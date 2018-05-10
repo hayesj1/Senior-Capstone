@@ -1,9 +1,11 @@
 workspace.xml
 
-Slick2d\dist
-Slick2d\examples
-Slick2d\lzma
-Slick2d\scripts
-Slick2d\target
-Slick2d\testdata
-Slick2d\webstart
+bin/
+
+Slick2d/dist/
+Slick2d/examples/
+Slick2d/lzma/
+Slick2d/scripts/
+Slick2d/target/
+Slick2d/testdata/
+Slick2d/webstart/
