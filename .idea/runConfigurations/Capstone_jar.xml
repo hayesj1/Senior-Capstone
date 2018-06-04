@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Capstone.jar" type="JarApplication" factoryName="JAR Application" singleton="true">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/bin/artifacts/Capstone/Capstone.jar" />
+    <option name="WORKING_DIRECTORY" value="C:\Users\hayesj3\Documents\GitHub_Repos\Senior-Capstone\bin\artifacts\Capstone" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+    <method />
+  </configuration>
+</component>

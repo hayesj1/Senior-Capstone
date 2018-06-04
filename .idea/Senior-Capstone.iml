@@ -3,10 +3,10 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/Slick2d" />
       <excludeFolder url="file://$MODULE_DIR$/bin" />
     </content>
-    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Slick2D" level="application" />
+    <orderEntry type="inheritedJdk" />
   </component>
 </module>

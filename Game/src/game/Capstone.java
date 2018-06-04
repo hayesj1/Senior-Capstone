@@ -1,14 +1,22 @@
 package game;
 
-import org.newdawn.slick.Game;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
+import game.input.InputHandler;
+import org.newdawn.slick.*;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.SoundStore;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Capstone implements Game {
 
 	private String title;
+	private Image im = null;
+	private Animation anim = null;
+	private Audio bgm = null;
 
+	private InputHandler input = new InputHandler();
 	/**
 	 * Create a new basic game
 	 *
@@ -27,6 +35,19 @@ public class Capstone implements Game {
 	 */
 	@Override
 	public void init(GameContainer container) throws SlickException {
+		container.getInput().addPrimaryListener(input);
+		SoundStore.get().init();
+		container.setMusicOn(true);
+		container.setMusicVolume(5.0f);
+		try {
+			bgm = SoundStore.get().getOgg("./FromHere.ogg");
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		im = new Image("./doggo.png");
+		SpriteSheet sprites = new SpriteSheet("./Ultravore.gif", 20, 20, 1);
+		anim = new Animation(sprites, 0, 0, 8, 0, true, 1000, true);
 
 	}
 
@@ -40,6 +61,10 @@ public class Capstone implements Game {
 	 */
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
+		int bufid = -1;
+		if (!bgm.isPlaying()) {
+			bufid = bgm.playAsMusic(1.0f, 1.0f, false);
+		}
 
 	}
 
@@ -53,7 +78,9 @@ public class Capstone implements Game {
 	 */
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
-
+		g.drawString("Welcome to our Capstone!",10,10);
+		g.drawImage(im, 10+input.getxOff(), 120+input.getyOff());
+		g.drawAnimation(anim, 10, 30);
 	}
 
 	/**
@@ -63,7 +90,7 @@ public class Capstone implements Game {
 	 */
 	@Override
 	public boolean closeRequested() {
-		return false;
+		return true;
 	}
 
 	/**
@@ -78,7 +105,20 @@ public class Capstone implements Game {
 
 	public static void main(String[] args) {
 		Capstone game = new Capstone("Capstone");
-		System.out.println("Welcome to !"+game.getTitle());
+		System.out.println("Welcome to "+game.getTitle());
+
+		try
+		{
+			AppGameContainer appgc;
+			appgc = new AppGameContainer(game);
+			appgc.setDisplayMode(640, 480, false);
+			appgc.setShowFPS(false);
+			appgc.start();
+		}
+		catch (SlickException ex)
+		{
+			Logger.getLogger(Capstone.class.getName()).log(Level.SEVERE, null, ex);
+		}
 
 
 	}

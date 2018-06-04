@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Game/Game.iml" filepath="$PROJECT_DIR$/Game/Game.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Senior-Capstone.iml" filepath="$PROJECT_DIR$/.idea/Senior-Capstone.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Slick2d/Slick2d.iml" filepath="$PROJECT_DIR$/Slick2d/Slick2d.iml" />
     </modules>
   </component>
 </project>
