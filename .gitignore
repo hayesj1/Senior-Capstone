@@ -1,14 +1,5 @@
 workspace.xml
 
-bin/
+bin/*
 Game/lib/*.jar
-
-Slick2d/dist/
-Slick2d/examples/
-Slick2d/lzma/
-Slick2d/scripts/
-Slick2d/target/
-Slick2d/testdata/
-Slick2d/webstart/
-Slick2D/lib/
-Slick2D/*.*
+Slick2D/*
