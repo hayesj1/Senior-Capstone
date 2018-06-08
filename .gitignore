@@ -1,6 +1,7 @@
 workspace.xml
 
 bin/
+Game/lib/*.jar
 
 Slick2d/dist/
 Slick2d/examples/
@@ -9,3 +10,5 @@ Slick2d/scripts/
 Slick2d/target/
 Slick2d/testdata/
 Slick2d/webstart/
+Slick2D/lib/
+Slick2D/*.*
