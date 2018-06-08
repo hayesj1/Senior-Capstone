@@ -35,6 +35,7 @@ public class Capstone implements Game {
 	 */
 	@Override
 	public void init(GameContainer container) throws SlickException {
+		// ##### TESTING CODE ##### //
 		container.getInput().addPrimaryListener(input);
 		SoundStore.get().init();
 		container.setMusicOn(true);
@@ -49,6 +50,36 @@ public class Capstone implements Game {
 		SpriteSheet sprites = new SpriteSheet("./Ultravore.gif", 20, 20, 1);
 		anim = new Animation(sprites, 0, 0, 8, 0, true, 1000, true);
 
+		// ##### PRODUCTION CODE ##### //
+		initSpecies();
+		initMoves();
+		initPlayer();
+		initDungeon();
+	}
+
+	private void initSpecies() {
+
+	}
+
+	private void initMoves() {
+
+	}
+
+	private void initPlayer() {
+
+	}
+
+	private void initDungeon() {
+		initMonsters();
+		initBoss();
+	}
+
+	private void initMonsters() {
+
+	}
+
+	private void initBoss() {
+
 	}
 
 	/**
@@ -61,10 +92,13 @@ public class Capstone implements Game {
 	 */
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
+		// ##### TESTING CODE ##### //
 		int bufid = -1;
 		if (!bgm.isPlaying()) {
 			bufid = bgm.playAsMusic(1.0f, 1.0f, false);
 		}
+
+		// ##### PRODUCTION CODE ##### //
 
 	}
 
@@ -78,9 +112,12 @@ public class Capstone implements Game {
 	 */
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
+		// ##### TESTING CODE ##### //
 		g.drawString("Welcome to our Capstone!",10,10);
 		g.drawImage(im, 10+input.getxOff(), 120+input.getyOff());
 		g.drawAnimation(anim, 10, 30);
+
+		// ##### PRODUCTION CODE ##### //
 	}
 
 	/**

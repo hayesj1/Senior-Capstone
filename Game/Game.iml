@@ -5,6 +5,8 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/manifests" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="">
@@ -18,8 +20,8 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="Slick2D Natives" level="application" />
-    <orderEntry type="library" name="lwjgl-2.9.3" level="application" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="Slick2D Natives" level="application" />
+    <orderEntry type="library" scope="RUNTIME" name="lwjgl-2.9.3" level="application" />
     <orderEntry type="inheritedJdk" />
   </component>
 </module>

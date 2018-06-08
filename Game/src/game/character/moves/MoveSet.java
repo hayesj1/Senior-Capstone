@@ -1,4 +1,4 @@
-package game.monster.moves;
+package game.character.moves;
 
 public class MoveSet {
 	private Move[] set;

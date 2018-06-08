@@ -1,4 +1,4 @@
-package game.monster;
+package game.character;
 
 public class Stats {
 
@@ -14,19 +14,19 @@ public class Stats {
 		this.speed = speed;
 	}
 
-	public int getMaxHP() {
+	public int maxHP() {
 		return maxHP;
 	}
 
-	public int getAttack() {
+	public int attack() {
 		return attack;
 	}
 
-	public int getDefense() {
+	public int defense() {
 		return defense;
 	}
 
-	public int getSpeed() {
+	public int speed() {
 		return speed;
 	}
 }
