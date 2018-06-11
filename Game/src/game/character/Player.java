@@ -3,11 +3,11 @@ package game.character;
 import game.character.moves.Move;
 
 public class Player extends PlayableCharacter {
-	private static final int MAX_TEAM_SIZE = 6;
+	private static final int MAX_PARTY_SIZE = 6;
 
-	private Monster[] team = new Monster[MAX_TEAM_SIZE];
+	private Monster[] party = new Monster[MAX_PARTY_SIZE];
 
 	public Player(Species species, Stats stats, Move[] learnedMoves, String name) {
-		super(species, stats, learnedMoves, name);
+		super(species, name, learnedMoves, stats);
 	}
 }

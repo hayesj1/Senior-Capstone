@@ -3,16 +3,29 @@ package game.character;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
 
-public class PlayableCharacter extends Character implements IBattlable{
+public class PlayableCharacter extends Character implements IBattlable, ILevelable {
+	public static final int MAX_MOVES = 6;
+	private final Move[] learnedMoves = new Move[MAX_MOVES];
+	private int moveCount = 0;
 
-	protected Move[] learnedMoves;
-	protected Stats stats;
-	protected int HP;
+	private Stats stats;
+	private int HP;
+	private int level;
+	private int exp;
+	private int requiredExp;
 
-	public PlayableCharacter(Species species, Stats stats, Move[] learnedMoves, String name) {
+	public PlayableCharacter(Species species, String name, Move[] learnedMoves, Stats stats) { this(species, name, learnedMoves, stats, 1); }
+	public PlayableCharacter(Species species, String name, Move[] learnedMoves, Stats stats, int level) {
 		super(species, name);
 		this.stats = stats;
-		this.learnedMoves = learnedMoves;
+		for (int i = 0, j = 0; i < learnedMoves.length && moveCount <= MAX_MOVES; i++) {
+			if (learnedMoves[i] == null) { continue; }
+			this.learnedMoves[j] = learnedMoves[i];
+			moveCount++;
+		}
+		this.level = Math.max(Math.min(level, ILevelable.MAX_LEVEL), 1);
+		this.exp =  ILevelable.requiredExpForLevel(this.level);
+		this.requiredExp = ILevelable.requiredExpForLevel(this.level+1);
 	}
 
 	/**
@@ -104,5 +117,42 @@ public class PlayableCharacter extends Character implements IBattlable{
 	public void setHP(int hp) {
 		this.HP = hp;
 		this.validateHP();
+	}
+
+	@Override
+	public int getLevel() {
+		return this.level;
+	}
+
+	@Override
+	public int levelUp() {
+		return ++this.level;
+	}
+
+	@Override
+	public void addEXP(int exp) {
+		this.exp += exp;
+		if (this.requiredExp > 0 && this.exp >= this.requiredExp) {
+
+		}
+	}
+
+	/**
+	 * Learn a new move. If {@link #moveCount} is less than {@link #MAX_MOVES}, the slot param is ignored and the new
+	 * move is placed in the first free move slot
+	 * @param newMove The move to learn
+	 * @param slot The moveSlot which wil be replaced.
+	 * @return the move which was replaced by newMove or null if the slot was empty
+	 */
+	@Override
+	public Move learnNewMove(Move newMove, int slot) {
+		if (moveCount == MAX_MOVES) {
+			Move old = learnedMoves[slot];
+			learnedMoves[slot] = newMove;
+			return old;
+		} else {
+			learnedMoves[moveCount++] = newMove;
+			return null;
+		}
 	}
 }
