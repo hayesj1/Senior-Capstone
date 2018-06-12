@@ -6,8 +6,17 @@ public class Player extends PlayableCharacter {
 	private static final int MAX_PARTY_SIZE = 6;
 
 	private Monster[] party = new Monster[MAX_PARTY_SIZE];
+	private int nextFreeSlot = 0;
 
 	public Player(Species species, Stats stats, Move[] learnedMoves, String name) {
 		super(species, name, learnedMoves, stats);
+	}
+
+	public void addMonsterToParty(Monster monster) {
+		this.party[this.nextFreeSlot++] = monster;
+	}
+
+	public IBattlable swapMonster() {
+		return this.party[0];
 	}
 }

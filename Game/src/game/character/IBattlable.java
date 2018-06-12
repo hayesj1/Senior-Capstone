@@ -1,5 +1,6 @@
 package game.character;
 
+import game.battle.Turn;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
 
@@ -13,6 +14,9 @@ public interface IBattlable {
 	 * @return True if this character should be capturable, false otherwise
 	 */
 	boolean isCapturable();
+
+	Turn planMove(IBattlable[] targets);
+	boolean executeTurn();
 
 	/**
 	 * <code>this</code> monster attempts to deal damage to <code>defender</code> with <code>move</code>. If the move
@@ -38,9 +42,14 @@ public interface IBattlable {
 	 * @return True if <code>this</code> can use <code>move</code>, false otherwise
 	 */
 	boolean canUseMove(Move move);
+	void KO();
+
 	Stats getStats();
 	int HP();
 	int modifyHP(int delta);
 	void setHP(int hp);
 
+	default boolean isKOed() {
+		return HP() == 0;
+	}
 }

@@ -1,5 +1,6 @@
 package game.character;
 
+import game.battle.Turn;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
 
@@ -7,6 +8,7 @@ public class PlayableCharacter extends Character implements IBattlable, ILevelab
 	public static final int MAX_MOVES = 6;
 	private final Move[] learnedMoves = new Move[MAX_MOVES];
 	private int moveCount = 0;
+	private Turn turn = new Turn(this, null, null);
 
 	private Stats stats;
 	private int HP;
@@ -36,6 +38,24 @@ public class PlayableCharacter extends Character implements IBattlable, ILevelab
 		return false;
 	}
 
+	@Override
+	public Turn planMove(IBattlable[] targets) {
+		//TODO Implement move Selection
+		this.turn.setTarget(targets[0]);
+		this.turn.setAttack(learnedMoves[0]);
+		return this.turn;
+	}
+
+	@Override
+	public boolean executeTurn() {
+		try {
+			return this.turn.execute();
+		} catch (MoveOutOfUsesException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
+	}
+
 	/**
 	 * <code>this</code> monster attempts to deal damage to <code>defender</code> with <code>move</code>. If the move
 	 * lands, <code>defender.attackedBy(this, move)</code> is called. Otherwise the move misses. The chance to hit is
@@ -48,13 +68,17 @@ public class PlayableCharacter extends Character implements IBattlable, ILevelab
 	public boolean attack(IBattlable defender, Move move) throws MoveOutOfUsesException {
 		if (!this.canUseMove(move)) { throw new MoveOutOfUsesException(move, this); }
 		else if (move.accuracy() == 100) {
-			defender.attackedBy(this, move);
+			if (defender.attackedBy(this, move)) {
+				defender.KO();
+			}
 			return true;
 		} else if (move.accuracy() == 0) { return false; }
 		else {
 			int randNum = IBattlable.rand.nextInt(100) + 1;
 			if (randNum <= move.accuracy()) {
-				defender.attackedBy(this, move);
+				if (defender.attackedBy(this, move)) {
+					defender.KO();
+				}
 				return true;
 			} else { return false; }
 		}
@@ -83,6 +107,11 @@ public class PlayableCharacter extends Character implements IBattlable, ILevelab
 	@Override
 	public boolean canUseMove(Move move) {
 		return move.uses() > 0;
+	}
+
+	@Override
+	public void KO() {
+
 	}
 
 	/**
