@@ -4,11 +4,14 @@ import game.battle.Turn;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
 
-public class PlayableCharacter extends Character implements IBattlable, ILevelable {
+public abstract class PlayableCharacter extends Character implements IBattlable, ILevelable {
 	public static final int MAX_MOVES = 6;
+
+	private Turn turn = new Turn(this, null, null);
+
 	private final Move[] learnedMoves = new Move[MAX_MOVES];
 	private int moveCount = 0;
-	private Turn turn = new Turn(this, null, null);
+	private boolean justCaptured = false;
 
 	private Stats stats;
 	private int HP;
@@ -36,6 +39,16 @@ public class PlayableCharacter extends Character implements IBattlable, ILevelab
 	@Override
 	public boolean isCapturable() {
 		return false;
+	}
+
+	@Override
+	public boolean justCaptured() {
+		return this.justCaptured;
+	}
+
+	@Override
+	public void justCaptured(boolean justCaptured) {
+		this.justCaptured = justCaptured;
 	}
 
 	@Override
@@ -98,15 +111,6 @@ public class PlayableCharacter extends Character implements IBattlable, ILevelab
 		this.validateHP();
 
 		return this.HP == 0;
-	}
-
-	/**
-	 * @param move the move in question
-	 * @return True if <code>this</code> can use <code>move</code>, false otherwise
-	 */
-	@Override
-	public boolean canUseMove(Move move) {
-		return move.uses() > 0;
 	}
 
 	@Override

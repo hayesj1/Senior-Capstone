@@ -19,4 +19,26 @@ public class Player extends PlayableCharacter {
 	public IBattlable swapMonster() {
 		return this.party[0];
 	}
+
+	/**
+	 * Attempt to capture this <code>IBattlable</code>. If successful, <code>capturer</code> claims this <code>IBattlable</code>
+	 *
+	 * @param capturer the <code>IBattlable</code> attempting to capture this <code>IBattlable</code>
+	 * @return true on success, false if failure or this <code>IBattlable</code> is not capturable
+	 * @see #isCapturable()
+	 */
+	@Override
+	public boolean capture(IBattlable capturer) {
+		return false;
+	}
+
+	/**
+	 * Adds <code>captured</code> to this <code>IBattlable</code>'s team(if one exists)
+	 *
+	 * @param captured the newly captured <code>IBattlable</code>
+	 */
+	@Override
+	public void addToTeam(IBattlable captured) {
+		//TODO: add captured monster to party
+	}
 }

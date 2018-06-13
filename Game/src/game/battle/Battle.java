@@ -72,30 +72,51 @@ public class Battle {
 		this.order = new TreeMap<>(BattleOrder.getInstance());
 	}
 
-	private void prepare(IBattlable[] playerParty, IBattlable[] opposingParty) {
+	/**
+	 * Initializes battle participants and attack order
+	 * @param playerteam Array of Player's participants
+	 * @param opposingTeam Array of Opponent's participants
+	 */
+	private void prepare(IBattlable[] playerteam, IBattlable[] opposingTeam) {
 
-		System.arraycopy(playerParty, 0, this.playerParty, 0, 2);
-		System.arraycopy(opposingParty, 0, this.opposingParty, 0, 2);
+		System.arraycopy(playerteam, 0, this.playerParty, 0, 2);
+		System.arraycopy(opposingTeam, 0, this.opposingParty, 0, 2);
 
-		this.order.put(playerParty[0], opposingParty);
-		this.order.put(playerParty[1], opposingParty);
-		this.order.put(opposingParty[0], playerParty);
-		this.order.put(opposingParty[1], playerParty);
+		this.order.put(playerteam[0], opposingTeam);
+		this.order.put(playerteam[1], opposingTeam);
+		this.order.put(opposingTeam[0], playerteam);
+		this.order.put(opposingTeam[1], playerteam);
 
 	}
 
-	public void start(IBattlable[] playerTeam, IBattlable[] opposingTeam) {
+	/**
+	 * Starts battle between playerTeam and opposingTeam
+	 * @param playerTeam Array of Player's participants
+	 * @param opposingTeam Array of Opponent's participants
+	 * @return true if the Player won, false otherwise
+	 */
+	public boolean start(IBattlable[] playerTeam, IBattlable[] opposingTeam) {
 		prepare(playerTeam, opposingTeam);
+		boolean playerWon = false;
 		do {
 			order.descendingMap().forEach(IBattlable::planMove);
 			order.descendingKeySet().forEach(IBattlable::executeTurn);
 			order.descendingKeySet().removeIf(IBattlable::isKOed);
+			order.descendingKeySet().removeIf(IBattlable::justCaptured);
 
-			if (this.playerParty[0].isKOed()) {
-				break; // you LOSE cause you DEAD
-			} else if (this.playerParty[1].isKOed()) {
-				this.playerParty[1] = ((Player) this.playerParty[0]).swapMonster();
+			if (order.size() < 4) {
+				if (this.playerParty[0].isKOed()) {
+					playerWon = false;
+					break; // you LOSE cause you DEAD
+				} else if (this.opposingParty[0].isKOed() && this.opposingParty[1].isKOed()) {
+					playerWon = true;
+					break; // you WIN cause opposingParty is DEAD or CAPTURED
+				} else if (this.playerParty[1].isKOed()) {
+					this.playerParty[1] = ((Player) this.playerParty[0]).swapMonster();
+				}
 			}
 		} while(order.size() > 0);
+
+		return playerWon;
 	}
 }

@@ -12,4 +12,14 @@ public class Monster extends PlayableCharacter {
 	@Override
 	public boolean isCapturable() { return true; }
 
+	/**
+	 * Adds <code>captured</code> to this <code>IBattlable</code>'s team(if one exists)
+	 *
+	 * @param captured the newly captured <code>IBattlable</code>
+	 */
+	@Override
+	public void addToTeam(IBattlable captured) {
+		return; // Monster don't have a team
+	}
+
 }

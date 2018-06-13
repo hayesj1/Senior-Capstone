@@ -2,6 +2,9 @@ package game.character;
 
 import game.character.moves.Move;
 
+/**
+ * For character which use the leveling system
+ */
 public interface ILevelable {
 	int MAX_LEVEL = 100;
 

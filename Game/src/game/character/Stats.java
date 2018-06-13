@@ -1,5 +1,9 @@
 package game.character;
 
+/**
+ * The base stats for a given Playable Character. These are increased overtime by spending stat-points,
+ * which are awarded from leveling up.
+ */
 public class Stats {
 
 	private int maxHP;
