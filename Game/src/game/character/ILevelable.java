@@ -10,13 +10,12 @@ public interface ILevelable {
 
 	static int requiredExpForLevel(int level) {
 		//TODO: replace with permanent formula
-		return (level < MAX_LEVEL) ? (2 >> (level / 4) + 1) + (2 * level) : 0;
+		return (level < MAX_LEVEL) ? (int) Math.floor( 10 * Math.sqrt(level + 1) ) : 0;
 	}
 
 	static int expForDefeating(int yourLevel, int theirLevel) {
 		//TODO: replace with permanent formula
-		int bigger = Math.max(yourLevel, theirLevel);
-		return (int) (1 / Math.log( Math.abs(theirLevel - yourLevel) ) + ( Math.floorDiv(bigger, 10) * 100 ));
+		return (int) Math.ceil(Math.sqrt(theirLevel + 5));
 	}
 
 	int getLevel();
