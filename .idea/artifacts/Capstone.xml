@@ -3,22 +3,9 @@
     <output-path>$PROJECT_DIR$/bin/artifacts/Capstone</output-path>
     <root id="archive" name="Capstone.jar">
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/Game/manifests/capstone/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/manifests/capstone/META-INF/MANIFEST.MF" />
       </element>
-      <element id="module-output" name="Game" />
-      <element id="directory" name="lib">
-        <element id="library" level="module" name="Slick2D" module-name="Game" />
-        <element id="dir-copy" path="$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/jar" />
-        <element id="file-copy" path="$PROJECT_DIR$/../../Global_Libs/Slick2D/lib/natives-linux.jar" />
-        <element id="file-copy" path="$PROJECT_DIR$/../../Global_Libs/Slick2D/lib/natives-mac.jar" />
-        <element id="file-copy" path="$PROJECT_DIR$/../../Global_Libs/Slick2D/lib/natives-windows.jar" />
-      </element>
-      <element id="dir-copy" path="$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/windows" />
-      <element id="dir-copy" path="$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/macosx" />
-      <element id="dir-copy" path="$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/linux" />
-      <element id="dir-copy" path="$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/freebsd" />
-      <element id="dir-copy" path="$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/openbsd" />
-      <element id="dir-copy" path="$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/solaris" />
+      <element id="module-output" name="Senior-Capstone" />
     </root>
   </artifact>
 </component>

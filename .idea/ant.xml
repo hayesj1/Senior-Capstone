@@ -3,5 +3,6 @@
   <component name="AntConfiguration">
     <buildFile url="file://$PROJECT_DIR$/Slick2d/build.xml" />
     <buildFile url="file://$PROJECT_DIR$/Slick2d/scripts/game-build-example.xml" />
+    <buildFile url="file://$PROJECT_DIR$/senior-capstone.xml" />
   </component>
 </project>

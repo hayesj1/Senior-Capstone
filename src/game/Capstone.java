@@ -1,10 +1,16 @@
 package game;
 
+import game.input.DemoInputHandler;
 import game.input.InputHandler;
 import org.newdawn.slick.*;
+import org.newdawn.slick.command.BasicCommand;
+import org.newdawn.slick.command.Command;
+import org.newdawn.slick.command.InputProvider;
+import org.newdawn.slick.command.KeyControl;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.SoundStore;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +21,9 @@ public class Capstone implements Game {
 	private Image im = null;
 	private Animation anim = null;
 	private Audio bgm = null;
+	private InputProvider provider = null;
+	private DemoInputHandler handler = new DemoInputHandler();
+	private Command test = new BasicCommand("test");
 
 	private InputHandler input = new InputHandler();
 	/**
@@ -41,35 +50,43 @@ public class Capstone implements Game {
 		container.setMusicOn(true);
 		container.setMusicVolume(5.0f);
 		try {
-			bgm = SoundStore.get().getOgg("./FromHere.ogg");
+			bgm = SoundStore.get().getOgg("assets/sound/bgm/FromHere.ogg");
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
 
-		im = new Image("./doggo.png");
-		SpriteSheet sprites = new SpriteSheet("./Ultravore.gif", 20, 20, 1);
+		im = new Image("./assets/image/doggo.png");
+		SpriteSheet sprites = new SpriteSheet("assets/sprite/Ultravore.gif", 20, 20, 1);
 		anim = new Animation(sprites, 0, 0, 8, 0, true, 1000, true);
 
 		// ##### PRODUCTION CODE ##### //
-		initSpecies();
-		initMoves();
-		initPlayer();
-		initDungeon();
-	}
-
-	private void initSpecies() {
+		initInput(container);
+		initSpecies(container);
+		initMoves(container);
+		initPlayer(container);
+		initDungeon(container);
 
 	}
 
-	private void initMoves() {
+	private void initInput(GameContainer container) {
+		provider = new InputProvider(container.getInput());
+		provider.addListener(handler);
+		provider.bindCommand(new KeyControl(Input.KEY_E), test);
+	}
+
+	private void initSpecies(GameContainer container) {
 
 	}
 
-	private void initPlayer() {
+	private void initMoves(GameContainer container) {
 
 	}
 
-	private void initDungeon() {
+	private void initPlayer(GameContainer container) {
+
+	}
+
+	private void initDungeon(GameContainer container) {
 		initMonsters();
 		initBoss();
 	}
@@ -141,6 +158,11 @@ public class Capstone implements Game {
 	}
 
 	public static void main(String[] args) {
+		System.setProperty("java.library.path", "libs");
+		//Extracted from Distributing Your LWJGL Application
+		System.setProperty("org.lwjgl.librarypath", new File("libs/natives").getAbsolutePath());
+
+
 		Capstone game = new Capstone("Capstone");
 		System.out.println("Welcome to "+game.getTitle());
 

@@ -3,10 +3,18 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/Slick2d" />
       <excludeFolder url="file://$MODULE_DIR$/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/doc" />
+      <excludeFolder url="file://$MODULE_DIR$/manifests" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="Slick2D" level="project" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="Slick2D Natives" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="lwjgl-2.9.3" level="project" />
     <orderEntry type="inheritedJdk" />
   </component>
 </module>
