@@ -21,8 +21,14 @@ public class Turn {
 	 * @throws MoveOutOfUsesException if the move has no uses left
 	 */
 	public boolean execute() throws MoveOutOfUsesException {
-		return attacker.attack(target, attack);
+		boolean res = attacker.attack(target, attack);
+		this.target = null;
+		this.attack = null;
+
+		return res;
 	}
+
+	public boolean ready() { return this.attacker != null && this.target != null && this.attack != null; }
 
 	public IBattlable getAttacker() {
 		return attacker;

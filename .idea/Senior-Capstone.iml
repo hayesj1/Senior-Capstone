@@ -12,8 +12,8 @@
       <excludeFolder url="file://$MODULE_DIR$/manifests" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Slick2D" level="project" />
-    <orderEntry type="library" exported="" scope="RUNTIME" name="Slick2D Natives" level="project" />
+    <orderEntry type="library" name="Slick2D" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Slick2D Natives" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="lwjgl-2.9.3" level="project" />
     <orderEntry type="inheritedJdk" />
   </component>

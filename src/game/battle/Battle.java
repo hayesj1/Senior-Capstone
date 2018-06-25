@@ -2,6 +2,7 @@ package game.battle;
 
 import game.character.IBattlable;
 import game.character.Player;
+import game.input.BattleCommandDelegate;
 
 import java.util.Comparator;
 import java.util.TreeMap;
@@ -53,7 +54,8 @@ public class Battle {
 		 */
 		@Override
 		public int compare(IBattlable o1, IBattlable o2) {
-			return Integer.compare(o1.getStats().speed(), o2.getStats().speed());
+			int speeds = Integer.compare(o1.getStats().speed(), o2.getStats().speed());
+			return speeds == 0 ? 1 : speeds;
 		}
 
 		public static BattleOrder getInstance() {
@@ -61,12 +63,24 @@ public class Battle {
 		}
 	}
 
+	private BattleCommandDelegate commandDelegate;
+	private boolean prepared;
+	private boolean started;
+	private boolean ended;
+	private boolean needsAction = false;
+	private boolean playerWon;
+	private int actor = -1;
+
 	private IBattlable[] playerParty;
 	private IBattlable[] opposingParty;
-
 	private TreeMap<IBattlable, IBattlable[]> order;
 
-	public Battle() {
+	public Battle(BattleCommandDelegate del) {
+		this.commandDelegate = del;
+		this.prepared = false;
+		this.started = false;
+		this.ended = false;
+		this.playerWon = false;
 		this.playerParty = new IBattlable[2];
 		this.opposingParty = new IBattlable[2];
 		this.order = new TreeMap<>(BattleOrder.getInstance());
@@ -87,36 +101,66 @@ public class Battle {
 		this.order.put(opposingTeam[0], playerteam);
 		this.order.put(opposingTeam[1], playerteam);
 
+		this.actor = 0;
+		this.prepared = true;
 	}
 
 	/**
 	 * Starts battle between playerTeam and opposingTeam
 	 * @param playerTeam Array of Player's participants
 	 * @param opposingTeam Array of Opponent's participants
-	 * @return true if the Player won, false otherwise
 	 */
-	public boolean start(IBattlable[] playerTeam, IBattlable[] opposingTeam) {
+	public void start(IBattlable[] playerTeam, IBattlable[] opposingTeam) {
+		if (started) {
+			return;
+		}
 		prepare(playerTeam, opposingTeam);
-		boolean playerWon = false;
-		do {
-			order.descendingMap().forEach(IBattlable::planMove);
-			order.descendingKeySet().forEach(IBattlable::executeTurn);
-			order.descendingKeySet().removeIf(IBattlable::isKOed);
-			order.descendingKeySet().removeIf(IBattlable::justCaptured);
 
-			if (order.size() < 4) {
-				if (this.playerParty[0].isKOed()) {
-					playerWon = false;
-					break; // you LOSE cause you DEAD
-				} else if (this.opposingParty[0].isKOed() && this.opposingParty[1].isKOed()) {
-					playerWon = true;
-					break; // you WIN cause opposingParty is DEAD or CAPTURED
-				} else if (this.playerParty[1].isKOed()) {
-					this.playerParty[1] = ((Player) this.playerParty[0]).swapMonster();
-				}
-			}
-		} while(order.size() > 0);
-
-		return playerWon;
+		started = true;
 	}
+
+	public void advanceTurn(int moveSlot) {
+		if (!started) { return; }
+		needsAction = true;
+		if (this.actor == 0 && this.playerParty[1] == null) {
+			this.playerParty[this.actor].planMove(moveSlot, this.opposingParty);
+			this.actor++;
+		} else {
+			this.playerParty[this.actor].planMove(moveSlot, this.opposingParty);
+		}
+		this.actor++;
+		if (actor >= this.playerParty.length) {
+			needsAction = false;
+			//TODO Enable Basic AI move selection
+			opposingParty[0].planMove(1, this.playerParty);
+			opposingParty[1].planMove(1, this.playerParty);
+			executeTurns();
+		}
+	}
+
+	private void executeTurns() {
+		if (!started) { return; }
+		order.descendingKeySet().forEach(IBattlable::executeTurn);
+		order.descendingKeySet().removeIf(IBattlable::isKOed);
+		order.descendingKeySet().removeIf(IBattlable::justCaptured);
+		this.actor = 0;
+
+		if (order.size() < 4) {
+			if (this.playerParty[0].isKOed()) {
+				playerWon = false; // you LOSE cause you DEAD
+				ended = true;
+			} else if (this.opposingParty[0].isKOed() && this.opposingParty[1].isKOed()) {
+				playerWon = true; // you WIN cause opposingParty is DEAD or CAPTURED
+				ended = true;
+			} else if (this.playerParty[1].isKOed()) {
+				this.playerParty[1] = ((Player) this.playerParty[0]).swapMonster();
+			}
+		}
+	}
+
+	public boolean isOver() { return this.ended; }
+	public boolean playerVictory() { return this.playerWon; }
+	public boolean needsUserAction() { return this.needsAction; }
+	public IBattlable getActiveActor() { return this.playerParty[this.actor]; }
+
 }

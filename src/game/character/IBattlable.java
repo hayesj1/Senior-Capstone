@@ -60,6 +60,13 @@ public interface IBattlable {
 	Turn planMove(IBattlable[] targets);
 
 	/**
+	 * This <code>IBattlable</code> will select the move in moveSLot to use on its upcoming turn
+	 * @param moveSlot slot# of the selected move; values are 1 through 6
+	 * @param targets the available targets for a move
+	 * @return a <code>Turn</code> instance for later execution of the move chosen
+	 */
+	Turn planMove(int moveSlot, IBattlable[] targets);
+	/**
 	 * Execute the turn saved by a previous call to {@link #planMove(IBattlable[])}
 	 * @return true if the move lands, false if it missed, if it is out of uses, or if there is some other failure
 	 */
@@ -105,4 +112,6 @@ public interface IBattlable {
 	int HP();
 	int modifyHP(int delta);
 	void setHP(int hp);
+
+	Move[] getLearnedMoves();
 }
