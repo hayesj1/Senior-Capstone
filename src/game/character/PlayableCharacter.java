@@ -231,5 +231,18 @@ public abstract class PlayableCharacter extends Character implements IBattlable,
 	@Override
 	public Move[] getLearnedMoves() { return learnedMoves; }
 
+	@Override
+	public int getMoveSlotByLearnedMoveName(String name) {
+		int slot = -1;
+		for (int i = 0; i < MAX_MOVES; i++) {
+			if (learnedMoves[i].getName().equalsIgnoreCase(name)) {
+				slot = i+1;
+				break;
+			}
+		}
+
+		return slot;
+	}
+
 	public Animation getDeathAnimation() { return this.deathAnim; }
 }

@@ -143,9 +143,12 @@ public class Move implements Comparable<Move> {
 	 */
 	@Override
 	public String toString() {
-		return this.name+": "+this.description;
+		return this.name;
 	}
 
+	public String description() {
+		return this.name+": "+this.description;
+	}
 
 	/**
 	 * Compares this object with the specified object for order.  Returns a

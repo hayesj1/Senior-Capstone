@@ -6,7 +6,7 @@ import org.newdawn.slick.command.*;
 import java.util.HashSet;
 
 public class DemoInputHandler implements InputProviderListener {
-	private HashSet<CommandDelegate> commandDelegates = new HashSet<CommandDelegate>();
+	private HashSet<ICommandDelegate> commandDelegates = new HashSet<ICommandDelegate>();
 
 	public static final BasicCommand attack1 = new BasicCommand("Attack_1");
 	public static final BasicCommand attack2 = new BasicCommand("Attack_2");
@@ -14,6 +14,7 @@ public class DemoInputHandler implements InputProviderListener {
 	public static final BasicCommand attack4 = new BasicCommand("Attack_4");
 	public static final BasicCommand attack5 = new BasicCommand("Attack_5");
 	public static final BasicCommand attack6 = new BasicCommand("Attack_6");
+	public static final BasicCommand attack = new BasicCommand("Attack");
 
 	public static final BasicCommand forward = new BasicCommand("Forward");
 	public static final BasicCommand backward = new BasicCommand("backward");
@@ -23,15 +24,16 @@ public class DemoInputHandler implements InputProviderListener {
 	public static final BasicCommand escape = new BasicCommand("Escape");
 	public static final BasicCommand interact = new BasicCommand("Interact");
 
-	public void addCommandDelegate(CommandDelegate del) {
+	public void addCommandDelegate(ICommandDelegate del) {
 		this.commandDelegates.add(del);
 	}
 
-	public void removeCommandDelegate(CommandDelegate del) {
+	public void removeCommandDelegate(ICommandDelegate del) {
 		this.commandDelegates.remove(del);
 	}
 
 	public void registerCommands(InputProvider provider) {
+		provider.bindCommand(new MouseButtonControl(Input.MOUSE_LEFT_BUTTON), attack);
 		provider.bindCommand(new KeyControl(Input.KEY_1), attack1);
 		provider.bindCommand(new KeyControl(Input.KEY_2), attack2);
 		provider.bindCommand(new KeyControl(Input.KEY_3), attack3);
@@ -57,6 +59,8 @@ public class DemoInputHandler implements InputProviderListener {
 		provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escape);
 		provider.bindCommand(new KeyControl(Input.KEY_SPACE), interact);
 	}
+
+
 
 	@Override
 	public void controlPressed(Command command) {

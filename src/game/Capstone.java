@@ -4,6 +4,8 @@ import game.battle.Battle;
 import game.character.*;
 import game.character.moves.Move;
 import game.character.moves.MoveSet;
+import game.gui.ButtonGrid;
+import game.gui.LabeledButton;
 import game.input.BattleCommandDelegate;
 import game.input.DemoInputHandler;
 import game.input.InputHandler;
@@ -14,12 +16,10 @@ import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.SoundStore;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Capstone implements Game {
+	private static Capstone instance = new Capstone("Capstone");
 
 	private String title;
 	private Image im = null;
@@ -45,6 +45,9 @@ public class Capstone implements Game {
 	private Battle demoBattle;
 	private BattleCommandDelegate battleCommandDelegate;
 	private SpriteSheet orcSheet;
+	private LabeledButton[] buttons;
+	private ButtonGrid moveGrid;
+	private PlayableCharacter[] actors;
 
 	/**
 	 * Create a new basic game
@@ -85,8 +88,11 @@ public class Capstone implements Game {
 		initSpecies(container);
 		initPlayer(container);
 		initDungeon(container);
+		initGUI(container);
 
 		// ##### DEMO CODE ##### //
+		actors = new PlayableCharacter[] { player, mon1, mon2, mon3 };
+
 		demoBattle.start(new IBattlable[] { player, mon1 }, new IBattlable[] { mon2, mon3 });
 		battleCommandDelegate.init(demoBattle);
 	}
@@ -95,7 +101,7 @@ public class Capstone implements Game {
 		provider = new InputProvider(container.getInput());
 		provider.addListener(handler);
 		handler.registerCommands(provider);
-		battleCommandDelegate = new BattleCommandDelegate();
+		battleCommandDelegate = new BattleCommandDelegate(container.getInput());
 		handler.addCommandDelegate(battleCommandDelegate);
 	}
 
@@ -151,6 +157,14 @@ public class Capstone implements Game {
 
 	}
 
+	private void initGUI(GameContainer container) {
+		buttons = new LabeledButton[PlayableCharacter.MAX_MOVES];
+		for (int i = 0; i < PlayableCharacter.MAX_MOVES; i++) {
+			buttons[i] = new LabeledButton(moves[i], battleCommandDelegate, container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
+		}
+		moveGrid = new ButtonGrid(container, 1, 6, 5, buttons);
+	}
+
 	/**
 	 * Update the game logic here. No rendering should take place in this method
 	 * though it won't do any harm.
@@ -185,25 +199,23 @@ public class Capstone implements Game {
 	 */
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
-		g.setBackground(Color.darkGray);
-		g.setAntiAlias(true);
-		g.setLineWidth(2.0f);
 		// ##### TESTING CODE ##### //
 		g.drawString("Welcome to our Capstone!",980,20);
 		//g.drawImage(im, 10+input.getxOff(), 120+input.getyOff());
 		//g.drawAnimation(anim, 10, 30);
 		if (demoBattle.isOver()) {
-			g.drawString(demoBattle.playerVictory() ? "You WIN!" : "You LOSE!", 140, 40);
+			g.drawString(demoBattle.playerVictory() ? "You WIN!" : "You LOSE!", 240, 40);
 		} else {
 			g.drawString("Keep on battling!", 140,40);
-			g.drawString("Your Health: "+player.HP(),140,60);
-			g.drawString("Your Buddies's Health: "+mon1.HP(), 140, 80);
-			g.drawString("Enemy1's Health: "+mon2.HP(), 140, 100);
-			g.drawString("Enemy2's Health: "+mon3.HP(), 140, 120);
 		}
 
 		// ##### PRODUCTION CODE ##### //
+		g.setBackground(Color.darkGray);
+		g.setAntiAlias(true);
+		g.setLineWidth(2.0f);
+
 		drawHUD(container, g);
+		drawBattle(container, g);
 		Animation deathAnim = mon2.getDeathAnimation();
 		if (deathAnim != null) {
 			deathAnim.setLooping(false);
@@ -212,34 +224,38 @@ public class Capstone implements Game {
 		}
 	}
 
-	private void drawHUD(GameContainer container, Graphics g) {
+	private void drawHUD(GameContainer container, Graphics g) throws SlickException {
 		drawStats(container, g);
 		drawMoves(container, g);
 	}
 
 	private void drawStats(GameContainer container, Graphics g) {
-		PlayableCharacter[] actors = new PlayableCharacter[] { player, mon1, mon2, mon3 };
 		g.setColor(Color.lightGray);
 		int x = 20, y = 20;
-		for (int i = 0; i < 4; i++) {
-			float w = actors[i].HP() / actors[i].getStats().maxHP() * 100;
-			g.setColor(Color.lightGray);
-			g.fillRoundRect(x-2, y-2, 98, 18, 15);
-			g.fill(new RoundedRectangle(x, y, w+5, 20, 15, 16), new GradientFill(x,y,Color.red, x+100,y+20,Color.green));
+		for (PlayableCharacter actor : actors) {
+			float w = ( (actor.HP() * 1.0f) / actor.getStats().maxHP() );
+			//g.setColor(Color.lightGray);
+			g.fillRoundRect(x-2, y-2, 204, 24, 8);
+			g.fill(new RoundedRectangle(x, y, w*200, 20, 8), new GradientFill(x,y,Color.red, x+200,y+20,Color.green));
 			y += 35;
+		}
+
+		IBattlable active = demoBattle.getActiveActor();
+		x = 240;
+		y = 60;
+		for (PlayableCharacter actor : actors) {
+			Color color = (actor == active) ? Color.white : Color.lightGray;
+			g.getFont().drawString(x, y, actor.getName()+" HP: "+actor.HP(), color);
+			y += 20;
 		}
 	}
 
-	private void drawMoves(GameContainer container, Graphics g) {
-		g.setColor(Color.white);
-		moves = player.getLearnedMoves();
-		int x = 20, y = 960 - 40;
-		for (int i = 0, j = 1; i < moves.length; i++) {
-			if (moves[i] == null) { continue; }
-			String mv = (j++)+": "+moves[i].getName();
-			g.drawString(mv, x, y);
-			x += mv.length()*10;
-		}
+	private void drawMoves(GameContainer container, Graphics g) throws SlickException {
+		moveGrid.setLocation(20, container.getHeight()-(moveGrid.getHeight()+20));
+		moveGrid.render(container, g);
+	}
+
+	private void drawBattle(GameContainer container, Graphics g) {
 
 	}
 
@@ -263,29 +279,12 @@ public class Capstone implements Game {
 		return this.title;
 	}
 
-	public static void main(String[] args) {
-		System.setProperty("java.library.path", "libs");
-		//Extracted from Distributing Your LWJGL Application
-		System.setProperty("org.lwjgl.librarypath", new File("libs/natives").getAbsolutePath());
+	public LabeledButton[] getButtons(){
+		return this.buttons;
+	}
 
-
-		Capstone game = new Capstone("Capstone");
-		System.out.println("Welcome to "+game.getTitle());
-
-		try
-		{
-			AppGameContainer appgc;
-			appgc = new AppGameContainer(game);
-			appgc.setDisplayMode(1280, 960, false);
-			appgc.setShowFPS(false);
-			appgc.start();
-		}
-		catch (SlickException ex)
-		{
-			Logger.getLogger(Capstone.class.getName()).log(Level.SEVERE, null, ex);
-		}
-
-
+	public static Capstone getInstance() {
+		return instance;
 	}
 }
 

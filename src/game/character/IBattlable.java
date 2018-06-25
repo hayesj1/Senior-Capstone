@@ -114,4 +114,5 @@ public interface IBattlable {
 	void setHP(int hp);
 
 	Move[] getLearnedMoves();
+	int getMoveSlotByLearnedMoveName(String name);
 }
