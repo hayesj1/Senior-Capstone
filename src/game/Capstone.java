@@ -78,9 +78,9 @@ public class Capstone implements Game {
 			ioe.printStackTrace();
 		}
 
-		im = new Image("assets/image/doggo.png");
-		SpriteSheet sprites = new SpriteSheet("assets/sprite/Ultravore.gif", 20, 20, 1);
-		anim = new Animation(sprites, 0, 0, 8, 0, true, 1000, true);
+		//im = new Image("assets/image/doggo.png");
+		//SpriteSheet sprites = new SpriteSheet("assets/sprite/Ultravore.gif", 20, 20, 1);
+		//anim = new Animation(sprites, 0, 0, 8, 0, true, 1000, true);
 
 		// ##### PRODUCTION CODE ##### //
 		initInput(container);
@@ -178,7 +178,7 @@ public class Capstone implements Game {
 		// ##### TESTING CODE ##### //
 		int bufid = -1;
 		if (!bgm.isPlaying()) {
-			bufid = bgm.playAsMusic(1.0f, 0.05f, false);
+			//bufid = bgm.playAsMusic(1.0f, 0.05f, false);
 		}
 
 		// ##### PRODUCTION CODE ##### //
