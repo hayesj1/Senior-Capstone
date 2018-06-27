@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_senior-capstone" default="compile.module.senior-capstone">
+  <dirname property="module.senior-capstone.basedir" file="${ant.file.module_senior-capstone}"/>
+  
+  <property name="module.jdk.home.senior-capstone" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.senior-capstone" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.senior-capstone" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.senior-capstone" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="senior-capstone.output.dir" value="${module.senior-capstone.basedir}/../bin/production/Senior-Capstone"/>
+  <property name="senior-capstone.testoutput.dir" value="${module.senior-capstone.basedir}/../bin/test/Senior-Capstone"/>
+  
+  <path id="senior-capstone.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="senior-capstone.module.production.classpath">
+    <path refid="library.slick2d.classpath"/>
+    <path refid="${module.jdk.classpath.senior-capstone}"/>
+  </path>
+  
+  <path id="senior-capstone.runtime.production.module.classpath">
+    <pathelement location="${senior-capstone.output.dir}"/>
+    <path refid="library.slick2d.classpath"/>
+    <path refid="library.slick2d_natives.classpath"/>
+    <path refid="library.lwjgl-2.9.3.classpath"/>
+  </path>
+  
+  <path id="senior-capstone.module.classpath">
+    <pathelement location="${senior-capstone.output.dir}"/>
+    <path refid="library.slick2d.classpath"/>
+    <path refid="${module.jdk.classpath.senior-capstone}"/>
+  </path>
+  
+  <path id="senior-capstone.runtime.module.classpath">
+    <pathelement location="${senior-capstone.testoutput.dir}"/>
+    <pathelement location="${senior-capstone.output.dir}"/>
+    <path refid="library.slick2d.classpath"/>
+    <path refid="library.slick2d_natives.classpath"/>
+    <path refid="library.lwjgl-2.9.3.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.senior-capstone">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.senior-capstone">
+    <patternset refid="excluded.from.module.senior-capstone"/>
+  </patternset>
+  
+  <path id="senior-capstone.module.sourcepath">
+    <dirset dir="${module.senior-capstone.basedir}/../../Senior-Capstone">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="senior-capstone.module.test.sourcepath">
+    <dirset dir="${module.senior-capstone.basedir}/../../Senior-Capstone">
+      <include name="test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.senior-capstone" depends="compile.module.senior-capstone.production,compile.module.senior-capstone.tests" description="Compile module Senior-Capstone"/>
+  
+  <target name="compile.module.senior-capstone.production" depends="register.custom.compilers" description="Compile module Senior-Capstone; production classes">
+    <mkdir dir="${senior-capstone.output.dir}"/>
+    <javac2 destdir="${senior-capstone.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.senior-capstone}/javac">
+      <compilerarg line="${compiler.args.senior-capstone}"/>
+      <bootclasspath refid="senior-capstone.module.bootclasspath"/>
+      <classpath refid="senior-capstone.module.production.classpath"/>
+      <src refid="senior-capstone.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.senior-capstone"/>
+    </javac2>
+    
+    <copy todir="${senior-capstone.output.dir}">
+      <fileset dir="${module.senior-capstone.basedir}/../src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.senior-capstone.tests" depends="register.custom.compilers,compile.module.senior-capstone.production" description="compile module Senior-Capstone; test classes" unless="skip.tests">
+    <mkdir dir="${senior-capstone.testoutput.dir}"/>
+    <javac2 destdir="${senior-capstone.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.senior-capstone}/javac">
+      <compilerarg line="${compiler.args.senior-capstone}"/>
+      <bootclasspath refid="senior-capstone.module.bootclasspath"/>
+      <classpath refid="senior-capstone.module.classpath"/>
+      <src refid="senior-capstone.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.senior-capstone"/>
+    </javac2>
+    
+    <copy todir="${senior-capstone.testoutput.dir}">
+      <fileset dir="${module.senior-capstone.basedir}/../test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.senior-capstone" description="cleanup module">
+    <delete dir="${senior-capstone.output.dir}"/>
+    <delete dir="${senior-capstone.testoutput.dir}"/>
+  </target>
+</project>
