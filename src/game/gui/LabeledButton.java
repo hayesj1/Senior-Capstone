@@ -14,34 +14,21 @@ public class LabeledButton extends MouseOverArea {
 	private int textX;
 	private int textY;
 	private int cutoff;
-	private IButtonDelegate delegate;
 	private boolean textNeedsValidation;
 	private Shape bounds;
 
-	public LabeledButton(Object textSrc, IButtonDelegate delegate, GUIContext container, Font font, Image image) { this(textSrc, delegate, container, font, image, null); }
-	public LabeledButton(Object textSrc, IButtonDelegate delegate, GUIContext container, Font font, Shape shape) { this(textSrc, delegate, container, font, null, shape); }
-	public LabeledButton(Object textSrc, IButtonDelegate delegate, GUIContext container, Font font, Image image, Shape shape) {
+	public LabeledButton(Object textSrc, GUIContext container, Font font, Image image) { this(textSrc, container, font, image, null); }
+	public LabeledButton(Object textSrc, GUIContext container, Font font, Shape shape) { this(textSrc, container, font, null, shape); }
+	public LabeledButton(Object textSrc, GUIContext container, Font font, Image image, Shape shape) {
 		super(container, image, shape);
 
 		this.text = textSrc.toString();
 		this.textColor = Color.darkGray;
 		this.textX = this.getX();
 		this.textY = this.getY();
-		this.delegate = delegate;
 		this.textNeedsValidation = true;
 		this.bounds = shape;
-		this.addListener(delegate);
 
-	}
-
-	public void interacted() {
-		this.delegate.action(this);
-	}
-
-	public LabeledButton setActionDelegate(IButtonDelegate delegate) {
-		this.delegate = delegate;
-		this.addListener(delegate);
-		return this;
 	}
 
 	public LabeledButton setText(Object textSrc) {

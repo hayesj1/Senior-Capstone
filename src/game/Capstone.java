@@ -26,7 +26,7 @@ public class Capstone implements Game {
 	private Animation anim = null;
 	private Audio bgm = null;
 	private InputProvider provider = null;
-	private DemoInputHandler handler = new DemoInputHandler();
+	private DemoInputHandler handler = null;
 
 	private InputHandler input = new InputHandler();
 	private MoveSet testMoveSet;
@@ -94,15 +94,17 @@ public class Capstone implements Game {
 		actors = new PlayableCharacter[] { player, mon1, mon2, mon3 };
 
 		demoBattle.start(new IBattlable[] { player, mon1 }, new IBattlable[] { mon2, mon3 });
-		battleCommandDelegate.init(demoBattle, container.getInput());
+		battleCommandDelegate.init(demoBattle);
 	}
 
 	private void initInput(GameContainer container) {
+		handler = new DemoInputHandler(container);
 		provider = new InputProvider(container.getInput());
 		provider.addListener(handler);
 		handler.registerCommands(provider);
 		battleCommandDelegate = new BattleCommandDelegate();
 		handler.addCommandDelegate(battleCommandDelegate);
+
 	}
 
 	private void initMoves(GameContainer container) {
@@ -162,7 +164,7 @@ public class Capstone implements Game {
 	private void initGUI(GameContainer container) {
 		buttons = new LabeledButton[PlayableCharacter.MAX_MOVES];
 		for (int i = 0; i < PlayableCharacter.MAX_MOVES; i++) {
-			buttons[i] = new LabeledButton(moves[i], battleCommandDelegate, container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
+			buttons[i] = new LabeledButton(moves[i], container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
 		}
 		moveGrid = new ButtonGrid(container, 1, 6, 5, buttons);
 	}
@@ -186,6 +188,10 @@ public class Capstone implements Game {
 		// ##### PRODUCTION CODE ##### //
 
 		// ##### DEMO CODE ##### //
+		if (container.getInput().isKeyDown(Input.KEY_ESCAPE)) {
+			container.exit();
+		}
+
 		if (demoBattle.isOver()) {
 			handler.removeCommandDelegate(battleCommandDelegate);
 		}

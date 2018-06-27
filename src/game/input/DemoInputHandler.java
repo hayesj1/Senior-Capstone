@@ -1,13 +1,12 @@
 package game.input;
 
+import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.command.*;
 
 import java.util.HashSet;
 
 public class DemoInputHandler implements InputProviderListener {
-	private HashSet<ICommandDelegate> commandDelegates = new HashSet<ICommandDelegate>();
-
 	public static final BasicCommand attack1 = new BasicCommand("Attack_1");
 	public static final BasicCommand attack2 = new BasicCommand("Attack_2");
 	public static final BasicCommand attack3 = new BasicCommand("Attack_3");
@@ -23,6 +22,16 @@ public class DemoInputHandler implements InputProviderListener {
 
 	public static final BasicCommand escape = new BasicCommand("Escape");
 	public static final BasicCommand interact = new BasicCommand("Interact");
+
+	public static final BasicCommand quit = new BasicCommand("Quit");
+
+	private HashSet<ICommandDelegate> commandDelegates;
+	private GameContainer container;
+
+	public DemoInputHandler(GameContainer container) {
+		this.container = container;
+		this.commandDelegates = new HashSet<>();
+	}
 
 	public void addCommandDelegate(ICommandDelegate del) {
 		this.commandDelegates.add(del);
@@ -56,8 +65,10 @@ public class DemoInputHandler implements InputProviderListener {
 		provider.bindCommand(new KeyControl(Input.KEY_LEFT), left);
 		provider.bindCommand(new KeyControl(Input.KEY_RIGHT), right);
 
-		provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escape);
+		provider.bindCommand(new KeyControl(Input.KEY_R), escape);
 		provider.bindCommand(new KeyControl(Input.KEY_SPACE), interact);
+
+		provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), quit);
 	}
 
 
@@ -70,6 +81,9 @@ public class DemoInputHandler implements InputProviderListener {
 	@Override
 	public void controlReleased(Command command) {
 		System.out.println(command+" released!");
-		commandDelegates.forEach(del -> del.action(command));
+		if (command == quit) {
+			container.exit();
+		}
+		commandDelegates.forEach(del -> del.action(command, container));
 	}
 }

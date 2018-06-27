@@ -20,7 +20,7 @@ public class Bootstrap {
 		{
 			AppGameContainer appgc;
 			appgc = new AppGameContainer(game);
-			appgc.setDisplayMode(1280, 960, false);
+			appgc.setDisplayMode(1920, 1080, true);
 			appgc.setShowFPS(false);
 			appgc.start();
 		}
