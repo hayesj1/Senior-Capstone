@@ -3,6 +3,8 @@ package game.character.moves;
 import game.character.ILevelable;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A set of Moves which can be learned by a species or group of species. After a new instanace is created, use {@link #putMove}
@@ -10,7 +12,7 @@ import java.util.HashMap;
  * movesets are immutable.
  * A move learned at level:<ul>
  * <li>-1 will never be learned (this is useful for organizing moves into groups, or master lists of moves)</li>
- * <li>0 or 1 will be one of up to four "default" moves available to all monsters</li>
+ * <li>0 or 1 will be one of up to six "default" moves available to all monsters</li>
  * <li>2 - 100 will be learned upon advancing to that level</li>
  * </ul>
  */
@@ -23,7 +25,13 @@ public class MoveSet {
 		this.complete = false;
 	}
 
-	public void ready() {
+	public void init(Move[] moves, int[] learnLevels) {
+		if (moves.length != learnLevels.length) { throw new IllegalArgumentException("learnLevels array must be same size as moves array!"); }
+		for (int i = 0; i < moves.length; i++) { putMove(moves[i], learnLevels[i]); }
+		this.ready();
+	}
+
+	protected final void ready() {
 		this.complete = true;
 	}
 
@@ -34,7 +42,7 @@ public class MoveSet {
 	 * @param levelLearned the level a species learns this move
 	 * @return tue if this call updated an existing value, false otherwise
 	 */
-	public boolean putMove(Move move, Integer levelLearned) {
+	protected boolean putMove(Move move, Integer levelLearned) {
 		if (this.complete && !moves.containsKey(move)) {
 			throw new IllegalStateException("Moveset is flagged as complete; no more moves can be added!");
 		} else {
@@ -66,5 +74,20 @@ public class MoveSet {
 	 */
 	public Integer willLearnMoveAt(Move move) {
 		return moves.getOrDefault(move, null);
+	}
+
+	/**
+	 * @return null if there aren't any moves in the set learned at the passed level; otherwise, the first move learned at the passed level
+	 */
+	public Move moveLearnedAt(int levelLearned) {
+		Iterator<Map.Entry<Move, Integer>> it = moves.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<Move, Integer> e = it.next();
+			if (e.getValue().equals(levelLearned)) {
+				return e.getKey();
+			}
+		}
+
+		return null;
 	}
 }

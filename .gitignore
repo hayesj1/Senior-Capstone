@@ -1,5 +1,4 @@
 workspace.xml
 
 bin/*
-Game/lib/*.jar
 Slick2D/*

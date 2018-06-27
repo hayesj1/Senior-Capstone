@@ -92,6 +92,7 @@ public class Battle {
 	 * @param opposingTeam Array of Opponent's participants
 	 */
 	private void prepare(IBattlable[] playerteam, IBattlable[] opposingTeam) {
+		if (prepared) { return; }
 
 		System.arraycopy(playerteam, 0, this.playerParty, 0, 2);
 		System.arraycopy(opposingTeam, 0, this.opposingParty, 0, 2);
@@ -101,7 +102,6 @@ public class Battle {
 		this.order.put(opposingTeam[0], playerteam);
 		this.order.put(opposingTeam[1], playerteam);
 
-		this.actor = 0;
 		this.prepared = true;
 	}
 
@@ -111,17 +111,17 @@ public class Battle {
 	 * @param opposingTeam Array of Opponent's participants
 	 */
 	public void start(IBattlable[] playerTeam, IBattlable[] opposingTeam) {
-		if (started) {
-			return;
-		}
-		prepare(playerTeam, opposingTeam);
+		if (started) { return; }
 
+		prepare(playerTeam, opposingTeam);
+		actor = 0;
+		needsAction = true;
 		started = true;
 	}
 
 	public void advanceTurn(int moveSlot) {
 		if (!started) { return; }
-		needsAction = true;
+
 		if (this.actor == 0 && this.playerParty[1] == null) {
 			this.playerParty[this.actor].planMove(moveSlot, this.opposingParty);
 			this.actor++;
@@ -135,6 +135,9 @@ public class Battle {
 			opposingParty[0].planMove(1, this.playerParty);
 			opposingParty[1].planMove(1, this.playerParty);
 			executeTurns();
+			this.actor = 0;
+			this.needsAction = true;
+
 		}
 	}
 
@@ -143,7 +146,6 @@ public class Battle {
 		order.descendingKeySet().forEach(IBattlable::executeTurn);
 		order.descendingKeySet().removeIf(IBattlable::isKOed);
 		order.descendingKeySet().removeIf(IBattlable::justCaptured);
-		this.actor = 0;
 
 		if (order.size() < 4) {
 			if (this.playerParty[0].isKOed()) {

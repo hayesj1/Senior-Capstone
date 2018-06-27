@@ -8,7 +8,7 @@ import org.newdawn.slick.Animation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class PlayableCharacter extends Character implements IBattlable, ILevelable {
+public abstract class PlayableCharacter extends Character implements IBattlable {
 	public static final int MAX_MOVES = 6;
 
 	private Turn turn = new Turn(this, null, null);
@@ -20,23 +20,17 @@ public abstract class PlayableCharacter extends Character implements IBattlable,
 
 	private Stats stats;
 	private int HP;
-	private int level;
-	private int exp;
-	private int requiredExp;
 	private Animation deathAnim;
 
 	public PlayableCharacter(Species species, String name, Move[] learnedMoves, Stats stats) { this(species, name, learnedMoves, stats, 1); }
 	public PlayableCharacter(Species species, String name, Move[] learnedMoves, Stats stats, int level) {
-		super(species, name);
+		super(species, name, level);
 		this.stats = stats;
 		for (int i = 0, j = 0; i < learnedMoves.length && moveCount <= MAX_MOVES; i++) {
 			if (learnedMoves[i] == null) { continue; }
 			this.learnedMoves[moveCount] = learnedMoves[i];
 			moveCount++;
 		}
-		this.level = Math.max(Math.min(level, ILevelable.MAX_LEVEL), 1);
-		this.exp =  ILevelable.requiredExpForLevel(this.level);
-		this.requiredExp = ILevelable.requiredExpForLevel(this.level+1);
 		this.HP = this.stats.maxHP();
 	}
 
@@ -113,6 +107,7 @@ public abstract class PlayableCharacter extends Character implements IBattlable,
 		else if (move.accuracy() == 100) {
 			if (defender.attackedBy(this, move)) {
 				defender.KO();
+				this.addEXP(ILevelable.expForDefeating(this.getLevel(), ((ILevelable) defender).getLevel()));
 			}
 			Logger.getLogger(PlayableCharacter.class.getName()).log(Level.INFO, "Hit with move "+move.getName());
 			return true;
@@ -189,24 +184,6 @@ public abstract class PlayableCharacter extends Character implements IBattlable,
 	public void setHP(int hp) {
 		this.HP = hp;
 		this.validateHP();
-	}
-
-	@Override
-	public int getLevel() {
-		return this.level;
-	}
-
-	@Override
-	public int levelUp() {
-		return ++this.level;
-	}
-
-	@Override
-	public void addEXP(int exp) {
-		this.exp += exp;
-		if (this.requiredExp > 0 && this.exp >= this.requiredExp) {
-
-		}
 	}
 
 	/**

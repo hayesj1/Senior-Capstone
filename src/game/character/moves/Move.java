@@ -146,7 +146,7 @@ public class Move implements Comparable<Move> {
 		return this.name;
 	}
 
-	public String description() {
+	public String describe() {
 		return this.name+": "+this.description;
 	}
 

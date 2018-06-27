@@ -5,6 +5,26 @@
         <option name="PATTERN" value="game.*" />
         <option name="ENABLED" value="true" />
       </pattern>
+      <pattern>
+        <option name="PATTERN" value="game.battle.*" />
+        <option name="ENABLED" value="false" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="game.character.*" />
+        <option name="ENABLED" value="false" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="game.exception.*" />
+        <option name="ENABLED" value="false" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="game.gui.*" />
+        <option name="ENABLED" value="false" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="game.input.*" />
+        <option name="ENABLED" value="false" />
+      </pattern>
     </extension>
     <option name="JAR_PATH" value="$PROJECT_DIR$/bin/artifacts/Capstone/Capstone.jar" />
     <option name="VM_PARAMETERS" value="-Djava.library.path=$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/windows" />

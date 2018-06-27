@@ -12,11 +12,8 @@ public class Player extends PlayableCharacter {
 		super(species, name, learnedMoves, stats);
 	}
 
-	public void addMonsterToParty(Monster monster) {
-		this.party[this.nextFreeSlot++] = monster;
-	}
-
 	public IBattlable swapMonster() {
+		//TODO: Ask user for swapee
 		return this.party[0];
 	}
 
@@ -39,6 +36,10 @@ public class Player extends PlayableCharacter {
 	 */
 	@Override
 	public void addToTeam(IBattlable captured) {
-		//TODO: add captured monster to party
+		if (nextFreeSlot >= MAX_PARTY_SIZE) {
+			//TODO: Ask user for swapee
+		} else if (captured instanceof Monster){
+			party[nextFreeSlot] = (Monster) captured;
+		}
 	}
 }

@@ -15,15 +15,15 @@ public class BattleCommandDelegate implements IButtonDelegate {
 	private IBattlable actor;
 	private boolean initialized;
 
-	public BattleCommandDelegate() { this(null); }
-	public BattleCommandDelegate(Input input) {
-		this.input = input;
+	public BattleCommandDelegate() {
+		this.input = null;
 		this.battle = null;
 		this.actor = null;
 		this.initialized = false;
 	}
 
-	public void init(Battle battle) {
+	public void init(Battle battle, Input input) {
+		this.input = input;
 		this.battle = battle;
 		this.actor = battle.getActiveActor();
 		this.initialized = true;
@@ -35,7 +35,8 @@ public class BattleCommandDelegate implements IButtonDelegate {
 
 	@Override
 	public void action(Command command) {
-		if (actor == null) { return; }
+		if (!initialized || actor == null || !battle.needsUserAction()) { return; }
+
 		int moveSlot = -1;
 		if (command == DemoInputHandler.attack1) { moveSlot = 1; }
 		else if (command == DemoInputHandler.attack2) { moveSlot = 2; }
@@ -43,14 +44,14 @@ public class BattleCommandDelegate implements IButtonDelegate {
 		else if (command == DemoInputHandler.attack4) { moveSlot = 4; }
 		else if (command == DemoInputHandler.attack5) { moveSlot = 5; }
 		else if (command == DemoInputHandler.attack6) { moveSlot = 6; }
-		else if (command == DemoInputHandler.attack && input != null) {
+		else if (command == DemoInputHandler.attack) {
 			int mx = input.getMouseX();
 			int my = input.getMouseY();
 			LabeledButton clicked = null;
 			LabeledButton[] buttons = Capstone.getInstance().getButtons();
-			for (int i = 0; i < buttons.length; i++) {
-				if (buttons[i].getBounds().contains(mx, my)) {
-					clicked = buttons[i];
+			for (LabeledButton button : buttons) {
+				if (button.getBounds().contains(mx, my)) {
+					clicked = button;
 					break;
 				}
 			}
@@ -81,6 +82,5 @@ public class BattleCommandDelegate implements IButtonDelegate {
 
 	@Override
 	public void componentActivated(AbstractComponent abstractComponent) {
-
 	}
 }

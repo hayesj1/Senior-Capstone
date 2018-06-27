@@ -38,7 +38,7 @@ public class LabeledButton extends MouseOverArea {
 		this.delegate.action(this);
 	}
 
-	public LabeledButton setAction(IButtonDelegate delegate) {
+	public LabeledButton setActionDelegate(IButtonDelegate delegate) {
 		this.delegate = delegate;
 		this.addListener(delegate);
 		return this;

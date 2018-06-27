@@ -94,14 +94,14 @@ public class Capstone implements Game {
 		actors = new PlayableCharacter[] { player, mon1, mon2, mon3 };
 
 		demoBattle.start(new IBattlable[] { player, mon1 }, new IBattlable[] { mon2, mon3 });
-		battleCommandDelegate.init(demoBattle);
+		battleCommandDelegate.init(demoBattle, container.getInput());
 	}
 
 	private void initInput(GameContainer container) {
 		provider = new InputProvider(container.getInput());
 		provider.addListener(handler);
 		handler.registerCommands(provider);
-		battleCommandDelegate = new BattleCommandDelegate(container.getInput());
+		battleCommandDelegate = new BattleCommandDelegate();
 		handler.addCommandDelegate(battleCommandDelegate);
 	}
 
@@ -113,12 +113,15 @@ public class Capstone implements Game {
 		bite = new Move("Bite", "", 5, 90, 20);
 		slam = new Move("Slam", "", 6, 80, 10);
 		testMoveSet = new MoveSet();
-		testMoveSet.putMove(punch, -1);
+		moves = new Move[] { punch, kick, slap, elbow, bite, slam };
+		int[] levels = new int[] {-1, 2, 4, 7, 11, 16 };
+		testMoveSet.init(moves, levels);
+		/*testMoveSet.putMove(punch, -1);
 		testMoveSet.putMove(kick, 2);
 		testMoveSet.putMove(slap, 4);
 		testMoveSet.putMove(elbow, 7);
 		testMoveSet.putMove(bite,11);
-		testMoveSet.putMove(slam,16);
+		testMoveSet.putMove(slam,16);*/
 	}
 
 	private void initSpecies(GameContainer container) {
@@ -135,10 +138,9 @@ public class Capstone implements Game {
 	}
 
 	private void initPlayer(GameContainer container) {
-		moves = new Move[] { punch, kick, slap, elbow, bite, slam };
 		player = new Player(testSpecies, new Stats(30, 5, 5, 4), moves, "Player1");
 		mon1 = new Monster(testSpecies, new Stats(20, 4, 6, 3), moves);
-		player.addMonsterToParty(mon1);
+		player.addToTeam(mon1);
 	}
 
 	private void initDungeon(GameContainer container) {
