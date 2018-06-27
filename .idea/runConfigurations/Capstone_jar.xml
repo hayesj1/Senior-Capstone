@@ -28,7 +28,7 @@
     </extension>
     <option name="JAR_PATH" value="$PROJECT_DIR$/bin/artifacts/Capstone/Capstone.jar" />
     <option name="VM_PARAMETERS" value="-Djava.library.path=$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/windows" />
-    <option name="WORKING_DIRECTORY" value="C:\Users\hayesj3\Documents\GitHub_Repos\Senior-Capstone\bin\artifacts\Capstone" />
+    <option name="WORKING_DIRECTORY" value="./bin/artifacts/Capstone" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
     <module name="Senior-Capstone" />
