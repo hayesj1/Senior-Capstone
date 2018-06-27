@@ -5,9 +5,7 @@
       <root url="jar://$PROJECT_DIR$/libs/jorbis-0.0.15.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/jogg-0.0.7.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="file://$PROJECT_DIR$/../../Global_Libs/Slick2D/javadoc" />
-    </JAVADOC>
+    <JAVADOC />
     <SOURCES />
   </library>
 </component>

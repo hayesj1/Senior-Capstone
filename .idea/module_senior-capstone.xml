@@ -23,7 +23,6 @@
   <path id="senior-capstone.runtime.production.module.classpath">
     <pathelement location="${senior-capstone.output.dir}"/>
     <path refid="library.slick2d.classpath"/>
-    <path refid="library.slick2d_natives.classpath"/>
     <path refid="library.lwjgl-2.9.3.classpath"/>
   </path>
   
@@ -37,7 +36,6 @@
     <pathelement location="${senior-capstone.testoutput.dir}"/>
     <pathelement location="${senior-capstone.output.dir}"/>
     <path refid="library.slick2d.classpath"/>
-    <path refid="library.slick2d_natives.classpath"/>
     <path refid="library.lwjgl-2.9.3.classpath"/>
   </path>
   
@@ -53,6 +51,7 @@
   <path id="senior-capstone.module.sourcepath">
     <dirset dir="${module.senior-capstone.basedir}/../../Senior-Capstone">
       <include name="src"/>
+      <include name="resources"/>
     </dirset>
   </path>
   
@@ -77,6 +76,10 @@
     
     <copy todir="${senior-capstone.output.dir}">
       <fileset dir="${module.senior-capstone.basedir}/../src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.senior-capstone.basedir}/../resources">
         <patternset refid="compiler.resources"/>
         <type type="file"/>
       </fileset>
