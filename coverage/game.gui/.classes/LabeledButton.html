@@ -1,0 +1,198 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LabeledButton</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">game.gui</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LabeledButton (game.gui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LabeledButton</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    53.8%
+  </span>
+  <span class="absValue">
+    (7/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    74.4%
+  </span>
+  <span class="absValue">
+    (32/ 43)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package game.gui;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.newdawn.slick.Color;
+<i>4</i>&nbsp;import org.newdawn.slick.Font;
+<i>5</i>&nbsp;import org.newdawn.slick.Graphics;
+<i>6</i>&nbsp;import org.newdawn.slick.Image;
+<i>7</i>&nbsp;import org.newdawn.slick.geom.Shape;
+<i>8</i>&nbsp;import org.newdawn.slick.gui.GUIContext;
+<i>9</i>&nbsp;import org.newdawn.slick.gui.MouseOverArea;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;public class LabeledButton extends MouseOverArea {
+<i>12</i>&nbsp;	private String text;
+<i>13</i>&nbsp;	private Color textColor;
+<i>14</i>&nbsp;	private int textX;
+<i>15</i>&nbsp;	private int textY;
+<i>16</i>&nbsp;	private int cutoff;
+<i>17</i>&nbsp;	private IButtonDelegate delegate;
+<i>18</i>&nbsp;	private boolean textNeedsValidation;
+<i>19</i>&nbsp;	private Shape bounds;
+<i>20</i>&nbsp;
+<b class="nc"><i>21</i>&nbsp;	public LabeledButton(Object textSrc, IButtonDelegate delegate, GUIContext container, Font font, Image image) { this(textSrc, delegate, container, font, image, null); }</b>
+<b class="nc"><i>22</i>&nbsp;	public LabeledButton(Object textSrc, IButtonDelegate delegate, GUIContext container, Font font, Shape shape) { this(textSrc, delegate, container, font, null, shape); }</b>
+<i>23</i>&nbsp;	public LabeledButton(Object textSrc, IButtonDelegate delegate, GUIContext container, Font font, Image image, Shape shape) {
+<b class="fc"><i>24</i>&nbsp;		super(container, image, shape);</b>
+<i>25</i>&nbsp;
+<b class="fc"><i>26</i>&nbsp;		this.text = textSrc.toString();</b>
+<b class="fc"><i>27</i>&nbsp;		this.textColor = Color.darkGray;</b>
+<b class="fc"><i>28</i>&nbsp;		this.textX = this.getX();</b>
+<b class="fc"><i>29</i>&nbsp;		this.textY = this.getY();</b>
+<b class="fc"><i>30</i>&nbsp;		this.delegate = delegate;</b>
+<b class="fc"><i>31</i>&nbsp;		this.textNeedsValidation = true;</b>
+<b class="fc"><i>32</i>&nbsp;		this.bounds = shape;</b>
+<b class="fc"><i>33</i>&nbsp;		this.addListener(delegate);</b>
+<i>34</i>&nbsp;
+<b class="fc"><i>35</i>&nbsp;	}</b>
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;	public void interacted() {
+<b class="fc"><i>38</i>&nbsp;		this.delegate.action(this);</b>
+<b class="fc"><i>39</i>&nbsp;	}</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;	public LabeledButton setActionDelegate(IButtonDelegate delegate) {
+<b class="nc"><i>42</i>&nbsp;		this.delegate = delegate;</b>
+<b class="nc"><i>43</i>&nbsp;		this.addListener(delegate);</b>
+<b class="nc"><i>44</i>&nbsp;		return this;</b>
+<i>45</i>&nbsp;	}
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;	public LabeledButton setText(Object textSrc) {
+<b class="nc"><i>48</i>&nbsp;		this.text = textSrc.toString();</b>
+<b class="nc"><i>49</i>&nbsp;		this.textNeedsValidation = true;</b>
+<b class="nc"><i>50</i>&nbsp;		return this;</b>
+<i>51</i>&nbsp;	}
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;	public LabeledButton setTextColor(Color color) {
+<b class="nc"><i>54</i>&nbsp;		this.textColor = color;</b>
+<b class="nc"><i>55</i>&nbsp;		return this;</b>
+<i>56</i>&nbsp;	}
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;	@Override
+<i>59</i>&nbsp;	public void setLocation(int x, int y) {
+<b class="fc"><i>60</i>&nbsp;		super.setLocation(x, y);</b>
+<b class="fc"><i>61</i>&nbsp;		this.textNeedsValidation = true;</b>
+<b class="fc"><i>62</i>&nbsp;	}</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;	private void validateTextLocation(Graphics g) {
+<b class="fc"><i>65</i>&nbsp;		if (!textNeedsValidation) { return; }</b>
+<i>66</i>&nbsp;
+<b class="fc"><i>67</i>&nbsp;		Font font = g.getFont();</b>
+<b class="fc"><i>68</i>&nbsp;		int tw = font.getWidth(this.text);</b>
+<b class="fc"><i>69</i>&nbsp;		int th = font.getHeight(this.text);</b>
+<b class="fc"><i>70</i>&nbsp;		int bw = this.getWidth();</b>
+<b class="fc"><i>71</i>&nbsp;		int bh = this.getHeight();</b>
+<i>72</i>&nbsp;
+<b class="fc"><i>73</i>&nbsp;		for (this.cutoff = this.text.length()-1; tw &gt;= bw; this.cutoff--, tw = font.getWidth(this.text.substring(0, this.cutoff+1)));</b>
+<i>74</i>&nbsp;
+<b class="fc"><i>75</i>&nbsp;		this.textX = this.getX() + (bw / 2) - (tw / 2);</b>
+<b class="fc"><i>76</i>&nbsp;		this.textY = this.getY() + (bh / 2) - (th / 2);</b>
+<b class="fc"><i>77</i>&nbsp;		this.textNeedsValidation = false;</b>
+<b class="fc"><i>78</i>&nbsp;	}</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;	@Override
+<i>81</i>&nbsp;	public void render(GUIContext context, Graphics g) {
+<b class="fc"><i>82</i>&nbsp;		super.render(context, g);</b>
+<b class="fc"><i>83</i>&nbsp;		validateTextLocation(g);</b>
+<b class="fc"><i>84</i>&nbsp;		g.getFont().drawString(this.textX, this.textY, this.text, this.textColor, 0, cutoff);</b>
+<b class="fc"><i>85</i>&nbsp;	}</b>
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;	/**
+<i>88</i>&nbsp;	 * Returns a string representation of the object. In general, the
+<i>89</i>&nbsp;	 * {@code toString} method returns a string that
+<i>90</i>&nbsp;	 * &quot;textually represents&quot; this object. The result should
+<i>91</i>&nbsp;	 * be a concise but informative representation that is easy for a
+<i>92</i>&nbsp;	 * person to read.
+<i>93</i>&nbsp;	 * It is recommended that all subclasses override this method.
+<i>94</i>&nbsp;	 * &lt;p&gt;
+<i>95</i>&nbsp;	 * The {@code toString} method for class {@code Object}
+<i>96</i>&nbsp;	 * returns a string consisting of the name of the class of which the
+<i>97</i>&nbsp;	 * object is an instance, the at-sign character `{@code @}&#39;, and
+<i>98</i>&nbsp;	 * the unsigned hexadecimal representation of the hash code of the
+<i>99</i>&nbsp;	 * object. In other words, this method returns a string equal to the
+<i>100</i>&nbsp;	 * value of:
+<i>101</i>&nbsp;	 * &lt;blockquote&gt;
+<i>102</i>&nbsp;	 * &lt;pre&gt;
+<i>103</i>&nbsp;	 * getClass().getName() + &#39;@&#39; + Integer.toHexString(hashCode())
+<i>104</i>&nbsp;	 * &lt;/pre&gt;&lt;/blockquote&gt;
+<i>105</i>&nbsp;	 *
+<i>106</i>&nbsp;	 * @return a string representation of the object.
+<i>107</i>&nbsp;	 */
+<i>108</i>&nbsp;	@Override
+<i>109</i>&nbsp;	public String toString() {
+<b class="nc"><i>110</i>&nbsp;		return &quot;[LabeledButton] &quot;+this.text;</b>
+<i>111</i>&nbsp;	}
+<i>112</i>&nbsp;
+<b class="fc"><i>113</i>&nbsp;	public String getLabel() { return this.text; }</b>
+<b class="fc"><i>114</i>&nbsp;	public Shape getBounds() { return this.bounds; }</b>
+<i>115</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-06-26 13:01</div>
+</div>
+</body>
+</html>

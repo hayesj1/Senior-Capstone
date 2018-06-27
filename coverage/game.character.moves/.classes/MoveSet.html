@@ -1,0 +1,177 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MoveSet</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">game.character.moves</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MoveSet (game.character.moves)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MoveSet</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    59.3%
+  </span>
+  <span class="absValue">
+    (16/ 27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package game.character.moves;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import game.character.ILevelable;
+<i>4</i>&nbsp;import game.character.PlayableCharacter;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import java.util.HashMap;
+<i>7</i>&nbsp;import java.util.Iterator;
+<i>8</i>&nbsp;import java.util.Map;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; * A set of Moves which can be learned by a species or group of species. After a new instanace is created, use {@link #putMove}
+<i>12</i>&nbsp; * to add moves to this set. Once all moves have been added, call {@link #ready} to flag this moveset as complete. Completed
+<i>13</i>&nbsp; * movesets are immutable.
+<i>14</i>&nbsp; * A move learned at level:&lt;ul&gt;
+<i>15</i>&nbsp; * &lt;li&gt;-1 will never be learned (this is useful for organizing moves into groups, or master lists of moves)&lt;/li&gt;
+<i>16</i>&nbsp; * &lt;li&gt;0 or 1 will be one of up to six &quot;default&quot; moves available to all monsters&lt;/li&gt;
+<i>17</i>&nbsp; * &lt;li&gt;2 - 100 will be learned upon advancing to that level&lt;/li&gt;
+<i>18</i>&nbsp; * &lt;/ul&gt;
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;public class MoveSet {
+<i>21</i>&nbsp;	private HashMap&lt;Move, Integer&gt; moves;
+<i>22</i>&nbsp;	private boolean complete;
+<i>23</i>&nbsp;
+<b class="fc"><i>24</i>&nbsp;	public MoveSet() {</b>
+<b class="fc"><i>25</i>&nbsp;		this.moves = new HashMap&lt;&gt;(10);</b>
+<b class="fc"><i>26</i>&nbsp;		this.complete = false;</b>
+<b class="fc"><i>27</i>&nbsp;	}</b>
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;	public void init(Move[] moves, int[] learnLevels) {
+<b class="fc"><i>30</i>&nbsp;		if (moves.length != learnLevels.length) { throw new IllegalArgumentException(&quot;learnLevels array must be same size as moves array!&quot;); }</b>
+<b class="fc"><i>31</i>&nbsp;		for (int i = 0; i &lt; moves.length; i++) { putMove(moves[i], learnLevels[i]); }</b>
+<b class="fc"><i>32</i>&nbsp;		this.ready();</b>
+<b class="fc"><i>33</i>&nbsp;	}</b>
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;	protected final void ready() {
+<b class="fc"><i>36</i>&nbsp;		this.complete = true;</b>
+<b class="fc"><i>37</i>&nbsp;	}</b>
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;	/**
+<i>40</i>&nbsp;	 * Adds a new move to the set or updates the level an existing move is learned.
+<i>41</i>&nbsp;	 * If levelLearned is null or negative, it is clamped to -1. If levelLearned is greater than &lt;code&gt;ILevelable.MAX_LEVEL&lt;/code&gt;, it is clamped to &lt;code&gt;ILevelable.MAX_LEVEL&lt;/code&gt;
+<i>42</i>&nbsp;	 * @param move the move to add/update
+<i>43</i>&nbsp;	 * @param levelLearned the level a species learns this move
+<i>44</i>&nbsp;	 * @return tue if this call updated an existing value, false otherwise
+<i>45</i>&nbsp;	 */
+<i>46</i>&nbsp;	protected boolean putMove(Move move, Integer levelLearned) {
+<b class="fc"><i>47</i>&nbsp;		if (this.complete &amp;&amp; !moves.containsKey(move)) {</b>
+<b class="nc"><i>48</i>&nbsp;			throw new IllegalStateException(&quot;Moveset is flagged as complete; no more moves can be added!&quot;);</b>
+<i>49</i>&nbsp;		} else {
+<b class="fc"><i>50</i>&nbsp;			boolean willReplace = false;</b>
+<b class="fc"><i>51</i>&nbsp;			if (moves.containsKey(move)) { willReplace = true; }</b>
+<i>52</i>&nbsp;			// conform realLevel to the range -1 - 100. If levelLearned is null default to -1, otherwise clamp levelLearned at the extrema
+<b class="fc"><i>53</i>&nbsp;			int realLevel = ( levelLearned == null ) ? -1 : (levelLearned &lt; -1 ? -1 : ( levelLearned &gt; ILevelable.MAX_LEVEL ? ILevelable.MAX_LEVEL : levelLearned ));</b>
+<b class="fc"><i>54</i>&nbsp;			moves.put(move, realLevel);</b>
+<b class="fc"><i>55</i>&nbsp;			return willReplace;</b>
+<i>56</i>&nbsp;		}
+<i>57</i>&nbsp;	}
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;	/**
+<i>60</i>&nbsp;	 * @return true if move is in this moveset; false otherwise
+<i>61</i>&nbsp;	 */
+<i>62</i>&nbsp;	public boolean containsMove(Move move) {
+<b class="nc"><i>63</i>&nbsp;		return moves.containsKey(move);</b>
+<i>64</i>&nbsp;	}
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;	/**
+<i>67</i>&nbsp;	 * @return true if at least one move will be learned at the passed level; false otherwise
+<i>68</i>&nbsp;	 */
+<i>69</i>&nbsp;	public boolean containsMoveAtLevel(Integer levelLearned) {
+<b class="nc"><i>70</i>&nbsp;		return moves.containsValue(levelLearned);</b>
+<i>71</i>&nbsp;	}
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;	/**
+<i>74</i>&nbsp;	 * @return null if the passed move isn&#39;t in this moveset; otherwise, the level the passed move will be learned at
+<i>75</i>&nbsp;	 */
+<i>76</i>&nbsp;	public Integer willLearnMoveAt(Move move) {
+<b class="nc"><i>77</i>&nbsp;		return moves.getOrDefault(move, null);</b>
+<i>78</i>&nbsp;	}
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;	/**
+<i>81</i>&nbsp;	 * @return null if there aren&#39;t any moves in the set learned at the passed level; otherwise, the first move learned at the passed level
+<i>82</i>&nbsp;	 */
+<i>83</i>&nbsp;	public Move moveLearnedAt(int levelLearned) {
+<b class="nc"><i>84</i>&nbsp;		Iterator&lt;Map.Entry&lt;Move, Integer&gt;&gt; it = moves.entrySet().iterator();</b>
+<b class="nc"><i>85</i>&nbsp;		while (it.hasNext()) {</b>
+<b class="nc"><i>86</i>&nbsp;			Map.Entry&lt;Move, Integer&gt; e = it.next();</b>
+<b class="nc"><i>87</i>&nbsp;			if (e.getValue().equals(levelLearned)) {</b>
+<b class="nc"><i>88</i>&nbsp;				return e.getKey();</b>
+<i>89</i>&nbsp;			}
+<b class="nc"><i>90</i>&nbsp;		}</b>
+<i>91</i>&nbsp;
+<b class="nc"><i>92</i>&nbsp;		return null;</b>
+<i>93</i>&nbsp;	}
+<i>94</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-06-26 13:01</div>
+</div>
+</body>
+</html>

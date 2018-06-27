@@ -1,0 +1,115 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Bootstrap</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">game</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Bootstrap (game)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Bootstrap</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    61.5%
+  </span>
+  <span class="absValue">
+    (8/ 13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package game;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.newdawn.slick.AppGameContainer;
+<i>4</i>&nbsp;import org.newdawn.slick.SlickException;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import java.io.File;
+<i>7</i>&nbsp;import java.util.logging.Level;
+<i>8</i>&nbsp;import java.util.logging.Logger;
+<i>9</i>&nbsp;
+<b class="nc"><i>10</i>&nbsp;public class Bootstrap {</b>
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;	public static void main(String[] args) {
+<b class="fc"><i>13</i>&nbsp;		System.setProperty(&quot;java.library.path&quot;, &quot;./libs&quot;);</b>
+<b class="fc"><i>14</i>&nbsp;		System.setProperty(&quot;org.lwjgl.librarypath&quot;, new File(&quot;./libs/natives&quot;).getAbsolutePath());</b>
+<i>15</i>&nbsp;
+<b class="fc"><i>16</i>&nbsp;		Capstone game = Capstone.getInstance();</b>
+<b class="fc"><i>17</i>&nbsp;		System.out.println(&quot;Welcome to &quot;+game.getTitle());</b>
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;		try
+<i>20</i>&nbsp;		{
+<i>21</i>&nbsp;			AppGameContainer appgc;
+<b class="fc"><i>22</i>&nbsp;			appgc = new AppGameContainer(game);</b>
+<b class="fc"><i>23</i>&nbsp;			appgc.setDisplayMode(1280, 960, false);</b>
+<b class="fc"><i>24</i>&nbsp;			appgc.setShowFPS(false);</b>
+<b class="fc"><i>25</i>&nbsp;			appgc.start();</b>
+<i>26</i>&nbsp;		}
+<b class="nc"><i>27</i>&nbsp;		catch (SlickException ex)</b>
+<i>28</i>&nbsp;		{
+<b class="nc"><i>29</i>&nbsp;			Logger.getLogger(Capstone.class.getName()).log(Level.SEVERE, null, ex);</b>
+<b class="nc"><i>30</i>&nbsp;		}</b>
+<b class="nc"><i>31</i>&nbsp;	}</b>
+<i>32</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-06-26 11:55</div>
+</div>
+</body>
+</html>
