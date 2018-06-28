@@ -8,15 +8,12 @@ import game.gui.ButtonGrid;
 import game.gui.LabeledButton;
 import game.input.BattleCommandDelegate;
 import game.input.DemoInputHandler;
-import game.input.InputHandler;
 import org.newdawn.slick.*;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.SoundStore;
-
-import java.io.IOException;
 
 public class Capstone implements Game {
 	private static Capstone instance = new Capstone("Capstone");
@@ -28,8 +25,8 @@ public class Capstone implements Game {
 	private InputProvider provider = null;
 	private DemoInputHandler handler = null;
 
-	private InputHandler input = new InputHandler();
 	private MoveSet testMoveSet;
+	private Move[] testMoves;
 	private Species testSpecies;
 	private Move punch;
 	private Move kick;
@@ -37,24 +34,34 @@ public class Capstone implements Game {
 	private Move elbow;
 	private Move bite;
 	private Move slam;
+
+	private MoveSet allMoveSet;
+	private MoveSet playerMoveSet;
+	private MoveSet monsterMoveSet;
+	private Move[] allMoves;
+	private Move[] playerMoves;
+	private Move[] monsterMoves;
+	private Species playerSpecies;
+	private Species monsterSpecies;
 	private Move jab;
-	private Move ComboPunch;
-	private Move Slash;
-	private Move Crunch;
-	private Move BladeBeam;
-	private Move RocketPunch;
-	private Move RiskyBlow;
-	private Move Dragonfist;
-	private Move Rage;
+	private Move comboPunch;
+	private Move slash;
+	private Move crunch;
+	private Move bladeBeam;
+	private Move rocketPunch;
+	private Move riskyBlow;
+	private Move dragonfist;
+	private Move rage;
 	private Move counter;
 	private Move upperCut;
 	private Move killerStab;
 	private Move fireFist;
+
 	private Player player;
-	private Move[] moves;
-	private Monster mon3;
-	private Monster mon2;
 	private Monster mon1;
+	private Monster mon2;
+	private Monster mon3;
+
 	private Battle demoBattle;
 	private BattleCommandDelegate battleCommandDelegate;
 	private SpriteSheet orcSheet;
@@ -81,16 +88,7 @@ public class Capstone implements Game {
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		// ##### TESTING CODE ##### //
-		container.getInput().addPrimaryListener(input);
-		SoundStore.get().init();
-		container.setMusicOn(true);
-		container.setMusicVolume(5.0f);
-		try {
-			bgm = SoundStore.get().getOgg("assets/sound/bgm/FromHere.ogg");
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-
+		//container.getInput().addPrimaryListener(input);
 		//im = new Image("assets/image/doggo.png");
 		//SpriteSheet sprites = new SpriteSheet("assets/sprite/Ultravore.gif", 20, 20, 1);
 		//anim = new Animation(sprites, 0, 0, 8, 0, true, 1000, true);
@@ -102,6 +100,7 @@ public class Capstone implements Game {
 		initPlayer(container);
 		initDungeon(container);
 		initGUI(container);
+		initSound(container);
 
 		// ##### DEMO CODE ##### //
 		actors = new PlayableCharacter[] { player, mon1, mon2, mon3 };
@@ -121,41 +120,69 @@ public class Capstone implements Game {
 	}
 
 	private void initMoves(GameContainer container) {
+		// ##### TESTING CODE ##### //
 		punch = new Move("Punch", "", 5, 80, 30);
 		kick = new Move("Kick", "", 4, 90, 30);
 		slap = new Move("Slap", "", 3, 100, 20);
 		elbow = new Move("Elbow", "", 4, 85, 30);
 		bite = new Move("Bite", "", 5, 90, 20);
 		slam = new Move("Slam", "", 6, 80, 10);
+
+		testMoveSet = new MoveSet();
+		testMoves = new Move[] { punch, kick, slap, elbow, bite, slam };
+		int[] levels = new int[] {-1, 2, 4, 7, 11, 16 };
+		testMoveSet.init(testMoves, levels);
+
+		// ##### PRODUCTION CODE ##### //
+
+		// ##### DEMO CODE ##### //
 		jab = new Move("Jab", "", 2,100, 35);
-		ComboPunch = new Move("Combo Punch", "", 2,75, 15);
-		Slash = new Move("Slash", "", 3,90, 16);
-		Crunch = new Move("Crunch", "", 5,80, 16);
-		BladeBeam = new Move("Blade Beam", "", 7,80, 6);
-		RocketPunch = new Move("Rocket Punch", "", 8,78, 8);
-		RiskyBlow = new Move("Risky Blow", "", 16,50, 1);
-		Dragonfist = new Move("Dragon Fist", "", 13,70, 3);
-		Rage = new Move("Rage", "", 4,87, 25);
+		comboPunch = new Move("Combo Punch", "", 2,75, 15);
+		slash = new Move("Slash", "", 3,90, 16);
+		crunch = new Move("Crunch", "", 5,80, 16);
+		bladeBeam = new Move("Blade Beam", "", 7,80, 6);
+		rocketPunch = new Move("Rocket Punch", "", 8,78, 8);
+		riskyBlow = new Move("Risky Blow", "", 16,50, 1);
+		dragonfist = new Move("Dragon Fist", "", 13,70, 3);
+		rage = new Move("Rage", "", 4,87, 25);
 		counter = new Move("Counter", "", 7,100, 10);
 		upperCut = new Move("Upper Cut", "", 8,76, 14);
 		killerStab = new Move("Killer Stab", "", 10,74, 7);
 		fireFist = new Move("Fire Fist", "", 9,75, 8);
-		
-		testMoveSet = new MoveSet();
-		moves = new Move[] { punch, kick, slap, elbow, bite, slam };
-		int[] levels = new int[] {-1, 2, 4, 7, 11, 16 };
-		testMoveSet.init(moves, levels);
-		/*testMoveSet.putMove(punch, -1);
-		testMoveSet.putMove(kick, 2);
-		testMoveSet.putMove(slap, 4);
-		testMoveSet.putMove(elbow, 7);
-		testMoveSet.putMove(bite,11);
-		testMoveSet.putMove(slam,16);*/
+
+		allMoveSet = new MoveSet();
+		playerMoveSet = new MoveSet();
+		monsterMoveSet = new MoveSet();
+
+		allMoves = new Move[] { jab, comboPunch, slash, crunch, bladeBeam, rocketPunch, riskyBlow, dragonfist, rage, counter, upperCut, killerStab, fireFist };
+		playerMoves = new Move[]  { jab, comboPunch, riskyBlow, rage, counter, upperCut };
+		monsterMoves = new Move[] { jab, slash, crunch, bladeBeam, rocketPunch, dragonfist, killerStab, fireFist };
+
+		int[] allMovesLevels = new int[allMoves.length];
+		for (int i = 0; i < allMovesLevels.length; i++) {
+			allMovesLevels[i] = -1;
+		}
+
+		int[] playerMovesLevels = new int[]  { 0, 3, 7, 12, 14, 20 }; //Josh please fill in the proper levels
+		int[] monsterMovesLevels = new int[] { 0, 3, 6, 8, 13, 20, 25, 30 }; //Josh please fill in the proper levels
+
+		allMoveSet.init(allMoves, allMovesLevels);
+		playerMoveSet.init(playerMoves, playerMovesLevels);
+		monsterMoveSet.init(monsterMoves, monsterMovesLevels);
 	}
 
 	private void initSpecies(GameContainer container) {
 		initSprites(container);
+
+		// ##### TESTING CODE ##### //
 		testSpecies = new Species("Test Uno", testMoveSet, orcSheet) {};
+
+		// ##### PRODUCTION CODE ##### //
+
+
+		// ##### DEMO CODE ##### //
+		playerSpecies = new Species("Human", playerMoveSet, null) {};
+		//TODO: Make Monster Species
 	}
 
 	private void initSprites(GameContainer container) {
@@ -167,8 +194,16 @@ public class Capstone implements Game {
 	}
 
 	private void initPlayer(GameContainer container) {
-		player = new Player(testSpecies, new Stats(30, 5, 5, 4), moves, "Player1");
-		mon1 = new Monster(testSpecies, new Stats(20, 4, 6, 3), moves);
+		// ##### TESTING CODE ##### //
+		//player = new Player(testSpecies, new Stats(30, 5, 5, 4), testMoves, "Player1");
+		mon1 = new Monster(testSpecies, new Stats(20, 4, 6, 3), testMoves);
+
+		// ##### PRODUCTION CODE ##### //
+		Move[] playerStartMoves = new Move[] { playerMoves[0] };
+		Stats playerStats = new Stats(30, 5, 5, 4); // Josh please fix these values
+		player = new Player(playerSpecies, playerStats, playerStartMoves, "Player1");
+
+		// ##### DEMO CODE ##### //
 		player.addToTeam(mon1);
 	}
 
@@ -180,8 +215,8 @@ public class Capstone implements Game {
 	}
 
 	private void initMonsters() {
-		mon2 = new Monster(testSpecies, new Stats(25, 3, 4, 2), moves);
-		mon3 = new Monster(testSpecies, new Stats(15, 5, 5, 5), moves);
+		mon2 = new Monster(testSpecies, new Stats(25, 3, 4, 2), testMoves);
+		mon3 = new Monster(testSpecies, new Stats(15, 5, 5, 5), testMoves);
 	}
 
 	private void initBoss() {
@@ -191,9 +226,21 @@ public class Capstone implements Game {
 	private void initGUI(GameContainer container) {
 		buttons = new LabeledButton[PlayableCharacter.MAX_MOVES];
 		for (int i = 0; i < PlayableCharacter.MAX_MOVES; i++) {
-			buttons[i] = new LabeledButton(moves[i], container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
+			buttons[i] = new LabeledButton(playerMoves[i], container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
 		}
 		moveGrid = new ButtonGrid(container, 1, 6, 5, buttons);
+	}
+
+	private void initSound(GameContainer container) {
+		SoundStore.get().init();
+		container.setMusicOn(true);
+		container.setMusicVolume(1.0f);
+
+		/*try {
+			bgm = SoundStore.get().getOgg("assets/sound/bgm/FromHere.ogg");
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}*/
 	}
 
 	/**
@@ -207,16 +254,16 @@ public class Capstone implements Game {
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
 		// ##### TESTING CODE ##### //
-		int bufid = -1;
-		if (!bgm.isPlaying()) {
+		//5int bufid = -1;
+		//if (!bgm.isPlaying()) {
 			//bufid = bgm.playAsMusic(1.0f, 0.05f, false);
-		}
+		//}
 
 		// ##### PRODUCTION CODE ##### //
 
 		// ##### DEMO CODE ##### //
 		if (container.getInput().isKeyDown(Input.KEY_ESCAPE)) {
-			container.exit();
+			//container.exit();
 		}
 
 		if (demoBattle.isOver()) {

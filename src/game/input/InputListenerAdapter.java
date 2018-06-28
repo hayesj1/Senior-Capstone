@@ -3,6 +3,10 @@ package game.input;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.InputListener;
 
+/**
+ * @deprecated This class was created for learning purposes only.
+ */
+@Deprecated
 public class InputListenerAdapter implements InputListener {
 	private static final int MAX_CONTROLLERS = 20;
 	private static final int MAX_CONTROLLER_BUTTONS = 100;
