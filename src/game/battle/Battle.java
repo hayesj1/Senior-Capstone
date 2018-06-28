@@ -55,7 +55,7 @@ public class Battle {
 		@Override
 		public int compare(IBattlable o1, IBattlable o2) {
 			int speeds = Integer.compare(o1.getStats().speed(), o2.getStats().speed());
-			return speeds == 0 ? 1 : speeds;
+			return speeds == 0 ? IBattlable.rand.nextInt(3) - 1 : speeds;
 		}
 
 		public static BattleOrder getInstance() {
