@@ -5,7 +5,7 @@ import game.character.Player;
 import game.input.BattleCommandDelegate;
 
 import java.util.Comparator;
-import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class Battle {
 	public static class BattleOrder implements Comparator<IBattlable> {
@@ -73,7 +73,7 @@ public class Battle {
 
 	private IBattlable[] playerParty;
 	private IBattlable[] opposingParty;
-	private TreeMap<IBattlable, IBattlable[]> order;
+	private TreeSet<IBattlable> order;
 
 	public Battle(BattleCommandDelegate del) {
 		this.commandDelegate = del;
@@ -83,7 +83,7 @@ public class Battle {
 		this.playerWon = false;
 		this.playerParty = new IBattlable[2];
 		this.opposingParty = new IBattlable[2];
-		this.order = new TreeMap<>(BattleOrder.getInstance());
+		this.order = new TreeSet<>(BattleOrder.getInstance());
 	}
 
 	/**
@@ -97,10 +97,10 @@ public class Battle {
 		System.arraycopy(playerteam, 0, this.playerParty, 0, 2);
 		System.arraycopy(opposingTeam, 0, this.opposingParty, 0, 2);
 
-		this.order.put(playerteam[0], opposingTeam);
-		this.order.put(playerteam[1], opposingTeam);
-		this.order.put(opposingTeam[0], playerteam);
-		this.order.put(opposingTeam[1], playerteam);
+		this.order.add(playerteam[0]);
+		this.order.add(playerteam[1]);
+		this.order.add(opposingTeam[0]);
+		this.order.add(opposingTeam[1]);
 
 		this.prepared = true;
 	}
@@ -122,40 +122,45 @@ public class Battle {
 	public void advanceTurn(int moveSlot) {
 		if (!started) { return; }
 
-		if (this.actor == 0 && this.playerParty[1] == null) {
-			this.playerParty[this.actor].planMove(moveSlot, this.opposingParty);
-			this.actor++;
+		// Do player moves
+		if (actor == 0 && playerParty[1] == null) {
+			playerParty[actor].planMove(moveSlot, opposingParty);
+			actor++;
 		} else {
-			this.playerParty[this.actor].planMove(moveSlot, this.opposingParty);
+			playerParty[actor].planMove(moveSlot, opposingParty);
 		}
-		this.actor++;
-		if (actor >= this.playerParty.length) {
+		actor++;
+
+		// Do AI moves
+		if (actor >= playerParty.length) {
 			needsAction = false;
-			//TODO Enable Basic AI move selection
-			opposingParty[0].planMove(1, this.playerParty);
-			opposingParty[1].planMove(1, this.playerParty);
+			int moveIdx1 = IBattlable.rand.nextInt(opposingParty[0].getMoveCount());
+			int moveIdx2 = IBattlable.rand.nextInt(opposingParty[1].getMoveCount());
+			opposingParty[0].planMove(moveIdx1+1, playerParty);
+			opposingParty[1].planMove(moveIdx2+1, playerParty);
 			executeTurns();
-			this.actor = 0;
-			this.needsAction = true;
+
+			actor = 0;
+			needsAction = true;
 
 		}
 	}
 
 	private void executeTurns() {
 		if (!started) { return; }
-		order.descendingKeySet().forEach(IBattlable::executeTurn);
-		order.descendingKeySet().removeIf(IBattlable::isKOed);
-		order.descendingKeySet().removeIf(IBattlable::justCaptured);
+		order.descendingSet().forEach(IBattlable::executeTurn);
+		order.descendingSet().removeIf(IBattlable::isKOed);
+		order.descendingSet().removeIf(IBattlable::justCaptured);
 
 		if (order.size() < 4) {
-			if (this.playerParty[0].isKOed()) {
+			if (playerParty[0].isKOed()) {
 				playerWon = false; // you LOSE cause you DEAD
 				ended = true;
-			} else if (this.opposingParty[0].isKOed() && this.opposingParty[1].isKOed()) {
+			} else if ((opposingParty[0].isKOed() || opposingParty[0].justCaptured()) && (opposingParty[1].isKOed() || opposingParty[1].justCaptured())) {
 				playerWon = true; // you WIN cause opposingParty is DEAD or CAPTURED
 				ended = true;
-			} else if (this.playerParty[1].isKOed()) {
-				this.playerParty[1] = ((Player) this.playerParty[0]).swapMonster();
+			} else if (playerParty[1].isKOed()) {
+				playerParty[1] = ((Player) playerParty[0]).swapMonster();
 			}
 		}
 	}
