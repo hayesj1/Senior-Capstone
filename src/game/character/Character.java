@@ -23,10 +23,12 @@ public abstract class Character implements ILevelable {
 		return species;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -43,7 +45,7 @@ public abstract class Character implements ILevelable {
 			int moveSlot = 0; // TODO ask user for moveslot to swap
 			Move move = this.species.getLearnableMoves().moveLearnedAt(this.level);
 			this.learnNewMove(move, moveSlot);
-			Capstone.getInstance().getButtons()[moveSlot].setText(move);
+			Capstone.getInstance().getMoveButtons()[moveSlot].setText(move);
 		}
 		return this.level;
 	}

@@ -5,7 +5,7 @@ import game.character.moves.Move;
 /**
  * For character which use the leveling system
  */
-public interface ILevelable {
+public interface ILevelable extends IBattlable {
 	int MAX_LEVEL = 100;
 
 	static int requiredExpForLevel(int level) {

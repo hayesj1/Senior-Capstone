@@ -21,6 +21,7 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 	private Stats stats;
 	private int HP;
 	private Animation deathAnim;
+	private boolean plannedTurn;
 
 	public PlayableCharacter(Species species, String name, Move[] learnedMoves, Stats stats) { this(species, name, learnedMoves, stats, 1); }
 	public PlayableCharacter(Species species, String name, Move[] learnedMoves, Stats stats, int level) {
@@ -32,6 +33,7 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 			moveCount++;
 		}
 		this.HP = this.stats.maxHP();
+		this.plannedTurn = false;
 	}
 
 	/**
@@ -61,7 +63,7 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 
 	@Override
 	public Turn planMove(IBattlable[] targets) {
-		//TODO Implement move Selection
+		if (plannedTurn) { return turn; }
 		this.turn.setTarget(null);
 		this.turn.setAttack(null);
 
@@ -71,9 +73,12 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 		this.turn.setAttack(learnedMoves[selectedSlot-1]);
 		selectedSlot = -1;
 		//TODO Implement target selection
-		IBattlable tar = targets[1].isKOed() ? targets[0] : targets[1];
-		this.turn.setTarget(tar);
-
+		if (!(targets[0].isKOed() || targets[0].justCaptured()) && (targets[1].isKOed() || targets[1].justCaptured())) {
+			this.turn.setTarget(targets[0]);
+		} else if ((targets[0].isKOed() || targets[0].justCaptured()) && !(targets[1].isKOed() || targets[1].justCaptured())) {
+			this.turn.setTarget(targets[1]);
+		}
+		plannedTurn = true;
 		return this.turn;
 	}
 
@@ -83,10 +88,13 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 		return this.planMove(targets);
 	}
 
+
 	@Override
 	public boolean executeTurn() {
 		try {
-			return this.turn.execute();
+			boolean ret = this.turn.execute();
+			this.plannedTurn = false;
+			return ret;
 		} catch (MoveOutOfUsesException e) {
 			System.out.println(e.getMessage());
 			return false;
@@ -211,7 +219,7 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 	@Override
 	public int getMoveSlotByLearnedMoveName(String name) {
 		int slot = -1;
-		for (int i = 0; i < MAX_MOVES; i++) {
+		for (int i = 0; i < moveCount; i++) {
 			if (learnedMoves[i].getName().equalsIgnoreCase(name)) {
 				slot = i+1;
 				break;

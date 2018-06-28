@@ -15,12 +15,14 @@ public class DemoInputHandler implements InputProviderListener {
 	public static final BasicCommand attack6 = new BasicCommand("Attack_6");
 	public static final BasicCommand attack = new BasicCommand("Attack");
 
+	public static final BasicCommand selectTarget = new BasicCommand("Select Target");
+	public static final BasicCommand runAway = new BasicCommand("Escape");
+
 	public static final BasicCommand forward = new BasicCommand("Forward");
 	public static final BasicCommand backward = new BasicCommand("backward");
 	public static final BasicCommand left = new BasicCommand("Left");
 	public static final BasicCommand right = new BasicCommand("Right");
 
-	public static final BasicCommand escape = new BasicCommand("Escape");
 	public static final BasicCommand interact = new BasicCommand("Interact");
 
 	public static final BasicCommand quit = new BasicCommand("Quit");
@@ -56,6 +58,9 @@ public class DemoInputHandler implements InputProviderListener {
 		provider.bindCommand(new KeyControl(Input.KEY_NUMPAD5), attack5);
 		provider.bindCommand(new KeyControl(Input.KEY_NUMPAD6), attack6);
 
+		//provider.bindCommand(new MouseButtonControl(Input.MOUSE_LEFT_BUTTON), selectTarget);
+		provider.bindCommand(new KeyControl(Input.KEY_R), runAway);
+
 		provider.bindCommand(new KeyControl(Input.KEY_W), forward);
 		provider.bindCommand(new KeyControl(Input.KEY_S), backward);
 		provider.bindCommand(new KeyControl(Input.KEY_A), left);
@@ -65,7 +70,6 @@ public class DemoInputHandler implements InputProviderListener {
 		provider.bindCommand(new KeyControl(Input.KEY_LEFT), left);
 		provider.bindCommand(new KeyControl(Input.KEY_RIGHT), right);
 
-		provider.bindCommand(new KeyControl(Input.KEY_R), escape);
 		provider.bindCommand(new KeyControl(Input.KEY_SPACE), interact);
 
 		provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), quit);

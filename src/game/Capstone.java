@@ -17,6 +17,7 @@ import org.newdawn.slick.openal.SoundStore;
 
 public class Capstone implements Game {
 	private static Capstone instance = new Capstone("Capstone");
+	private static final int BUTTON_SPACING = 5;
 
 	private String title;
 	private Image im = null;
@@ -24,6 +25,56 @@ public class Capstone implements Game {
 	private Audio bgm = null;
 	private InputProvider provider = null;
 	private DemoInputHandler handler = null;
+	private MouseListener onFlyMouseListner = new MouseListener() {
+		private boolean isAcceptingInput = false;
+		@Override
+		public void mousePressed(int button, int x, int y) { }
+
+		@Override
+		public void mouseReleased(int button, int x, int y) {
+			if (button == Input.MOUSE_LEFT_BUTTON) {
+				if (needsTarget) {
+					for (int i = 0; i < targetSelectorButtons.length; i++) {
+						if (targetSelectorButtons[i].getBounds().contains(x, y)) {
+							setSelectedTargetSlot(Integer.valueOf(targetSelectorButtons[i].getLabel().substring(0, 1)));
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		@Override
+		public void mouseClicked(int button, int x, int y, int clickCount) { }
+
+		@Override
+		public void mouseWheelMoved(int change) { }
+
+		@Override
+		public void mouseMoved(int oldx, int oldy, int newx, int newy) { }
+
+		@Override
+		public void mouseDragged(int oldx, int oldy, int newx, int newy) { }
+
+		@Override
+		public void setInput(Input input) { }
+
+		@Override
+		public boolean isAcceptingInput() {
+			return isAcceptingInput;
+		}
+
+		@Override
+		public void inputEnded() {
+			isAcceptingInput = false;
+		}
+
+		@Override
+		public void inputStarted() {
+			isAcceptingInput = true;
+		}
+	};
+
 
 	private MoveSet testMoveSet;
 	private Move[] testMoves;
@@ -61,13 +112,21 @@ public class Capstone implements Game {
 	private Monster mon1;
 	private Monster mon2;
 	private Monster mon3;
+	private PlayableCharacter[] actors;
 
 	private Battle demoBattle;
 	private BattleCommandDelegate battleCommandDelegate;
 	private SpriteSheet orcSheet;
-	private LabeledButton[] buttons;
+
+	private LabeledButton[] moveButtons;
 	private ButtonGrid moveGrid;
-	private PlayableCharacter[] actors;
+	private LabeledButton[] targetSelectorButtons;
+	private ButtonGrid targetSelectionGrid;
+
+	private boolean needsTarget = false;
+	private boolean selectedTarget = false;
+	private int targetSlot = -1;
+	private int moveSlot = -1;
 
 	/**
 	 * Create a new basic game
@@ -110,12 +169,15 @@ public class Capstone implements Game {
 	}
 
 	private void initInput(GameContainer container) {
-		handler = new DemoInputHandler(container);
-		provider = new InputProvider(container.getInput());
-		provider.addListener(handler);
-		handler.registerCommands(provider);
+		Input input = container.getInput();
+		input.addMouseListener(onFlyMouseListner);
+
 		battleCommandDelegate = new BattleCommandDelegate();
+		provider = new InputProvider(input);
+		handler = new DemoInputHandler(container);
 		handler.addCommandDelegate(battleCommandDelegate);
+		handler.registerCommands(provider);
+		provider.addListener(handler);
 
 	}
 
@@ -181,7 +243,7 @@ public class Capstone implements Game {
 
 
 		// ##### DEMO CODE ##### //
-		playerSpecies = new Species("Human", playerMoveSet, null) {};
+		playerSpecies = new Species("Human", playerMoveSet, orcSheet) {};
 		//TODO: Make Monster Species
 	}
 
@@ -224,11 +286,17 @@ public class Capstone implements Game {
 	}
 
 	private void initGUI(GameContainer container) {
-		buttons = new LabeledButton[PlayableCharacter.MAX_MOVES];
+		moveButtons = new LabeledButton[PlayableCharacter.MAX_MOVES];
 		for (int i = 0; i < PlayableCharacter.MAX_MOVES; i++) {
-			buttons[i] = new LabeledButton(playerMoves[i], container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
+			moveButtons[i] = new LabeledButton(playerMoves[i], container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
 		}
-		moveGrid = new ButtonGrid(container, 1, 6, 5, buttons);
+		moveGrid = new ButtonGrid(container, 1, 6, BUTTON_SPACING, moveButtons);
+
+		targetSelectorButtons = new LabeledButton[Battle.MAX_TEAM_SIZE];
+		for (int i = 0; i < Battle.MAX_TEAM_SIZE; i++) {
+			targetSelectorButtons[i] = new LabeledButton("", container, container.getDefaultFont(), null, new RoundedRectangle(0, 0, 150, container.getDefaultFont().getLineHeight()+10, 8));
+		}
+		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, BUTTON_SPACING, targetSelectorButtons);
 	}
 
 	private void initSound(GameContainer container) {
@@ -254,7 +322,7 @@ public class Capstone implements Game {
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
 		// ##### TESTING CODE ##### //
-		//5int bufid = -1;
+		//int bufid = -1;
 		//if (!bgm.isPlaying()) {
 			//bufid = bgm.playAsMusic(1.0f, 0.05f, false);
 		//}
@@ -262,13 +330,21 @@ public class Capstone implements Game {
 		// ##### PRODUCTION CODE ##### //
 
 		// ##### DEMO CODE ##### //
-		if (container.getInput().isKeyDown(Input.KEY_ESCAPE)) {
-			//container.exit();
-		}
-
 		if (demoBattle.isOver()) {
 			handler.removeCommandDelegate(battleCommandDelegate);
+		} else {
+			demoBattle.advanceTurn(moveSlot);
+
+			IBattlable activeActor = demoBattle.getActiveActor();
+			for (int i = 0; i < PlayableCharacter.MAX_MOVES; i++) {
+				boolean hasMoreMoves = i < activeActor.getMoveCount();
+				Object textSrc = hasMoreMoves ? activeActor.getLearnedMoves()[i] : "";
+				moveButtons[i].setText(textSrc);
+				moveButtons[i].setAcceptingInput(hasMoreMoves);
+			}
 		}
+
+
 	}
 
 	/**
@@ -282,19 +358,22 @@ public class Capstone implements Game {
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
 		// ##### TESTING CODE ##### //
-		g.drawString("Welcome to our Capstone!",980,20);
+		//g.drawString("Welcome to our Capstone!",980,20);
 		//g.drawImage(im, 10+input.getxOff(), 120+input.getyOff());
 		//g.drawAnimation(anim, 10, 30);
-		if (demoBattle.isOver()) {
-			g.drawString(demoBattle.playerVictory() ? "You WIN!" : "You LOSE!", 240, 40);
-		} else {
-			g.drawString("Keep on battling!", 140,40);
-		}
 
 		// ##### PRODUCTION CODE ##### //
+		g.clear();
+
 		g.setBackground(Color.darkGray);
 		g.setAntiAlias(true);
 		g.setLineWidth(2.0f);
+
+		if (demoBattle.isOver()) {
+			g.drawString(demoBattle.playerVictory() ? "You WIN!" : "You LOSE!", 240, 40);
+		} else {
+			g.drawString("Keep on battling!", 240,40);
+		}
 
 		drawHUD(container, g);
 		drawBattle(container, g);
@@ -304,11 +383,15 @@ public class Capstone implements Game {
 			g.drawAnimation(deathAnim, 20, 200);
 			//deathAnim.setDuration(0, 2000);
 		}
+
+		g.flush();
 	}
 
 	private void drawHUD(GameContainer container, Graphics g) throws SlickException {
-		drawStats(container, g);
-		drawMoves(container, g);
+		if (demoBattle.isStarted() && !demoBattle.isOver()) {
+			drawStats(container, g);
+			drawMoves(container, g);
+		}
 	}
 
 	private void drawStats(GameContainer container, Graphics g) {
@@ -337,8 +420,35 @@ public class Capstone implements Game {
 		moveGrid.render(container, g);
 	}
 
-	private void drawBattle(GameContainer container, Graphics g) {
+	private void drawBattle(GameContainer container, Graphics g) throws SlickException {
+			drawTargetSelector(container, g);
+	}
 
+	private void drawTargetSelector(GameContainer container, Graphics g) throws SlickException {
+		if (!needsTarget) {
+			targetSelectionGrid.setLocation(container.getWidth(), container.getHeight());
+			targetSelectionGrid.setEnabled(false);
+			targetSelectionGrid.setShown(false);
+		} else {
+			int x = container.getWidth() / 2 - targetSelectionGrid.getWidth();
+			int y = moveGrid.getY() - targetSelectionGrid.getHeight() - BUTTON_SPACING;
+			targetSelectionGrid.setLocation(x ,y);
+			targetSelectionGrid.setEnabled(true);
+			targetSelectionGrid.setShown(true);
+
+		}
+
+		targetSelectionGrid.render(container, g);
+	}
+
+	public void selectTarget(IBattlable[] targets) {
+		if (needsTarget || selectedTarget) { return; }
+
+		for (int i = 1; i <= targets.length; i++) {
+			targetSelectorButtons[i-1].setText(i+": "+targets[i-1].getName());
+		}
+
+		needsTarget = true;
 	}
 
 	/**
@@ -361,12 +471,37 @@ public class Capstone implements Game {
 		return this.title;
 	}
 
-	public LabeledButton[] getButtons(){
-		return this.buttons;
-	}
-
 	public static Capstone getInstance() {
 		return instance;
 	}
-}
 
+	public LabeledButton[] getMoveButtons(){
+		return this.moveButtons;
+	}
+
+	public LabeledButton[] getTargetSelectorButtons() {
+		return this.targetSelectorButtons;
+	}
+
+	public int getSelectedTargetSlot() {
+		if (!this.selectedTarget) {
+			throw new IllegalStateException("Target is invalid or not selected!");
+		}
+
+		int ret = this.targetSlot;
+		this.targetSlot = -1;
+		this.selectedTarget = false;
+		return ret;
+	}
+
+	public void setSelectedTargetSlot(int targetSlot) {
+		this.targetSlot = targetSlot;
+		this.selectedTarget = targetSlot > 0 && targetSlot < 3;
+		this.needsTarget = !this.selectedTarget;
+		this.targetSelectionGrid.setShown(this.needsTarget);
+	}
+
+	public void setMoveSlot(int moveSlot) {
+		this.moveSlot = moveSlot;
+	}
+}

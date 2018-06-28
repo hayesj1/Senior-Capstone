@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * For characters which can use the battle system
  */
-public interface IBattlable {
+public interface IBattlable extends INamed {
 
 	Random rand = new Random();
 

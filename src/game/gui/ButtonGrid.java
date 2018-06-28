@@ -3,14 +3,13 @@ package game.gui;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.GUIContext;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-public class ButtonGrid extends AbstractComponent {
+public class ButtonGrid extends CapstoneComponent {
 	private int x;
 	private int y;
 	private int width;
@@ -88,6 +87,10 @@ public class ButtonGrid extends AbstractComponent {
 
 	@Override
 	public void render(GUIContext context, Graphics g) throws SlickException {
+		if (!this.shown) {
+			return;
+		}
+
 		Color old = g.getColor();
 
 		g.setColor(backgroundColor);
@@ -127,6 +130,12 @@ public class ButtonGrid extends AbstractComponent {
 	@Override
 	public int getHeight() {
 		return this.height;
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		buttons.forEach(button -> button.setAcceptingInput(enabled));
 	}
 
 	public void setBackgroundColor(Color color) { this.backgroundColor = color; }

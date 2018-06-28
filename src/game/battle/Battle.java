@@ -1,5 +1,6 @@
 package game.battle;
 
+import game.Capstone;
 import game.character.IBattlable;
 import game.character.Player;
 import game.input.BattleCommandDelegate;
@@ -62,6 +63,7 @@ public class Battle {
 			return instance;
 		}
 	}
+	public static final int MAX_TEAM_SIZE = 2;
 
 	private BattleCommandDelegate commandDelegate;
 	private boolean prepared;
@@ -74,6 +76,7 @@ public class Battle {
 	private IBattlable[] playerParty;
 	private IBattlable[] opposingParty;
 	private TreeSet<IBattlable> order;
+	private Turn turn = null;
 
 	public Battle(BattleCommandDelegate del) {
 		this.commandDelegate = del;
@@ -94,8 +97,8 @@ public class Battle {
 	private void prepare(IBattlable[] playerteam, IBattlable[] opposingTeam) {
 		if (prepared) { return; }
 
-		System.arraycopy(playerteam, 0, this.playerParty, 0, 2);
-		System.arraycopy(opposingTeam, 0, this.opposingParty, 0, 2);
+		System.arraycopy(playerteam, 0, this.playerParty, 0, MAX_TEAM_SIZE);
+		System.arraycopy(opposingTeam, 0, this.opposingParty, 0, MAX_TEAM_SIZE);
 
 		this.order.add(playerteam[0]);
 		this.order.add(playerteam[1]);
@@ -120,24 +123,39 @@ public class Battle {
 	}
 
 	public void advanceTurn(int moveSlot) {
-		if (!started) { return; }
+		if (!started || (moveSlot < 1 || moveSlot > playerParty[actor].getMoveCount())) { return; }
 
 		// Do player moves
-		if (actor == 0 && playerParty[1] == null) {
-			playerParty[actor].planMove(moveSlot, opposingParty);
-			actor++;
-		} else {
-			playerParty[actor].planMove(moveSlot, opposingParty);
+		turn = playerParty[actor].planMove(moveSlot, opposingParty);
+		if (turn.getTarget() == null) {
+			Capstone.getInstance().selectTarget(opposingParty);
+			try {
+				int targetSlot = Capstone.getInstance().getSelectedTargetSlot();
+				turn.setTarget(opposingParty[targetSlot - 1]);
+			} catch (IllegalStateException ise) {
+				return;
+			}
 		}
-		actor++;
+
+		if (turn.ready()) {
+			if (actor == 0 && playerParty[1].isKOed()) { actor++; }
+			actor++;
+		}
 
 		// Do AI moves
 		if (actor >= playerParty.length) {
 			needsAction = false;
-			int moveIdx1 = IBattlable.rand.nextInt(opposingParty[0].getMoveCount());
-			int moveIdx2 = IBattlable.rand.nextInt(opposingParty[1].getMoveCount());
-			opposingParty[0].planMove(moveIdx1+1, playerParty);
-			opposingParty[1].planMove(moveIdx2+1, playerParty);
+			for (int i = 0; i < opposingParty.length; i++) {
+				if (opposingParty[i].isKOed() || opposingParty[i].justCaptured()) { continue; }
+
+				int moveIdx = IBattlable.rand.nextInt(opposingParty[i].getMoveCount());
+				turn = opposingParty[i].planMove(moveIdx+1, playerParty);
+				if (turn.getTarget() == null) {
+					int targetIdx = IBattlable.rand.nextInt(playerParty.length);
+					turn.setTarget(playerParty[targetIdx]);
+				}
+			}
+
 			executeTurns();
 
 			actor = 0;
@@ -166,6 +184,7 @@ public class Battle {
 	}
 
 	public boolean isOver() { return this.ended; }
+	public boolean isStarted() { return this.started; }
 	public boolean playerVictory() { return this.playerWon; }
 	public boolean needsUserAction() { return this.needsAction; }
 	public IBattlable getActiveActor() { return this.playerParty[this.actor]; }
