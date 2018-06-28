@@ -40,23 +40,28 @@ public class BattleCommandDelegate implements ICommandDelegate {
 		else if (command == DemoInputHandler.attack) {
 			int mx = input.getMouseX();
 			int my = input.getMouseY();
-			LabeledButton clicked = null;
-			LabeledButton[] buttons = Capstone.getInstance().getButtons();
-			for (LabeledButton button : buttons) {
-				if (button.getBounds().contains(mx, my)) {
-					clicked = button;
-					break;
-				}
-			}
+			LabeledButton[] buttons = Capstone.getInstance().getMoveButtons();
+			LabeledButton clicked = getClicked(mx, my, buttons);
 
-			if (clicked != null) {
-				moveSlot = this.actor.getMoveSlotByLearnedMoveName(clicked.getLabel());
-			}
+			if (clicked == null) { return; }
+			moveSlot = this.actor.getMoveSlotByLearnedMoveName(clicked.getLabel());
 		}
 
 		if (moveSlot > 0 && moveSlot <= this.actor.getMoveCount() && !battle.isOver()) {
-			battle.advanceTurn(moveSlot);
+			Capstone.getInstance().setMoveSlot(moveSlot);
 			this.actor = this.battle.getActiveActor();
 		}
+	}
+
+	private LabeledButton getClicked(int mx, int my, LabeledButton[] buttons) {
+		if (buttons == null) { return null; }
+		LabeledButton clicked = null;
+		for (LabeledButton button : buttons) {
+			if (button.getBounds().contains(mx, my)) {
+				clicked = button;
+				break;
+			}
+		}
+		return clicked;
 	}
 }
