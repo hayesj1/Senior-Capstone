@@ -54,7 +54,7 @@ public class BattleCommandDelegate implements ICommandDelegate {
 			}
 		}
 
-		if (moveSlot > 0 && !battle.isOver()) {
+		if (moveSlot > 0 && moveSlot <= this.actor.getMoveCount() && !battle.isOver()) {
 			battle.advanceTurn(moveSlot);
 			this.actor = this.battle.getActiveActor();
 		}

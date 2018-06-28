@@ -113,6 +113,7 @@ public interface IBattlable {
 	int modifyHP(int delta);
 	void setHP(int hp);
 
+	int getMoveCount();
 	Move[] getLearnedMoves();
 	int getMoveSlotByLearnedMoveName(String name);
 }

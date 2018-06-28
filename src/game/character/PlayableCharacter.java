@@ -221,5 +221,8 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 		return slot;
 	}
 
+	@Override
+	public int getMoveCount() { return this.moveCount; }
+
 	public Animation getDeathAnimation() { return this.deathAnim; }
 }
