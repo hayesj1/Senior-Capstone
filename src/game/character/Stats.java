@@ -21,15 +21,12 @@ public class Stats {
 	public int maxHP() {
 		return maxHP;
 	}
-
 	public int attack() {
 		return attack;
 	}
-
 	public int defense() {
 		return defense;
 	}
-
 	public int speed() {
 		return speed;
 	}

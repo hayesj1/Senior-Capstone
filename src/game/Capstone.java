@@ -6,6 +6,7 @@ import game.character.moves.Move;
 import game.character.moves.MoveSet;
 import game.gui.ButtonGrid;
 import game.gui.LabeledButton;
+import game.gui.Panel;
 import game.input.BattleCommandDelegate;
 import game.input.DemoInputHandler;
 import org.newdawn.slick.*;
@@ -18,6 +19,9 @@ import org.newdawn.slick.openal.SoundStore;
 public class Capstone implements Game {
 	private static Capstone instance = new Capstone("Capstone");
 	private static final int BUTTON_SPACING = 5;
+
+	public static final Color SELECTION_COLOR = Color.orange;
+
 
 	private String title;
 	private Image im = null;
@@ -118,6 +122,7 @@ public class Capstone implements Game {
 	private BattleCommandDelegate battleCommandDelegate;
 	private SpriteSheet orcSheet;
 
+	private Panel battleControlPanel;
 	private LabeledButton[] moveButtons;
 	private ButtonGrid moveGrid;
 	private LabeledButton[] targetSelectorButtons;
@@ -225,8 +230,8 @@ public class Capstone implements Game {
 			allMovesLevels[i] = -1;
 		}
 
-		int[] playerMovesLevels = new int[]  { 0, 3, 7, 12, 14, 20 }; //Josh please fill in the proper levels
-		int[] monsterMovesLevels = new int[] { 0, 3, 6, 8, 13, 20, 25, 30 }; //Josh please fill in the proper levels
+		int[] playerMovesLevels = new int[]  { 0, 3, 7, 12, 14, 20 }; //Josh please fill in the proper levels or remove this comment if they're fine
+		int[] monsterMovesLevels = new int[] { 0, 3, 6, 8, 13, 20, 25, 30 }; //Josh please fill in the proper levels or remove this comment if they're fine
 
 		allMoveSet.init(allMoves, allMovesLevels);
 		playerMoveSet.init(playerMoves, playerMovesLevels);
@@ -237,14 +242,14 @@ public class Capstone implements Game {
 		initSprites(container);
 
 		// ##### TESTING CODE ##### //
-		testSpecies = new Species("Test Uno", testMoveSet, orcSheet) {};
+		testSpecies = new Species("Test Species", testMoveSet, orcSheet);
 
 		// ##### PRODUCTION CODE ##### //
 
 
 		// ##### DEMO CODE ##### //
-		playerSpecies = new Species("Human", playerMoveSet, orcSheet) {};
-		//TODO: Make Monster Species
+		playerSpecies = new Species("Human", playerMoveSet, orcSheet);
+		monsterSpecies = new Species("???", monsterMoveSet, orcSheet); // Josh please replace ??? with a good species name
 	}
 
 	private void initSprites(GameContainer container) {
@@ -258,11 +263,11 @@ public class Capstone implements Game {
 	private void initPlayer(GameContainer container) {
 		// ##### TESTING CODE ##### //
 		//player = new Player(testSpecies, new Stats(30, 5, 5, 4), testMoves, "Player1");
-		mon1 = new Monster(testSpecies, new Stats(20, 4, 6, 3), testMoves);
+		mon1 = new Monster(testSpecies, new Stats(20, 4, 6, 3), testMoves); // Josh please fix these stats or agree with them and remove this comment
 
 		// ##### PRODUCTION CODE ##### //
 		Move[] playerStartMoves = new Move[] { playerMoves[0] };
-		Stats playerStats = new Stats(30, 5, 5, 4); // Josh please fix these values
+		Stats playerStats = new Stats(30, 5, 5, 4); // Josh please fix these values or agree with them and remove this comment
 		player = new Player(playerSpecies, playerStats, playerStartMoves, "Player1");
 
 		// ##### DEMO CODE ##### //
@@ -286,17 +291,26 @@ public class Capstone implements Game {
 	}
 
 	private void initGUI(GameContainer container) {
-		moveButtons = new LabeledButton[PlayableCharacter.MAX_MOVES];
-		for (int i = 0; i < PlayableCharacter.MAX_MOVES; i++) {
+		int bcpX = 0, bcpW = container.getWidth(), bcpY = (container.getHeight() / 5) * 4, bcpH = container.getHeight() / 5;
+		battleControlPanel = new Panel(container, bcpX, bcpY, bcpW, bcpH);
+		battleControlPanel.setBackgroundColor(Color.lightGray);
+
+		moveButtons = new LabeledButton[IBattlable.MAX_MOVES];
+		for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
 			moveButtons[i] = new LabeledButton(playerMoves[i], container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
 		}
 		moveGrid = new ButtonGrid(container, 1, 6, BUTTON_SPACING, moveButtons);
+		moveGrid.setBackgroundColor(Color.transparent);
 
 		targetSelectorButtons = new LabeledButton[Battle.MAX_TEAM_SIZE];
 		for (int i = 0; i < Battle.MAX_TEAM_SIZE; i++) {
 			targetSelectorButtons[i] = new LabeledButton("", container, container.getDefaultFont(), null, new RoundedRectangle(0, 0, 150, container.getDefaultFont().getLineHeight()+10, 8));
 		}
 		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, BUTTON_SPACING, targetSelectorButtons);
+		targetSelectionGrid.setBackgroundColor(Color.transparent);
+
+		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidth(), 0);
+		battleControlPanel.addChild(targetSelectionGrid, 0, 0);
 	}
 
 	private void initSound(GameContainer container) {
@@ -336,16 +350,15 @@ public class Capstone implements Game {
 			demoBattle.advanceTurn(moveSlot);
 
 			IBattlable activeActor = demoBattle.getActiveActor();
-			for (int i = 0; i < PlayableCharacter.MAX_MOVES; i++) {
+			for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
 				boolean hasMoreMoves = i < activeActor.getMoveCount();
 				Object textSrc = hasMoreMoves ? activeActor.getLearnedMoves()[i] : "";
 				moveButtons[i].setText(textSrc);
 				moveButtons[i].setAcceptingInput(hasMoreMoves);
 			}
 		}
-
-
 	}
+
 
 	/**
 	 * Render the game's screen here.
@@ -388,36 +401,57 @@ public class Capstone implements Game {
 	}
 
 	private void drawHUD(GameContainer container, Graphics g) throws SlickException {
-		if (demoBattle.isStarted() && !demoBattle.isOver()) {
-			drawStats(container, g);
+		if (demoBattle.isStarted()) {
+			if (demoBattle.isOver()) {
+				battleControlPanel.setEnabled(false);
+			}
+			drawBattleHUD(container, g);
 			drawMoves(container, g);
 		}
 	}
 
-	private void drawStats(GameContainer container, Graphics g) {
-		g.setColor(Color.lightGray);
-		int x = 20, y = 20;
-		for (PlayableCharacter actor : actors) {
-			float w = ( (actor.HP() * 1.0f) / actor.getStats().maxHP() );
-			//g.setColor(Color.lightGray);
-			g.fillRoundRect(x-2, y-2, 204, 24, 8);
-			g.fill(new RoundedRectangle(x, y, w*200, 20, 8), new GradientFill(x,y,Color.red, x+200,y+20,Color.green));
-			y += 35;
-		}
+	private void drawBattleHUD(GameContainer container, Graphics g) throws SlickException {
+		battleControlPanel.render(container, g);
+		if (!demoBattle.isOver()) {
+			g.setColor(Color.lightGray);
+			int x = 20, y = 20;
+			for (PlayableCharacter actor : actors) {
+				float w = ( ( actor.HP() * 1.0f ) / actor.getStats().maxHP() );
+				//g.setColor(Color.lightGray);
+				g.fillRoundRect(x - 2, y - 2, 204, 24, 8);
+				g.fill(new RoundedRectangle(x, y, w * 200, 20, 8), new GradientFill(x, y, Color.red, x + 200, y + 20, Color.green));
+				y += 35;
+			}
 
-		IBattlable active = demoBattle.getActiveActor();
-		x = 240;
-		y = 60;
-		for (PlayableCharacter actor : actors) {
-			Color color = (actor == active) ? Color.white : Color.lightGray;
-			g.getFont().drawString(x, y, actor.getName()+" HP: "+actor.HP(), color);
-			y += 20;
+			IBattlable active = demoBattle.getActiveActor();
+			x = 240;
+			y = 60;
+			for (PlayableCharacter actor : actors) {
+				Color color = ( actor == active ) ? SELECTION_COLOR : Color.lightGray;
+				g.getFont().drawString(x, y, actor.getName() + " HP: " + actor.HP(), color);
+				y += 20;
+			}
 		}
 	}
 
 	private void drawMoves(GameContainer container, Graphics g) throws SlickException {
-		moveGrid.setLocation(20, container.getHeight()-(moveGrid.getHeight()+20));
-		moveGrid.render(container, g);
+		//moveGrid.setLocation(20, container.getHeight()-(moveGrid.getHeight()+20));
+		//moveGrid.render(container, g);
+		if (moveSlot > 0) {
+			int x = moveButtons[moveSlot-1].getX() - 2;
+			int y = moveButtons[moveSlot-1].getY() - 2;
+			int w = moveButtons[moveSlot-1].getWidth() + 3;
+			int h = moveButtons[moveSlot-1].getHeight() + 3;
+			Color oldC = g.getColor();
+			float oldLW = g.getLineWidth();
+
+			g.setLineWidth(1.0f);
+			g.setColor(SELECTION_COLOR);
+			g.drawRect(x, y, w, h);
+
+			g.setColor(oldC);
+			g.setLineWidth(oldLW);
+		}
 	}
 
 	private void drawBattle(GameContainer container, Graphics g) throws SlickException {
@@ -426,13 +460,13 @@ public class Capstone implements Game {
 
 	private void drawTargetSelector(GameContainer container, Graphics g) throws SlickException {
 		if (!needsTarget) {
-			targetSelectionGrid.setLocation(container.getWidth(), container.getHeight());
+			//targetSelectionGrid.setLocation(container.getWidth(), container.getHeight());
 			targetSelectionGrid.setEnabled(false);
-			targetSelectionGrid.setShown(false);
+			//targetSelectionGrid.setShown(false);
 		} else {
-			int x = container.getWidth() / 2 - targetSelectionGrid.getWidth();
-			int y = moveGrid.getY() - targetSelectionGrid.getHeight() - BUTTON_SPACING;
-			targetSelectionGrid.setLocation(x ,y);
+			//int x = container.getWidth() / 2 - targetSelectionGrid.getWidth();
+			//int y = moveGrid.getY() - targetSelectionGrid.getHeight() - BUTTON_SPACING;
+			//targetSelectionGrid.setLocation(x ,y);
 			targetSelectionGrid.setEnabled(true);
 			targetSelectionGrid.setShown(true);
 
@@ -498,7 +532,7 @@ public class Capstone implements Game {
 		this.targetSlot = targetSlot;
 		this.selectedTarget = targetSlot > 0 && targetSlot < 3;
 		this.needsTarget = !this.selectedTarget;
-		this.targetSelectionGrid.setShown(this.needsTarget);
+		this.targetSelectionGrid.setEnabled(this.needsTarget);
 	}
 
 	public void setMoveSlot(int moveSlot) {

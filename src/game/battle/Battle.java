@@ -73,10 +73,9 @@ public class Battle {
 	private boolean playerWon;
 	private int actor = -1;
 
-	private IBattlable[] playerParty;
-	private IBattlable[] opposingParty;
+	private IBattlable[] players;
+	private IBattlable[] foes;
 	private TreeSet<IBattlable> order;
-	private Turn turn = null;
 
 	public Battle(BattleCommandDelegate del) {
 		this.commandDelegate = del;
@@ -84,75 +83,83 @@ public class Battle {
 		this.started = false;
 		this.ended = false;
 		this.playerWon = false;
-		this.playerParty = new IBattlable[2];
-		this.opposingParty = new IBattlable[2];
+		this.players = new IBattlable[2];
+		this.foes = new IBattlable[2];
 		this.order = new TreeSet<>(BattleOrder.getInstance());
 	}
 
 	/**
 	 * Initializes battle participants and attack order
 	 * @param playerteam Array of Player's participants
-	 * @param opposingTeam Array of Opponent's participants
+	 * @param foeTeam Array of Opponent's participants
 	 */
-	private void prepare(IBattlable[] playerteam, IBattlable[] opposingTeam) {
+	private void prepare(IBattlable[] playerteam, IBattlable[] foeTeam) {
 		if (prepared) { return; }
 
-		System.arraycopy(playerteam, 0, this.playerParty, 0, MAX_TEAM_SIZE);
-		System.arraycopy(opposingTeam, 0, this.opposingParty, 0, MAX_TEAM_SIZE);
+		System.arraycopy(playerteam, 0, this.players, 0, MAX_TEAM_SIZE);
+		System.arraycopy(foeTeam, 0, this.foes, 0, MAX_TEAM_SIZE);
 
 		this.order.add(playerteam[0]);
 		this.order.add(playerteam[1]);
-		this.order.add(opposingTeam[0]);
-		this.order.add(opposingTeam[1]);
+		this.order.add(foeTeam[0]);
+		this.order.add(foeTeam[1]);
 
 		this.prepared = true;
 	}
 
 	/**
-	 * Starts battle between playerTeam and opposingTeam
+	 * Starts battle between playerTeam and foeTeam
 	 * @param playerTeam Array of Player's participants
-	 * @param opposingTeam Array of Opponent's participants
+	 * @param foeTeam Array of Opponent's participants
 	 */
-	public void start(IBattlable[] playerTeam, IBattlable[] opposingTeam) {
+	public void start(IBattlable[] playerTeam, IBattlable[] foeTeam) {
 		if (started) { return; }
 
-		prepare(playerTeam, opposingTeam);
+		prepare(playerTeam, foeTeam);
 		actor = 0;
 		needsAction = true;
 		started = true;
 	}
 
+	/**
+	 * Attempt to advance the state of the battle by the active actor's <code>planMove(...)</code> method.
+	 * If the advancing is successful, and all Human players have planned their moves,
+	 *    the AI players plan theirs and the turns are executed
+	 * @param moveSlot The slot of the selected move
+	 */
 	public void advanceTurn(int moveSlot) {
-		if (!started || (moveSlot < 1 || moveSlot > playerParty[actor].getMoveCount())) { return; }
+		if (!started || (moveSlot < 1 || moveSlot > players[actor].getMoveCount())) { return; }
 
 		// Do player moves
-		turn = playerParty[actor].planMove(moveSlot, opposingParty);
+		Turn turn = players[actor].planMove(moveSlot, foes);
 		if (turn.getTarget() == null) {
-			Capstone.getInstance().selectTarget(opposingParty);
+			Capstone.getInstance().selectTarget(foes);
 			try {
 				int targetSlot = Capstone.getInstance().getSelectedTargetSlot();
-				turn.setTarget(opposingParty[targetSlot - 1]);
+				turn.setTarget(foes[targetSlot - 1]);
 			} catch (IllegalStateException ise) {
 				return;
 			}
 		}
 
 		if (turn.ready()) {
-			if (actor == 0 && playerParty[1].isKOed()) { actor++; }
+			if (actor == 0 && players[1].isKOed()) { actor++; }
 			actor++;
 		}
 
 		// Do AI moves
-		if (actor >= playerParty.length) {
+		if (actor >= players.length) {
 			needsAction = false;
-			for (int i = 0; i < opposingParty.length; i++) {
-				if (opposingParty[i].isKOed() || opposingParty[i].justCaptured()) { continue; }
+			for (IBattlable foe : foes) {
+				if (foe.isKOed() || foe.wasJustCaptured()) {
+					continue;
+				}
 
-				int moveIdx = IBattlable.rand.nextInt(opposingParty[i].getMoveCount());
-				turn = opposingParty[i].planMove(moveIdx+1, playerParty);
+				int moveIdx = IBattlable.rand.nextInt(foe.getMoveCount());
+				turn = foe.planMove(moveIdx + 1, players);
 				if (turn.getTarget() == null) {
-					int targetIdx = IBattlable.rand.nextInt(playerParty.length);
-					turn.setTarget(playerParty[targetIdx]);
+					int targetIdx = IBattlable.rand.nextInt(players.length);
+					turn.setTarget(players[targetIdx]);
 				}
 			}
 
@@ -168,17 +175,17 @@ public class Battle {
 		if (!started) { return; }
 		order.descendingSet().forEach(IBattlable::executeTurn);
 		order.descendingSet().removeIf(IBattlable::isKOed);
-		order.descendingSet().removeIf(IBattlable::justCaptured);
+		order.descendingSet().removeIf(IBattlable::wasJustCaptured);
 
 		if (order.size() < 4) {
-			if (playerParty[0].isKOed()) {
+			if (players[0].isKOed()) {
 				playerWon = false; // you LOSE cause you DEAD
 				ended = true;
-			} else if ((opposingParty[0].isKOed() || opposingParty[0].justCaptured()) && (opposingParty[1].isKOed() || opposingParty[1].justCaptured())) {
-				playerWon = true; // you WIN cause opposingParty is DEAD or CAPTURED
+			} else if (( foes[0].isKOed() || foes[0].wasJustCaptured()) && ( foes[1].isKOed() || foes[1].wasJustCaptured())) {
+				playerWon = true; // you WIN cause foes is DEAD or CAPTURED
 				ended = true;
-			} else if (playerParty[1].isKOed()) {
-				playerParty[1] = ((Player) playerParty[0]).swapMonster();
+			} else if (players[1].isKOed()) {
+				players[1] = ((Player) players[0]).swapMonster();
 			}
 		}
 	}
@@ -187,6 +194,6 @@ public class Battle {
 	public boolean isStarted() { return this.started; }
 	public boolean playerVictory() { return this.playerWon; }
 	public boolean needsUserAction() { return this.needsAction; }
-	public IBattlable getActiveActor() { return this.playerParty[this.actor]; }
+	public IBattlable getActiveActor() { return this.players[this.actor]; }
 
 }

@@ -12,7 +12,7 @@ import java.util.Map;
  * movesets are immutable.
  * A move learned at level:<ul>
  * <li>-1 will never be learned (this is useful for organizing moves into groups, or master lists of moves)</li>
- * <li>0 or 1 will be one of up to six "default" moves available to all monsters</li>
+ * <li>0 or 1 will be one of up to six "default" moves available to all species with this moveset</li>
  * <li>2 - 100 will be learned upon advancing to that level</li>
  * </ul>
  */
@@ -25,6 +25,13 @@ public class MoveSet {
 		this.complete = false;
 	}
 
+	/**
+	 * Populate this moveSet.
+	 * Any negative elements of learnLevels are clamped to -1.
+	 * Any elements of learnLevels which are greater than <code>ILevelable.MAX_LEVEL</code>, are clamped to <code>ILevelable.MAX_LEVEL</code>
+	 * @param moves The moves
+	 * @param learnLevels The levels those moves are learned at
+	 */
 	public void init(Move[] moves, int[] learnLevels) {
 		if (moves.length != learnLevels.length) { throw new IllegalArgumentException("learnLevels array must be same size as moves array!"); }
 		for (int i = 0; i < moves.length; i++) { putMove(moves[i], learnLevels[i]); }

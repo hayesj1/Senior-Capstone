@@ -1,5 +1,6 @@
 package game.gui;
 
+import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -10,10 +11,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class ButtonGrid extends CapstoneComponent {
-	private int x;
-	private int y;
-	private int width;
-	private int height;
 	private int rows;
 	private int cols;
 	private int spacing;
@@ -31,9 +28,7 @@ public class ButtonGrid extends CapstoneComponent {
 		this(container, 0, 0, rows, cols, spacing, true, buttons);
 	}
 	public ButtonGrid(GUIContext container, int x, int y, int rows, int cols, int spacing, boolean populateAcross, LabeledButton... buttons) {
-		super(container);
-		this.x = x;
-		this.y = y;
+		super(container, x, y);
 		this.rows = rows <= 0 ? 1 : rows;
 		this.cols = cols <= 0 ? 1 : cols;
 		this.spacing = spacing < 0 ? 0 : spacing;
@@ -55,6 +50,9 @@ public class ButtonGrid extends CapstoneComponent {
 		this.pos = this.buttons.size();
 	}
 
+	/**
+	 * Computes and moves the buttons to the proper locations. Runs in O(n) time.
+	 */
 	private void computeButtonPositions() {
 		if (!this.invalid) { return; }
 		int cw = this.cellW;
@@ -85,8 +83,14 @@ public class ButtonGrid extends CapstoneComponent {
 		}
 	}
 
+	/**
+	 *
+	 * @param container the GUIContext
+	 * @param g the Graphics object to draw on
+	 * @throws SlickException
+	 */
 	@Override
-	public void render(GUIContext context, Graphics g) throws SlickException {
+	public void render(GUIContext container, Graphics g) throws SlickException {
 		if (!this.shown) {
 			return;
 		}
@@ -99,37 +103,26 @@ public class ButtonGrid extends CapstoneComponent {
 			computeButtonPositions();
 		}
 		for (LabeledButton button : this.buttons) {
-			button.render(context, g);
+			button.render(container, g);
+			if (!enabled) {
+				DrawingUtils.drawDisabledOverlay(container, g, button.getX(), button.getY(), button.getWidth(), button.getHeight());
+			}
 		}
 
 		g.setColor(old);
 	}
 
+	/**
+	 * Moves the entire grid to <code>(x,y)</code>.
+	 * This invalidates the grid, thus button positions will be recomputed
+	 * @param x the x-coordinate of the top-left pixel
+	 * @param y the y-coordinate of the top-left pixel
+	 * @see #computeButtonPositions()
+	 */
 	@Override
 	public void setLocation(int x, int y) {
-		this.x = x;
-		this.y = y;
+		super.setLocation(x, y);
 		this.invalid = true;
-	}
-
-	@Override
-	public int getX() {
-		return this.x;
-	}
-
-	@Override
-	public int getY() {
-		return this.y;
-	}
-
-	@Override
-	public int getWidth() {
-		return this.width;
-	}
-
-	@Override
-	public int getHeight() {
-		return this.height;
 	}
 
 	@Override

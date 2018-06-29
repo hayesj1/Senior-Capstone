@@ -10,6 +10,10 @@ public class Monster extends PlayableCharacter {
 
 	}
 
+
+	/**
+	 * @return True if this character is be capturable, false otherwise
+	 */
 	@Override
 	public boolean isCapturable() { return true; }
 

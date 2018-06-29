@@ -12,22 +12,23 @@ import java.util.Random;
 public interface IBattlable extends INamed {
 
 	Random rand = new Random();
+	int MAX_MOVES = 6;
 
 	/**
-	 * @return True if this character should be capturable, false otherwise
+	 * @return True if this character is capturable, false otherwise
 	 */
 	boolean isCapturable();
 
 	/**
 	 * @return True if this IBattlable was captured in the current battle; false otherwise
 	 */
-	boolean justCaptured();
+	boolean wasJustCaptured();
 
-	/** Flags this <code>IBattlable</code> as captured in the current battle if <code>justCaptured</code> is true;
-	 * otherwise flags this <code>IBattlable</code> as not captured or captured in a previous battle
-	 * @param justCaptured true if this <code>IBattlable</code> was just captured, false to reset
-	 */
-	void justCaptured(boolean justCaptured);
+	/** Flags this <code>IBattlable</code> as captured in the current battle */
+	void justCaptured();
+
+	/** Flags this <code>IBattlable</code> as captured in a previous battle */
+	void clearJustCaptured();
 
 	/**
 	 * Attempt to capture this <code>IBattlable</code>. If successful, <code>capturer</code> claims this <code>IBattlable</code>
@@ -40,7 +41,7 @@ public interface IBattlable extends INamed {
 		int randNum = IBattlable.rand.nextInt(100) + 1;
 		int catchChance = (1 - ( HP() / getStats().maxHP() )) * 100;
 		if (randNum <= catchChance) {
-			this.justCaptured(true);
+			this.justCaptured();
 			capturer.addToTeam(this);
 			return true;
 		} else { return false; }
@@ -66,6 +67,7 @@ public interface IBattlable extends INamed {
 	 * @return a <code>Turn</code> instance for later execution of the move chosen
 	 */
 	Turn planMove(int moveSlot, IBattlable[] targets);
+
 	/**
 	 * Execute the turn saved by a previous call to {@link #planMove(IBattlable[])}
 	 * @return true if the move lands, false if it missed, if it is out of uses, or if there is some other failure
@@ -99,6 +101,9 @@ public interface IBattlable extends INamed {
 		return move.uses() > 0;
 	}
 
+	/**
+	 * @return True if this IBattlable has 0 HP; false otherwise
+	 */
 	default boolean isKOed() {
 		return HP() == 0;
 	}

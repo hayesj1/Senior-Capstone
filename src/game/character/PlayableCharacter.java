@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class PlayableCharacter extends Character implements IBattlable {
-	public static final int MAX_MOVES = 6;
 
 	private Turn turn = new Turn(this, null, null);
 
@@ -37,21 +36,31 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 	}
 
 	/**
-	 * @return True if this character should be capturable, false otherwise
+	 * @return True if this character is be capturable, false otherwise
 	 */
 	@Override
 	public boolean isCapturable() {
 		return false;
 	}
 
+	/**
+	 * @return True if this IBattlable was captured in the current battle; false otherwise
+	 */
 	@Override
-	public boolean justCaptured() {
+	public boolean wasJustCaptured() {
 		return this.justCaptured;
 	}
 
+	/** Flags this <code>IBattlable</code> as captured in the current battle */
 	@Override
-	public void justCaptured(boolean justCaptured) {
-		this.justCaptured = justCaptured;
+	public void justCaptured() {
+		this.justCaptured = true;
+	}
+
+	/** Flags this <code>IBattlable</code> as captured in a previous battle */
+	@Override
+	public void clearJustCaptured() {
+		this.justCaptured = false;
 	}
 
 	public void setSelectedMove(int slot) {
@@ -61,6 +70,11 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 		this.selectedSlot = slot;
 	}
 
+	/**
+	 * This <code>IBattlable</code> will select a move to use on its upcoming turn
+	 * @param targets the available targets for a move
+	 * @return a <code>Turn</code> instance for later execution of the move chosen
+	 */
 	@Override
 	public Turn planMove(IBattlable[] targets) {
 		if (plannedTurn) { return turn; }
@@ -73,22 +87,31 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 		this.turn.setAttack(learnedMoves[selectedSlot-1]);
 		selectedSlot = -1;
 		//TODO Implement target selection
-		if (!(targets[0].isKOed() || targets[0].justCaptured()) && (targets[1].isKOed() || targets[1].justCaptured())) {
+		if (!(targets[0].isKOed() || targets[0].wasJustCaptured()) && (targets[1].isKOed() || targets[1].wasJustCaptured())) {
 			this.turn.setTarget(targets[0]);
-		} else if ((targets[0].isKOed() || targets[0].justCaptured()) && !(targets[1].isKOed() || targets[1].justCaptured())) {
+		} else if ((targets[0].isKOed() || targets[0].wasJustCaptured()) && !(targets[1].isKOed() || targets[1].wasJustCaptured())) {
 			this.turn.setTarget(targets[1]);
 		}
 		plannedTurn = true;
 		return this.turn;
 	}
 
+	/**
+	 * This <code>IBattlable</code> will select the move in moveSLot to use on its upcoming turn
+	 * @param moveSlot slot# of the selected move; values are 1 through 6
+	 * @param targets the available targets for a move
+	 * @return a <code>Turn</code> instance for later execution of the move chosen
+	 */
 	@Override
 	public Turn planMove(int moveSlot, IBattlable[] targets) {
 		this.selectedSlot = moveSlot;
 		return this.planMove(targets);
 	}
 
-
+	/**
+	 * Execute the turn saved by a previous call to {@link #planMove(IBattlable[])}
+	 * @return true if the move lands, false if it missed, if it is out of uses, or if there is some other failure
+	 */
 	@Override
 	public boolean executeTurn() {
 		try {
@@ -155,6 +178,9 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 		return this.HP == 0;
 	}
 
+	/**
+	 * Render KO animation
+	 */
 	@Override
 	public void KO() {
 		deathAnim = new Animation(this.species.getSpriteSheet(), 6,0, 8,0,true, 1000, true);

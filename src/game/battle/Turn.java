@@ -28,6 +28,9 @@ public class Turn {
 		return res;
 	}
 
+	/**
+	 * @return True if a call to <code>{@link this.execute()}</code> would not throw a NPE, false otherwise
+	 */
 	public boolean ready() { return this.attacker != null && this.target != null && this.attack != null; }
 
 	public IBattlable getAttacker() {

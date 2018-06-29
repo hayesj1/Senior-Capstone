@@ -43,6 +43,10 @@ public class DemoInputHandler implements InputProviderListener {
 		this.commandDelegates.remove(del);
 	}
 
+	/**
+	 * Register the Demo's command with <code>provider.bindCommand(Control, Command)</code>
+	 * @param provider The Input povider to bind commands with
+	 */
 	public void registerCommands(InputProvider provider) {
 		provider.bindCommand(new MouseButtonControl(Input.MOUSE_LEFT_BUTTON), attack);
 		provider.bindCommand(new KeyControl(Input.KEY_1), attack1);
@@ -75,11 +79,9 @@ public class DemoInputHandler implements InputProviderListener {
 		provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), quit);
 	}
 
-
-
 	@Override
 	public void controlPressed(Command command) {
-		System.out.println(command.toString()+" pressed!");
+		//System.out.println(command.toString()+" pressed!");
 	}
 
 	@Override

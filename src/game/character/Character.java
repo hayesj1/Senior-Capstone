@@ -38,16 +38,22 @@ public abstract class Character implements ILevelable {
 		return this.level;
 	}
 
+	/**
+	 * Attempt to level up
+	 * @return True if levelUp was successful, false otherwise
+	 */
 	@Override
-	public int levelUp() {
+	public boolean levelUp() {
+		if (this.exp < ILevelable.requiredExpForLevel(this.level)) { return false; }
+
 		this.requiredExp = ILevelable.requiredExpForLevel(++this.level);
 		if (this.species.getLearnableMoves().containsMoveAtLevel(this.level)) {
-			int moveSlot = 0; // TODO ask user for moveslot to swap
+			int moveSlot = (this.getMoveCount() < IBattlable.MAX_MOVES) ? this.getMoveCount()+1 : 0; // TODO ask user for moveslot to swap
 			Move move = this.species.getLearnableMoves().moveLearnedAt(this.level);
 			this.learnNewMove(move, moveSlot);
 			Capstone.getInstance().getMoveButtons()[moveSlot].setText(move);
 		}
-		return this.level;
+		return true;
 	}
 
 	@Override

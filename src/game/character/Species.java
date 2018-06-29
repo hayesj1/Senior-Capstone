@@ -3,7 +3,7 @@ package game.character;
 import game.character.moves.MoveSet;
 import org.newdawn.slick.SpriteSheet;
 
-public abstract class Species {
+public class Species {
 	private MoveSet learnableMoves;
 	private String name;
 

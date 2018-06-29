@@ -8,20 +8,32 @@ import game.character.moves.Move;
 public interface ILevelable extends IBattlable {
 	int MAX_LEVEL = 100;
 
+	/**
+	 * How much EXP is a ILevelable is required to have to level up to the passed level
+	 * @param level the target level
+	 * @return the amount of EXP required to levelup to <code>level</code>
+	 */
 	static int requiredExpForLevel(int level) {
 		//TODO: replace with permanent formula
 		return (level < MAX_LEVEL) ? (int) Math.floor( 10 * Math.sqrt(level + 1) ) : 0;
 	}
 
+	/**
+	 * How much EXP is rewarding for defeating a monster of level <code>theirLevel</code> at <code>yourLevel</code>
+	 * @param yourLevel your level when the foe is defeated
+	 * @param theirLevel the defeated foe's level
+	 * @return the EXP you'll gain
+	 */
 	static int expForDefeating(int yourLevel, int theirLevel) {
 		//TODO: replace with permanent formula
 		return (int) Math.ceil(Math.sqrt(theirLevel + 5));
 	}
 
-	int getLevel();
-	int levelUp();
-
-	void addEXP(int exp);
+	/**
+	 * Attempt to level up
+	 * @return True if levelUp was successful, false otherwise
+	 */
+	boolean levelUp();
 
 	/**
 	 * Learn a new move.
@@ -30,4 +42,7 @@ public interface ILevelable extends IBattlable {
 	 * @return the move which was replaced by newMove or null if the slot was empty
 	 */
 	Move learnNewMove(Move newMove, int slot);
+
+	void addEXP(int exp);
+	int getLevel();
 }

@@ -65,8 +65,8 @@ public class LabeledButton extends MouseOverArea {
 	}
 
 	@Override
-	public void render(GUIContext context, Graphics g) {
-		super.render(context, g);
+	public void render(GUIContext container, Graphics g) {
+		super.render(container, g);
 		validateTextLocation(g);
 		g.getFont().drawString(this.textX, this.textY, this.text, this.textColor, 0, cutoff);
 	}

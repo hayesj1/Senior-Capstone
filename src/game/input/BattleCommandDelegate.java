@@ -19,12 +19,23 @@ public class BattleCommandDelegate implements ICommandDelegate {
 		this.initialized = false;
 	}
 
+	/**
+	 * Initialize state. After the call returns, input will be processable if:
+	 * <code>battle.needsUserAction</code> returns <code>true</code>
+	 * and
+	 * <code>battle.getActiveActor</code> does not return <code>null</code>
+	 */
 	public void init(Battle battle) {
 		this.battle = battle;
 		this.actor = battle.getActiveActor();
 		this.initialized = true;
 	}
 
+	/**
+	 * Execute the action
+	 * @param command The command that was triggered
+	 * @param container The GUIContext
+	 */
 	@Override
 	public void action(Command command, GameContainer container) {
 		if (!initialized || actor == null || !battle.needsUserAction()) { return; }
@@ -53,6 +64,13 @@ public class BattleCommandDelegate implements ICommandDelegate {
 		}
 	}
 
+	/**
+	 * Get the button that was clicked
+	 * @param mx mouseX
+	 * @param my mouseY
+	 * @param buttons the buttons to check
+	 * @return The pressed button, or null of none of the buttons in <code>buttons</code> contain the point <code>(mouseX, mouseY)</code>
+	 */
 	private LabeledButton getClicked(int mx, int my, LabeledButton[] buttons) {
 		if (buttons == null) { return null; }
 		LabeledButton clicked = null;

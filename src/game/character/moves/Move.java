@@ -13,6 +13,13 @@ public class Move implements Comparable<Move> {
 	private int maxUses;
 	private int uses;
 
+	/**
+	 * @param name The move name
+	 * @param description A short description text of what the move does
+	 * @param power The power stat
+	 * @param accuracy The accuracy stat; domain is assumed to be whole numbers between 0 - 100, inclusive
+	 * @param maxUses The maximum number of uses per battle
+	 */
 	public Move(String name, String description, int power, int accuracy, int maxUses) {
 		this.id = nextID++;
 		this.name = name;
@@ -146,6 +153,9 @@ public class Move implements Comparable<Move> {
 		return this.name;
 	}
 
+	/**
+	 * @return "<code>{@link #getName()}</code>: <code>{@link #getDescription()}</code>"
+	 */
 	public String describe() {
 		return this.name+": "+this.description;
 	}
