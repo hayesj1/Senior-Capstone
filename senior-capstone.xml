@@ -183,6 +183,15 @@
     <!-- Delete temporary files -->
     <delete dir="${artifacts.temp.dir}"/>
   </target>
+  
+  <target name="archive.release" depends="build.all.artifacts" description="create release archive">
+    <property name="archive.output" value="${basedir}/bin/releases/"/>
+    <mkdir dir="${archive.output}"/>
+    
+    <zip destfile="${archive.output}/Capstone.zip" whenempty="fail" createunicodeextrafields="always" encoding="utf8">
+      <zipfileset dir="${artifact.output.capstone}" prefix="Capstone"/>
+    </zip>
+  </target>
 
   <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
 </project>
