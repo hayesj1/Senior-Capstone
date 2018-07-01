@@ -13,6 +13,7 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.geom.RoundedRectangle;
+import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.SoundStore;
 
@@ -127,6 +128,7 @@ public class Capstone implements Game {
 	private ButtonGrid moveGrid;
 	private LabeledButton[] targetSelectorButtons;
 	private ButtonGrid targetSelectionGrid;
+	private TextField feedbackText;
 
 	private boolean needsTarget = false;
 	private boolean selectedTarget = false;
@@ -167,8 +169,6 @@ public class Capstone implements Game {
 		initSound(container);
 
 		// ##### DEMO CODE ##### //
-		actors = new PlayableCharacter[] { player, mon1, mon2, mon3 };
-
 		demoBattle.start(new IBattlable[] { player, mon1 }, new IBattlable[] { mon2, mon3 });
 		battleCommandDelegate.init(demoBattle);
 	}
@@ -242,7 +242,7 @@ public class Capstone implements Game {
 		initSprites(container);
 
 		// ##### TESTING CODE ##### //
-		testSpecies = new Species("Test Species", testMoveSet, orcSheet);
+		testSpecies = new Species("Generic Monster", testMoveSet, orcSheet);
 
 		// ##### PRODUCTION CODE ##### //
 
@@ -278,6 +278,7 @@ public class Capstone implements Game {
 		initMonsters();
 		initBoss();
 
+		actors = new PlayableCharacter[] { player, mon1, mon2, mon3 };
 		demoBattle = new Battle(battleCommandDelegate);
 	}
 
@@ -298,19 +299,38 @@ public class Capstone implements Game {
 		moveButtons = new LabeledButton[IBattlable.MAX_MOVES];
 		for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
 			moveButtons[i] = new LabeledButton(playerMoves[i], container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
+			moveButtons[i].setTextColor(Color.darkGray);
 		}
 		moveGrid = new ButtonGrid(container, 1, 6, BUTTON_SPACING, moveButtons);
 		moveGrid.setBackgroundColor(Color.transparent);
 
 		targetSelectorButtons = new LabeledButton[Battle.MAX_TEAM_SIZE];
+		int maxWidth = 0;
+		for (PlayableCharacter actor : actors) {
+			int width = container.getDefaultFont().getWidth("___" + actor.getName());
+			if (width > maxWidth) {
+				maxWidth = width;
+			}
+		}
 		for (int i = 0; i < Battle.MAX_TEAM_SIZE; i++) {
-			targetSelectorButtons[i] = new LabeledButton("", container, container.getDefaultFont(), null, new RoundedRectangle(0, 0, 150, container.getDefaultFont().getLineHeight()+10, 8));
+			targetSelectorButtons[i] = new LabeledButton("", container, container.getDefaultFont(), null, new RoundedRectangle(0, 0, maxWidth+10, container.getDefaultFont().getLineHeight()+10, 8));
+			targetSelectorButtons[i].setTextColor(Color.darkGray);
 		}
 		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, BUTTON_SPACING, targetSelectorButtons);
 		targetSelectionGrid.setBackgroundColor(Color.transparent);
 
+		feedbackText = new TextField(container, container.getDefaultFont(), 0, 0, battleControlPanel.getWidth(), container.getDefaultFont().getLineHeight());
+		feedbackText.setTextColor(Color.darkGray);
+		feedbackText.setBackgroundColor(Color.white);
+		feedbackText.setBorderColor(Color.darkGray);
+		feedbackText.setConsumeEvents(false);
+		feedbackText.setCursorVisible(false);
+		feedbackText.setAcceptingInput(false);
+		feedbackText.setText("Battle it out!");
+
 		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidth(), 0);
 		battleControlPanel.addChild(targetSelectionGrid, 0, 0);
+		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeight() - feedbackText.getHeight());
 	}
 
 	private void initSound(GameContainer container) {
@@ -380,20 +400,23 @@ public class Capstone implements Game {
 
 		g.setBackground(Color.darkGray);
 		g.setAntiAlias(true);
-		g.setLineWidth(2.0f);
+		g.setLineWidth(4.0f);
 
-		if (demoBattle.isOver()) {
-			g.drawString(demoBattle.playerVictory() ? "You WIN!" : "You LOSE!", 240, 40);
-		} else {
-			g.drawString("Keep on battling!", 240,40);
+		if (demoBattle.isStarted()) {
+			if (demoBattle.isOver()) {
+				feedbackText.setText(demoBattle.playerVictory() ? "You WIN!" : "You LOSE!");
+			} else {
+				//g.getFont().drawString(240, 40, "Keep on battling!", Color.black);
+			}
 		}
+
 
 		drawHUD(container, g);
 		drawBattle(container, g);
 		Animation deathAnim = mon2.getDeathAnimation();
 		if (deathAnim != null) {
 			deathAnim.setLooping(false);
-			g.drawAnimation(deathAnim, 20, 200);
+			//g.drawAnimation(deathAnim, 20, 200);
 			//deathAnim.setDuration(0, 2000);
 		}
 
@@ -537,5 +560,9 @@ public class Capstone implements Game {
 
 	public void setMoveSlot(int moveSlot) {
 		this.moveSlot = moveSlot;
+	}
+
+	public void setFeedbackText(String text) {
+		this.feedbackText.setText(text);
 	}
 }

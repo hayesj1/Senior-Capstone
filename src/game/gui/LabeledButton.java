@@ -9,6 +9,7 @@ import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.gui.MouseOverArea;
 
 public class LabeledButton extends MouseOverArea {
+	public static final Color DEFAULT_TEXT_COLOR = Color.black;
 	private String text;
 	private Color textColor;
 	private int textX;
@@ -23,7 +24,7 @@ public class LabeledButton extends MouseOverArea {
 		super(container, image, shape);
 
 		this.text = textSrc.toString();
-		this.textColor = Color.darkGray;
+		this.textColor = DEFAULT_TEXT_COLOR;
 		this.textX = this.getX();
 		this.textY = this.getY();
 		this.textNeedsValidation = true;

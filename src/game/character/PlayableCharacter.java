@@ -1,5 +1,6 @@
 package game.character;
 
+import game.Capstone;
 import game.battle.Turn;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
@@ -138,12 +139,15 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 		else if (move.accuracy() == 100) {
 			if (defender.attackedBy(this, move)) {
 				defender.KO();
+				Capstone.getInstance().setFeedbackText(this.getName()+" KO-ed "+defender.getName()+"!");
 				this.addEXP(ILevelable.expForDefeating(this.getLevel(), ((ILevelable) defender).getLevel()));
 			}
-			Logger.getLogger(PlayableCharacter.class.getName()).log(Level.INFO, "Hit with move "+move.getName());
+			Capstone.getInstance().setFeedbackText(this.getName()+" used a move with 100% Accuracy!");
+			Logger.getLogger(PlayableCharacter.class.getName()).log(Level.ALL, "Hit with move "+move.getName());
 			return true;
 		} else if (move.accuracy() == 0) {
-			Logger.getLogger(PlayableCharacter.class.getName()).log(Level.INFO, "Miss with move "+move.getName());
+			Capstone.getInstance().setFeedbackText(this.getName()+" used a move with 0% Accuracy!");
+			Logger.getLogger(PlayableCharacter.class.getName()).log(Level.ALL, "Miss with move "+move.getName());
 			return false;
 		}
 		else {
@@ -151,11 +155,13 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 			if (randNum <= move.accuracy()) {
 				if (defender.attackedBy(this, move)) {
 					defender.KO();
+					Capstone.getInstance().setFeedbackText(this.getName()+" KO-ed "+defender.getName()+"!");
 				}
-				Logger.getLogger(PlayableCharacter.class.getName()).log(Level.INFO, "Hit with move "+move.getName());
+				Logger.getLogger(PlayableCharacter.class.getName()).log(Level.ALL, "Hit with move "+move.getName());
 				return true;
 			} else {
-				Logger.getLogger(PlayableCharacter.class.getName()).log(Level.INFO, "Miss with move "+move.getName());
+				Capstone.getInstance().setFeedbackText(this.getName()+" MISSED "+defender.getName()+"!");
+				Logger.getLogger(PlayableCharacter.class.getName()).log(Level.ALL, "Miss with move "+move.getName());
 				return false;
 			}
 		}
@@ -174,7 +180,8 @@ public abstract class PlayableCharacter extends Character implements IBattlable 
 		this.modifyHP(-damage);
 		this.validateHP();
 
-		Logger.getLogger(PlayableCharacter.class.getName()).log(Level.INFO, "Hit by move "+move.getName()+" dealing "+damage+" damage and leaving "+HP()+"HP!");
+		Capstone.getInstance().setFeedbackText(this.getName()+" HIT by "+attacker.getName()+", dealing "+damage+" DAMAGE!");
+		Logger.getLogger(PlayableCharacter.class.getName()).log(Level.ALL, "Hit by move "+move.getName()+" dealing "+damage+" damage and leaving "+HP()+"HP!");
 		return this.HP == 0;
 	}
 
