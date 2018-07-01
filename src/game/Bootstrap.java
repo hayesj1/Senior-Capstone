@@ -20,8 +20,8 @@ public class Bootstrap {
 		{
 			AppGameContainer appgc;
 			appgc = new AppGameContainer(game);
-			appgc.setDisplayMode(1920, 1080, false);
-			appgc.setShowFPS(true);
+			appgc.setDisplayMode(appgc.getScreenWidth(), appgc.getScreenHeight(), true);
+			appgc.setShowFPS(false);
 			appgc.start();
 		}
 		catch (SlickException ex)

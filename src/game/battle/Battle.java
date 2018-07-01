@@ -158,7 +158,7 @@ public class Battle {
 				int moveIdx = IBattlable.rand.nextInt(foe.getMoveCount());
 				turn = foe.planMove(moveIdx + 1, players);
 				if (turn.getTarget() == null) {
-					int targetIdx = IBattlable.rand.nextInt(players.length);
+					int targetIdx = ( IBattlable.rand.nextInt(10) < 5 ) ? 0 : 1;
 					turn.setTarget(players[targetIdx]);
 				}
 			}
