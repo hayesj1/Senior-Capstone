@@ -2,4 +2,5 @@ workspace.xml
 
 bin/*
 Slick2D/*
+coverage/*
 senior-capstone.properties
