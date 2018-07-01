@@ -1,5 +1,4 @@
-# Senior Capstone:
-# 2D Dungeon Crawler RPG
+# Senior Capstone: 2D Dungeon Crawler RPG
 ## Overview:
 Our Capstone is a 2D, dungeon crawler-style, RPG. It incorporates popular mechancis from the genre, so players familair with franchises like Pokemon, Final Fantasy, or Fire Emblem will feel right at home. The dungeons are peusdo-randomly generated, and populated with monsters to fight or capture. Dungeons are cleared by defeating the boss at its end.
 
