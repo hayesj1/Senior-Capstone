@@ -1,6 +1,6 @@
 package game.character;
 
-import game.Capstone;
+import game.SuperDungeoneer;
 import game.battle.Turn;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
@@ -113,13 +113,13 @@ public abstract class BattlableActor extends Actor implements IBattlable {
 		else if (move.accuracy() == 100) {
 			if (defender.attackedBy(this, move)) {
 				defender.KO();
-				Capstone.getInstance().addFeedback(this.getName()+" KO-ed "+defender.getName()+"!");
+				SuperDungeoneer.getInstance().addFeedback(this.getName()+" KO-ed "+defender.getName()+"!");
 			}
-			Capstone.getInstance().addFeedback(this.getName()+" used a move with 100% Accuracy!");
+			SuperDungeoneer.getInstance().addFeedback(this.getName()+" used a move with 100% Accuracy!");
 			Logger.getLogger(CapturableActor.class.getName()).log(Level.ALL, "Hit with move "+move.getName());
 			return true;
 		} else if (move.accuracy() == 0) {
-			Capstone.getInstance().addFeedback(this.getName()+" used a move with 0% Accuracy!");
+			SuperDungeoneer.getInstance().addFeedback(this.getName()+" used a move with 0% Accuracy!");
 			Logger.getLogger(CapturableActor.class.getName()).log(Level.ALL, "Miss with move "+move.getName());
 			return false;
 		}
@@ -128,12 +128,12 @@ public abstract class BattlableActor extends Actor implements IBattlable {
 			if (randNum <= move.accuracy()) {
 				if (defender.attackedBy(this, move)) {
 					defender.KO();
-					Capstone.getInstance().addFeedback(this.getName()+" KO-ed "+defender.getName()+"!");
+					SuperDungeoneer.getInstance().addFeedback(this.getName()+" KO-ed "+defender.getName()+"!");
 				}
 				Logger.getLogger(CapturableActor.class.getName()).log(Level.ALL, "Hit with move "+move.getName());
 				return true;
 			} else {
-				Capstone.getInstance().addFeedback(this.getName()+" MISSED "+defender.getName()+"!");
+				SuperDungeoneer.getInstance().addFeedback(this.getName()+" MISSED "+defender.getName()+"!");
 				Logger.getLogger(CapturableActor.class.getName()).log(Level.ALL, "Miss with move "+move.getName());
 				return false;
 			}
@@ -155,7 +155,7 @@ public abstract class BattlableActor extends Actor implements IBattlable {
 		this.modifyHP(-damage);
 		this.validateHP();
 
-		Capstone.getInstance().addFeedback(this.getName()+" HIT by "+attacker.getName()+", dealing "+damage+" DAMAGE!");
+		SuperDungeoneer.getInstance().addFeedback(this.getName()+" HIT by "+attacker.getName()+", dealing "+damage+" DAMAGE!");
 		Logger.getLogger(CapturableActor.class.getName()).log(Level.ALL, "Hit by move "+move.getName()+" dealing "+damage+" damage and leaving "+HP()+"HP!");
 		return this.isKOed();
 

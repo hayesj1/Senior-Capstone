@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Capstone.jar" type="JarApplication" factoryName="JAR Application" singleton="true">
+  <configuration default="false" name="Super-Dungeoneer.jar" type="JarApplication" factoryName="JAR Application" singleton="true">
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="game.*" />
@@ -26,14 +26,14 @@
         <option name="ENABLED" value="false" />
       </pattern>
     </extension>
-    <option name="JAR_PATH" value="$PROJECT_DIR$/bin/artifacts/Capstone/Capstone.jar" />
-    <option name="VM_PARAMETERS" value="-Djava.library.path=$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/windows" />
-    <option name="WORKING_DIRECTORY" value="./bin/artifacts/Capstone" />
+    <option name="JAR_PATH" value="$PROJECT_DIR$/bin/artifacts/SuperDungeoneer/Super-Dungeoneer.jar" />
+    <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;libs/natives&quot;" />
+    <option name="WORKING_DIRECTORY" value=".\bin\artifacts\SuperDungeoneer" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
     <module name="Senior-Capstone" />
     <method>
-      <option name="AntTarget" enabled="true" antfile="file://$PROJECT_DIR$/senior-capstone.xml" target="all" />
+      <option name="AntTarget" enabled="true" antfile="file://$PROJECT_DIR$/super-dungeoneer.xml" target="all" />
     </method>
   </configuration>
 </component>

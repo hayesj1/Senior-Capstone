@@ -1,6 +1,6 @@
 package game.input;
 
-import game.Capstone;
+import game.SuperDungeoneer;
 import game.battle.Battle;
 import game.character.IBattlable;
 import game.gui.LabeledButton;
@@ -51,7 +51,7 @@ public class BattleCommandDelegate implements ICommandDelegate {
 		else if (command == DemoInputHandler.attack) {
 			int mx = input.getMouseX();
 			int my = input.getMouseY();
-			LabeledButton[] buttons = Capstone.getInstance().getMoveButtons();
+			LabeledButton[] buttons = SuperDungeoneer.getInstance().getMoveButtons();
 			LabeledButton clicked = getClicked(mx, my, buttons);
 
 			if (clicked == null) { return; }
@@ -59,7 +59,7 @@ public class BattleCommandDelegate implements ICommandDelegate {
 		}
 
 		if (moveSlot > 0 && moveSlot <= this.actor.getMoveCount() && !battle.isOver()) {
-			Capstone.getInstance().setMoveSlot(moveSlot);
+			SuperDungeoneer.getInstance().setMoveSlot(moveSlot);
 			this.actor = this.battle.getActiveActor();
 		}
 	}

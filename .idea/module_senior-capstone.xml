@@ -55,24 +55,18 @@
     </dirset>
   </path>
   
-  <path id="senior-capstone.module.test.sourcepath">
-    <dirset dir="${module.senior-capstone.basedir}/../../Senior-Capstone">
-      <include name="test"/>
-    </dirset>
-  </path>
-  
   
   <target name="compile.module.senior-capstone" depends="compile.module.senior-capstone.production,compile.module.senior-capstone.tests" description="Compile module Senior-Capstone"/>
   
-  <target name="compile.module.senior-capstone.production" depends="register.custom.compilers" description="Compile module Senior-Capstone; production classes">
+  <target name="compile.module.senior-capstone.production" description="Compile module Senior-Capstone; production classes">
     <mkdir dir="${senior-capstone.output.dir}"/>
-    <javac2 destdir="${senior-capstone.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.senior-capstone}/javac">
+    <javac destdir="${senior-capstone.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.senior-capstone}/javac">
       <compilerarg line="${compiler.args.senior-capstone}"/>
       <bootclasspath refid="senior-capstone.module.bootclasspath"/>
       <classpath refid="senior-capstone.module.production.classpath"/>
       <src refid="senior-capstone.module.sourcepath"/>
       <patternset refid="excluded.from.compilation.senior-capstone"/>
-    </javac2>
+    </javac>
     
     <copy todir="${senior-capstone.output.dir}">
       <fileset dir="${module.senior-capstone.basedir}/../src">
@@ -86,23 +80,7 @@
     </copy>
   </target>
   
-  <target name="compile.module.senior-capstone.tests" depends="register.custom.compilers,compile.module.senior-capstone.production" description="compile module Senior-Capstone; test classes" unless="skip.tests">
-    <mkdir dir="${senior-capstone.testoutput.dir}"/>
-    <javac2 destdir="${senior-capstone.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.senior-capstone}/javac">
-      <compilerarg line="${compiler.args.senior-capstone}"/>
-      <bootclasspath refid="senior-capstone.module.bootclasspath"/>
-      <classpath refid="senior-capstone.module.classpath"/>
-      <src refid="senior-capstone.module.test.sourcepath"/>
-      <patternset refid="excluded.from.compilation.senior-capstone"/>
-    </javac2>
-    
-    <copy todir="${senior-capstone.testoutput.dir}">
-      <fileset dir="${module.senior-capstone.basedir}/../test">
-        <patternset refid="compiler.resources"/>
-        <type type="file"/>
-      </fileset>
-    </copy>
-  </target>
+  <target name="compile.module.senior-capstone.tests" depends="compile.module.senior-capstone.production" description="compile module Senior-Capstone; test classes" unless="skip.tests"/>
   
   <target name="clean.module.senior-capstone" description="cleanup module">
     <delete dir="${senior-capstone.output.dir}"/>

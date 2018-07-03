@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="Capstone">
-    <output-path>$PROJECT_DIR$/bin/artifacts/Capstone</output-path>
-    <root id="archive" name="Capstone.jar">
+  <artifact type="jar" name="SuperDungeoneer">
+    <output-path>$PROJECT_DIR$/bin/artifacts/SuperDungeoneer</output-path>
+    <root id="archive" name="SuperDungeoneer.jar">
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/manifests/capstone/META-INF/MANIFEST.MF" />
       </element>

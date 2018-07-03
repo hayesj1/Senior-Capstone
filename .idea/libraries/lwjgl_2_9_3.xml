@@ -1,7 +1,6 @@
 <component name="libraryTable">
   <library name="lwjgl-2.9.3">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/lwjgl_test.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/lwjgl_util_applet.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/lwjgl_util.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/lwjgl-debug.jar!/" />

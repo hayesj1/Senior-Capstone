@@ -14,8 +14,8 @@ import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.SoundStore;
 
-public class Capstone implements Game {
-	private static Capstone instance = new Capstone("Capstone");
+public class SuperDungeoneer implements Game {
+	private static SuperDungeoneer instance = null;
 	private static final int COMPONENT_SPACING = 5;
 
 	public static final Color SELECTION_COLOR = Color.orange;
@@ -143,7 +143,7 @@ public class Capstone implements Game {
 	 *
 	 * @param title The title for the game
 	 */
-	public Capstone(String title) {
+	private SuperDungeoneer(String title) {
 		this.title = title;
 	}
 
@@ -357,7 +357,7 @@ public class Capstone implements Game {
 		helpText = new TextHistory(container, 0, 0, helpPanel.getWidth(), helpPanel.getHeight() / 2, Color.lightGray);
 		helpText.setTextColor(Color.darkGray);
 
-		helpText.addLine("Use the mouse to select a target after\nselecting a move!");
+		helpText.addLine("Use the mouse to select a target \nafter selecting a move!");
 		helpText.addLine("");
 		helpText.addLine("1-6 -- Select Move (or use the mouse)");
 		helpText.addLine("Esc -- Quit Game");
@@ -428,7 +428,7 @@ public class Capstone implements Game {
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
 		// ##### TESTING CODE ##### //
-		//g.drawString("Welcome to our Capstone!",980,20);
+		//g.drawString("Welcome to our SuperDungeoneer!",980,20);
 		//g.drawImage(im, 10+input.getxOff(), 120+input.getyOff());
 		//g.drawAnimation(anim, 10, 30);
 
@@ -558,7 +558,10 @@ public class Capstone implements Game {
 		return this.title;
 	}
 
-	public static Capstone getInstance() {
+	public static SuperDungeoneer getInstance() {
+		if (instance == null) {
+			instance = new SuperDungeoneer("Super Dungeoneer");
+		}
 		return instance;
 	}
 

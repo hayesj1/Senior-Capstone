@@ -1,6 +1,6 @@
 package game.character;
 
-import game.Capstone;
+import game.SuperDungeoneer;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
 
@@ -69,7 +69,7 @@ public class PlayableActor extends BattlableActor implements ILevelable {
 			int moveSlot = (this.getMoveCount() < IBattlable.MAX_MOVES) ? this.getMoveCount()+1 : 0;
 			Move move = this.species.getLearnableMoves().moveLearnedAt(this.level);
 			this.learnNewMove(move, moveSlot);
-			Capstone.getInstance().getMoveButtons()[moveSlot].setText(move);
+			SuperDungeoneer.getInstance().getMoveButtons()[moveSlot].setText(move);
 		}
 		return true;
 	}

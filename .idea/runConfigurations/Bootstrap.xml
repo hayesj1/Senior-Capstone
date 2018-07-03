@@ -2,8 +2,8 @@
   <configuration default="false" name="Bootstrap" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="game.Bootstrap" />
     <module name="Senior-Capstone" />
-    <option name="VM_PARAMETERS" value="-Djava.library.path=$PROJECT_DIR$/../../Global_Libs/lwjgl/lwjgl-2.9.3/native/windows" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/bin/production/Senior-Capstone" />
+    <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;libs/natives&quot;" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="game.tests.*" />

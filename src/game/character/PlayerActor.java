@@ -55,7 +55,7 @@ public class PlayerActor extends PlayableActor {
 	public void addToTeam(ICapturable captured) {
 		if (nextFreeSlot >= MAX_PARTY_SIZE) {
 			//TODO: Ask user for swapee
-			//Capstone.setPendingPartyMember()
+			//SuperDungeoneer.setPendingPartyMember()
 		} else {
 			party[nextFreeSlot++] = captured.convertToPlayable();
 		}
@@ -70,7 +70,7 @@ public class PlayerActor extends PlayableActor {
 	public void addToTeam(PlayableActor pendingPartyMember) {
 		if (nextFreeSlot >= MAX_PARTY_SIZE) {
 			//TODO: Ask user for swapee
-			//Capstone.setPendingPartyMember()
+			//SuperDungeoneer.setPendingPartyMember()
 		} else {
 			party[nextFreeSlot++] = pendingPartyMember;
 		}

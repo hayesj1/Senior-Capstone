@@ -1,6 +1,6 @@
 package game.battle;
 
-import game.Capstone;
+import game.SuperDungeoneer;
 import game.character.CapturableActor;
 import game.character.IBattlable;
 import game.character.PlayableActor;
@@ -135,9 +135,9 @@ public class Battle {
 		// Do player moves
 		Turn turn = players[activeActor].planMove(moveSlot, foes);
 		if (turn.getTarget() == null) {
-			Capstone.getInstance().selectTarget(foes);
+			SuperDungeoneer.getInstance().selectTarget(foes);
 			try {
-				int targetSlot = Capstone.getInstance().getSelectedTargetSlot();
+				int targetSlot = SuperDungeoneer.getInstance().getSelectedTargetSlot();
 				turn.setTarget(foes[targetSlot - 1]);
 			} catch (IllegalStateException ise) {
 				return;
@@ -161,7 +161,7 @@ public class Battle {
 			activeActor = 0;
 
 			if (ended) {
-				Capstone.getInstance().addFeedback(playerWon ? "You WIN!" : "You LOSE!");
+				SuperDungeoneer.getInstance().addFeedback(playerWon ? "You WIN!" : "You LOSE!");
 				return;
 			}
 

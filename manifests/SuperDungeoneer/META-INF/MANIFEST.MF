@@ -4,7 +4,7 @@ Class-Path: libs/lwjgl.jar libs/slick.jar libs/AppleJavaE
  xtensions.jar libs/asm-debug-all.jar libs/jinput.jar lib
  s/jogg-0.0.7.jar libs/jorbis-0.0.15.jar libs/laf-plugin-
  7.2.1.jar libs/laf-widget-7.2.1.jar libs/log4j-api-2.0-b
- eta9.jar libs/lwjgl-debug.jar libs/lwjgl_test.jar libs/l
- wjgl_util.jar libs/lwjgl_util_applet.jar libs/lzma.jar l
- ibs/substance-7.2.1.jar libs/trident-7.2.1.jar
+ eta9.jar libs/lwjgl-debug.jar libs/lwjgl_util.jar libs/l
+ wjgl_util_applet.jar libs/lzma.jar libs/substance-7.2.1.
+ jar
 

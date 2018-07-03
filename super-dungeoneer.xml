@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="senior-capstone" default="all">
-
-
-  <property file="senior-capstone.properties"/>
+  
+  <property file="super-dungeoneer.properties"/>
   <!-- Uncomment the following property if no tests compilation is needed -->
   <property name="skip.tests" value="true"/>
 
   <!-- Compiler options -->
-
   <property name="compiler.debug" value="on"/>
   <property name="compiler.generate.no.warnings" value="off"/>
   <property name="compiler.args" value=""/>
@@ -50,9 +48,8 @@
     <exclude name="**/?*.clj"/>
     <exclude name="**/?*.aj"/>
   </patternset>
-
+  
   <!-- JDK definitions -->
-
   <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
   <path id="jdk.classpath.1.8">
     <fileset dir="${jdk.home.1.8}">
@@ -79,21 +76,14 @@
       <include name="jre/lib/plugin.jar"/>
       <include name="jre/lib/resources.jar"/>
       <include name="jre/lib/rt.jar"/>
-      <include name="lib/ant-javafx.jar"/>
-      <include name="lib/dt.jar"/>
-      <include name="lib/javafx-mx.jar"/>
-      <include name="lib/jconsole.jar"/>
-      <include name="lib/packager.jar"/>
-      <include name="lib/sa-jdi.jar"/>
-      <include name="lib/tools.jar"/>
     </fileset>
   </path>
-
+  
   <property name="project.jdk.home" value="${jdk.home.1.8}"/>
   <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
   <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
-
-
+  
+  
   <!-- Project Libraries -->
   <path id="library.lwjgl-2.9.3.classpath">
     <pathelement location="${basedir}/libs/lwjgl-debug.jar"/>
@@ -102,84 +92,80 @@
     <pathelement location="${basedir}/libs/lwjgl_util.jar"/>
     <pathelement location="${basedir}/libs/lwjgl_util_applet.jar"/>
   </path>
-
+  
   <path id="library.slick2d.classpath">
     <pathelement location="${basedir}/libs/jogg-0.0.7.jar"/>
     <pathelement location="${basedir}/libs/jorbis-0.0.15.jar"/>
     <pathelement location="${basedir}/libs/slick.jar"/>
   </path>
-  <!-- Register Custom Compiler Taskdefs -->
-  <property name="javac2.home" value="${idea.home}/lib"/>
-  <path id="javac2.classpath">
-    <fileset dir="${javac2.home}">
-      <include name="javac2.jar"/>
-      <include name="jdom.jar"/>
-      <include name="asm-all*.jar"/>
-      <include name="jgoodies-forms.jar"/>
+  
+  
+  <!-- Global Libraries -->
+  <path id="library.lwjgl-2.9.3.classpath">
+    <fileset dir="C:/Users/hayesj3/Documents/Global_Libs/lwjgl/lwjgl-2.9.3/jar">
+      <patternset refid="library.patterns"/>
     </fileset>
   </path>
-  <target name="register.custom.compilers">
-    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
-    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
-  </target>
-
+  
+  <path id="library.slick2d.classpath">
+    <pathelement location="C:/Users/hayesj3/Documents/Global_Libs/Slick2D/lib/jinput.jar"/>
+    <pathelement location="C:/Users/hayesj3/Documents/Global_Libs/Slick2D/lib/slick.jar"/>
+  </path>
+  
   <!-- Modules -->
-
   <import file="${basedir}/.idea/module_senior-capstone.xml"/>
-
+  
   <target name="init" description="Build initialization">
     <!-- Perform any build initialization in this target -->
   </target>
-
+  
   <target name="clean" depends="clean.module.senior-capstone" description="cleanup all"/>
-
+  
   <target name="build.modules" depends="init, clean, compile.module.senior-capstone" description="build all modules"/>
-
+  
   <target name="init.artifacts">
     <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
-    <property name="artifact.output.capstone" value="${basedir}/bin/artifacts/Capstone"/>
+    <property name="artifact.output.superdungeoneer" value="${basedir}/bin/artifacts/SuperDungeoneer"/>
     <mkdir dir="${artifacts.temp.dir}"/>
-    <property name="temp.jar.path.Capstone.jar" value="${artifacts.temp.dir}/Capstone.jar"/>
+    <property name="temp.jar.path.SuperDungeoneer.jar" value="${artifacts.temp.dir}/Super-Dungeoneer.jar"/>
   </target>
-
-  <target name="artifact.capstone" depends="init.artifacts, compile.module.senior-capstone" description="Build &#39;Capstone&#39; artifact">
-    <property name="artifact.temp.output.capstone" value="${artifacts.temp.dir}/Capstone"/>
-    <property name="artifact.temp.output.capstone.assets" value="${artifact.temp.output.capstone}/assets"/>
-    <property name="artifact.temp.output.capstone.libs" value="${artifact.temp.output.capstone}/libs"/>
-    <property name="artifact.temp.output.capstone.libs.natives" value="${artifact.temp.output.capstone.libs}/natives"/>
-
+  
+  <target name="artifact.superdungeoneer" depends="init.artifacts, build.modules" description="Build &#39;SuperDungeoneer&#39; artifact">
+    <property name="artifact.temp.output.superdungeoneer" value="${artifacts.temp.dir}/SuperDungeoneer"/>
+    <property name="artifact.temp.output.superdungeoneer.assets" value="${artifact.temp.output.superdungeoneer}/assets"/>
+    <property name="artifact.temp.output.superdungeoneer.libs" value="${artifact.temp.output.superdungeoneer}/libs"/>
+    
+    <mkdir dir="${artifact.temp.output.superdungeoneer}"/>
+    <mkdir dir="${artifact.temp.output.superdungeoneer.assets}"/>
+    <mkdir dir="${artifact.temp.output.superdungeoneer.libs}"/>
+  
     <property name="assets.dir" value="${basedir}/resources/assets"/>
-    <property name="library.dir" value="${basedir}/libs/"/>
-    <property name="library.natives.dir" value="${library.dir}/natives"/>
-
-    <mkdir dir="${artifact.temp.output.capstone}"/>
-    <mkdir dir="${artifact.temp.output.capstone.assets}"/>
-    <mkdir dir="${artifact.temp.output.capstone.libs}"/>
-    <!--<mkdir dir="${artifact.temp.output.capstone.libs.natives}"/>-->
-
-    <copy todir="${artifact.temp.output.capstone.assets}">
+    <property name="library.dir" value="${basedir}/libs"/>
+    <property name="bootstraps.dir" value="${basedir}/resources/bootstraps"/>
+    
+    <copy todir="${artifact.temp.output.superdungeoneer.assets}">
       <fileset dir="${assets.dir}"/>
     </copy>
-    <copy todir="${artifact.temp.output.capstone.libs}">
+    <copy todir="${artifact.temp.output.superdungeoneer.libs}">
       <fileset dir="${library.dir}"/>
     </copy>
-    <!--<copy todir="${artifact.temp.output.capstone.libs.natives}">-->
-    <!--<fileset dir="${library.natives.dir}"/>-->
-    <!--</copy>-->
-
-    <jar destfile="${temp.jar.path.Capstone.jar}" duplicate="preserve" filesetmanifest="merge">
-      <zipfileset file="${basedir}/manifests/capstone/META-INF/MANIFEST.MF" prefix="META-INF"/>
+    <copy todir="${artifact.temp.output.superdungeoneer}">
+          <fileset dir="${bootstraps.dir}"/>
+    </copy>
+    
+    <jar destfile="${temp.jar.path.SuperDungeoneer.jar}" duplicate="preserve" filesetmanifest="merge">
+      <zipfileset file="${basedir}/manifests/SuperDungeoneer/META-INF/MANIFEST.MF" prefix="META-INF"/>
       <zipfileset dir="${senior-capstone.output.dir}"/>
     </jar>
-    <copy file="${temp.jar.path.Capstone.jar}" tofile="${artifact.temp.output.capstone}/Capstone.jar"/>
+    <copy file="${temp.jar.path.SuperDungeoneer.jar}" tofile="${artifact.temp.output.superdungeoneer}/Super-Dungeoneer.jar"/>
   </target>
-
-  <target name="build.all.artifacts" depends="artifact.capstone" description="Build all artifacts">
-    <mkdir dir="${artifact.output.capstone}"/>
-    <copy todir="${artifact.output.capstone}">
-      <fileset dir="${artifact.temp.output.capstone}"/>
+  
+  <target name="build.all.artifacts" depends="artifact.superdungeoneer" description="Build all artifacts">
+    <mkdir dir="${artifact.output.superdungeoneer}"/>
+    <copy todir="${artifact.output.superdungeoneer}">
+      <fileset dir="${artifact.temp.output.superdungeoneer}"/>
     </copy>
-
+    
     <!-- Delete temporary files -->
     <delete dir="${artifacts.temp.dir}"/>
   </target>
@@ -188,8 +174,8 @@
     <property name="archive.output" value="${basedir}/bin/releases/"/>
     <mkdir dir="${archive.output}"/>
     
-    <zip destfile="${archive.output}/Capstone.zip" whenempty="fail" createunicodeextrafields="always" encoding="utf8">
-      <zipfileset dir="${artifact.output.capstone}" prefix="Capstone"/>
+    <zip destfile="${archive.output}/Super-Dungeoneer.zip" whenempty="fail" createunicodeextrafields="always" encoding="utf8">
+      <zipfileset dir="${artifact.output.superdungeoneer}" prefix="Super-Dungeoneer"/>
     </zip>
   </target>
 
