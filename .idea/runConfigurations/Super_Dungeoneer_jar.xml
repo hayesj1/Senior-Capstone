@@ -27,7 +27,6 @@
       </pattern>
     </extension>
     <option name="JAR_PATH" value="$PROJECT_DIR$/bin/artifacts/SuperDungeoneer/Super-Dungeoneer.jar" />
-    <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;libs/natives&quot;" />
     <option name="WORKING_DIRECTORY" value=".\bin\artifacts\SuperDungeoneer" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />

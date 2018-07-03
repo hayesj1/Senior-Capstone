@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class Bootstrap {
 	public static void main(String[] args) {
-		System.setProperty("java.library.path", new File("libs/natives/").getAbsolutePath()+";"+System.getProperty("java.library.path"));
+		System.setProperty("net.java.games.input.librarypath", new File("libs/natives").getAbsolutePath());
 		System.setProperty("org.lwjgl.librarypath", new File("libs/natives").getAbsolutePath());
 
 		SuperDungeoneer game = SuperDungeoneer.getInstance();

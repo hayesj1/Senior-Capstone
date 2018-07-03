@@ -141,16 +141,12 @@
   
     <property name="assets.dir" value="${basedir}/resources/assets"/>
     <property name="library.dir" value="${basedir}/libs"/>
-    <property name="bootstraps.dir" value="${basedir}/resources/bootstraps"/>
     
     <copy todir="${artifact.temp.output.superdungeoneer.assets}">
       <fileset dir="${assets.dir}"/>
     </copy>
     <copy todir="${artifact.temp.output.superdungeoneer.libs}">
       <fileset dir="${library.dir}"/>
-    </copy>
-    <copy todir="${artifact.temp.output.superdungeoneer}">
-          <fileset dir="${bootstraps.dir}"/>
     </copy>
     
     <jar destfile="${temp.jar.path.SuperDungeoneer.jar}" duplicate="preserve" filesetmanifest="merge">

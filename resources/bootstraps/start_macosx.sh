@@ -1,1 +1,0 @@
-java -Djava.library.path="libs/natives" -jar Super-Dungeoneer.jar
