@@ -7,13 +7,13 @@ import game.character.moves.MoveSet;
 import game.gui.ButtonGrid;
 import game.gui.LabeledButton;
 import game.gui.Panel;
+import game.gui.TextHistory;
 import game.input.BattleCommandDelegate;
 import game.input.DemoInputHandler;
 import org.newdawn.slick.*;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.geom.RoundedRectangle;
-import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.SoundStore;
 
@@ -98,7 +98,7 @@ public class Capstone implements Game {
 	private Move[] playerMoves;
 	private Move[] monsterMoves;
 	private Species playerSpecies;
-	private Species monsterSpecies;
+	private Species orcSpecies;
 	private Move jab;
 	private Move comboPunch;
 	private Move slash;
@@ -113,11 +113,11 @@ public class Capstone implements Game {
 	private Move killerStab;
 	private Move fireFist;
 
-	private Player player;
-	private Monster mon1;
-	private Monster mon2;
-	private Monster mon3;
-	private PlayableCharacter[] actors;
+	private PlayerActor player;
+	private PlayableActor mon1;
+	private CapturableActor mon2;
+	private CapturableActor mon3;
+	private BattlableActor[] actors;
 
 	private Battle demoBattle;
 	private BattleCommandDelegate battleCommandDelegate;
@@ -128,12 +128,15 @@ public class Capstone implements Game {
 	private ButtonGrid moveGrid;
 	private LabeledButton[] targetSelectorButtons;
 	private ButtonGrid targetSelectionGrid;
-	private TextField feedbackText;
+	private TextHistory feedbackText;
 
 	private boolean needsTarget = false;
 	private boolean selectedTarget = false;
 	private int targetSlot = -1;
 	private int moveSlot = -1;
+
+	private Panel helpPanel;
+	private TextHistory helpText;
 
 	/**
 	 * Create a new basic game
@@ -163,13 +166,12 @@ public class Capstone implements Game {
 		initInput(container);
 		initMoves(container);
 		initSpecies(container);
-		initPlayer(container);
 		initDungeon(container);
 		initGUI(container);
 		initSound(container);
 
 		// ##### DEMO CODE ##### //
-		demoBattle.start(new IBattlable[] { player, mon1 }, new IBattlable[] { mon2, mon3 });
+		demoBattle.start(new PlayableActor[] { player, mon1 }, new CapturableActor[] { mon2, mon3 });
 		battleCommandDelegate.init(demoBattle);
 	}
 
@@ -203,7 +205,7 @@ public class Capstone implements Game {
 		// ##### PRODUCTION CODE ##### //
 
 		// ##### DEMO CODE ##### //
-		jab = new Move("Jab", "", 2,100, 35);
+		jab = new Move("Jab", "", 2,90, 35);
 		comboPunch = new Move("Combo Punch", "", 2,75, 15);
 		slash = new Move("Slash", "", 3,90, 16);
 		crunch = new Move("Crunch", "", 5,80, 16);
@@ -242,14 +244,14 @@ public class Capstone implements Game {
 		initSprites(container);
 
 		// ##### TESTING CODE ##### //
-		testSpecies = new Species("Generic Monster", testMoveSet, orcSheet);
+		//testSpecies = new Species("Generic Monster", testMoveSet, orcSheet);
 
 		// ##### PRODUCTION CODE ##### //
 
 
 		// ##### DEMO CODE ##### //
 		playerSpecies = new Species("Human", playerMoveSet, orcSheet);
-		monsterSpecies = new Species("???", monsterMoveSet, orcSheet); // Josh please replace ??? with a good species name
+		orcSpecies = new Species("Orc", monsterMoveSet, orcSheet);
 	}
 
 	private void initSprites(GameContainer container) {
@@ -260,41 +262,58 @@ public class Capstone implements Game {
 		}
 	}
 
-	private void initPlayer(GameContainer container) {
-		// ##### TESTING CODE ##### //
-		//player = new Player(testSpecies, new Stats(30, 5, 5, 4), testMoves, "Player1");
-		mon1 = new Monster(testSpecies, new Stats(20, 4, 6, 3), testMoves); // Josh please fix these stats or agree with them and remove this comment
-
-		// ##### PRODUCTION CODE ##### //
-		Move[] playerStartMoves = new Move[] { playerMoves[0] };
-		Stats playerStats = new Stats(30, 5, 5, 4); // Josh please fix these values or agree with them and remove this comment
-		player = new Player(playerSpecies, playerStats, playerStartMoves, "Player1");
-
-		// ##### DEMO CODE ##### //
-		player.addToTeam(mon1);
-	}
-
 	private void initDungeon(GameContainer container) {
 		initMonsters();
+		initPlayer(container);
 		initBoss();
 
-		actors = new PlayableCharacter[] { player, mon1, mon2, mon3 };
+		actors = new BattlableActor[] { player, mon1, mon2, mon3 };
 		demoBattle = new Battle(battleCommandDelegate);
 	}
 
 	private void initMonsters() {
-		mon2 = new Monster(testSpecies, new Stats(25, 3, 4, 2), testMoves);
-		mon3 = new Monster(testSpecies, new Stats(15, 5, 5, 5), testMoves);
+		// ##### TESTING CODE ##### //
+		//mon2 = new CapturableActor(testSpecies, new Stats(25, 3, 4, 2), testMoves);
+		//mon3 = new CapturableActor(testSpecies, new Stats(15, 5, 5, 5), testMoves);
+
+		// ##### PRODUCTION CODE ##### //
+
+
+		// ##### DEMO CODE ##### //
+		Move[] monsterStartMoves = new Move[] { monsterMoves[0] };
+		mon2 = new CapturableActor(orcSpecies, new Stats(25, 3, 4, 2), monsterStartMoves);
+		mon3 = new CapturableActor(orcSpecies, new Stats(15, 5, 5, 5), monsterStartMoves);
 	}
+
+	private void initPlayer(GameContainer container) {
+		// ##### TESTING CODE ##### //
+		//player = new Player(testSpecies, new Stats(30, 5, 5, 4), testMoves, "Player1");
+		//mon1 = new PlayableActor(testSpecies, new Stats(20, 4, 6, 3), testMoves);
+
+		// ##### PRODUCTION CODE ##### //
+		Move[] playerStartMoves = new Move[] { playerMoves[0] };
+		Stats playerStats = new Stats(30, 5, 5, 4); // Josh please fix these values or agree with them and remove this comment
+		player = new PlayerActor(playerSpecies, "You", playerStartMoves, playerStats);
+
+		// ##### DEMO CODE ##### //
+		Move[] monsterStartMoves = new Move[] { monsterMoves[0] };
+		mon1 = new PlayableActor(orcSpecies, "Olaf", new Stats(20, 4, 6, 3), monsterStartMoves); // Josh please fix these stats or agree with them and remove this comment
+		player.addToTeam(mon1);
+	}
+
 
 	private void initBoss() {
 
 	}
 
 	private void initGUI(GameContainer container) {
-		int bcpX = 0, bcpW = container.getWidth(), bcpY = (container.getHeight() / 5) * 4, bcpH = container.getHeight() / 5;
+		int bcpX = 0, bcpW = container.getWidth(), bcpY = container.getHeight() - (container.getHeight() / 5), bcpH = container.getHeight() / 5;
 		battleControlPanel = new Panel(container, bcpX, bcpY, bcpW, bcpH);
 		battleControlPanel.setBackgroundColor(Color.lightGray);
+
+		int hpX = container.getWidth() - (container.getWidth() / 5), hpW = (container.getWidth() / 5), hpY = 0, hpH = battleControlPanel.getY();
+		helpPanel = new Panel(container, hpX, hpY, hpW, hpH);
+		helpPanel.setBackgroundColor(Color.lightGray);
 
 		moveButtons = new LabeledButton[IBattlable.MAX_MOVES];
 		for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
@@ -306,7 +325,7 @@ public class Capstone implements Game {
 
 		targetSelectorButtons = new LabeledButton[Battle.MAX_TEAM_SIZE];
 		int maxWidth = 0;
-		for (PlayableCharacter actor : actors) {
+		for (BattlableActor actor : actors) {
 			int width = container.getDefaultFont().getWidth("___" + actor.getName());
 			if (width > maxWidth) {
 				maxWidth = width;
@@ -319,18 +338,24 @@ public class Capstone implements Game {
 		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, BUTTON_SPACING, targetSelectorButtons);
 		targetSelectionGrid.setBackgroundColor(Color.transparent);
 
-		feedbackText = new TextField(container, container.getDefaultFont(), 0, 0, battleControlPanel.getWidth(), container.getDefaultFont().getLineHeight());
+		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeight() - 5, Color.lightGray);
 		feedbackText.setTextColor(Color.darkGray);
-		feedbackText.setBackgroundColor(Color.white);
-		feedbackText.setBorderColor(Color.darkGray);
-		feedbackText.setConsumeEvents(false);
-		feedbackText.setCursorVisible(false);
-		feedbackText.setAcceptingInput(false);
-		feedbackText.setText("Battle it out!");
+		feedbackText.addLine("Battle it out!");
 
 		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidth(), 0);
 		battleControlPanel.addChild(targetSelectionGrid, 0, 0);
 		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeight() - feedbackText.getHeight());
+
+		helpText = new TextHistory(container, 0, 0, helpPanel.getWidth(), helpPanel.getHeight() / 2, Color.lightGray);
+		helpText.setTextColor(Color.darkGray);
+
+		helpText.addLine("Use the mouse to select a target after\nselecting a move!");
+		helpText.addLine("");
+		helpText.addLine("1-6 -- Select Move (or use the mouse)");
+		helpText.addLine("Esc -- Quit Game");
+
+		helpPanel.addChild(helpText, 0, 0);
+
 	}
 
 	private void initSound(GameContainer container) {
@@ -364,17 +389,21 @@ public class Capstone implements Game {
 		// ##### PRODUCTION CODE ##### //
 
 		// ##### DEMO CODE ##### //
-		if (demoBattle.isOver()) {
-			handler.removeCommandDelegate(battleCommandDelegate);
-		} else {
-			demoBattle.advanceTurn(moveSlot);
+		if (demoBattle.isStarted()) {
+			if (demoBattle.isOver()) {
+				handler.removeCommandDelegate(battleCommandDelegate);
+			} else {
+				demoBattle.advanceTurn(moveSlot);
 
-			IBattlable activeActor = demoBattle.getActiveActor();
-			for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
-				boolean hasMoreMoves = i < activeActor.getMoveCount();
-				Object textSrc = hasMoreMoves ? activeActor.getLearnedMoves()[i] : "";
-				moveButtons[i].setText(textSrc);
-				moveButtons[i].setAcceptingInput(hasMoreMoves);
+				if (!demoBattle.isOver()) {
+					IBattlable activeActor = demoBattle.getActiveActor();
+					for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
+						boolean hasMoreMoves = i < activeActor.getMoveCount();
+						Object textSrc = hasMoreMoves ? activeActor.getLearnedMoves()[i] : "";
+						moveButtons[i].setText(textSrc);
+						moveButtons[i].setAcceptingInput(hasMoreMoves);
+					}
+				}
 			}
 		}
 	}
@@ -402,15 +431,6 @@ public class Capstone implements Game {
 		g.setAntiAlias(true);
 		g.setLineWidth(4.0f);
 
-		if (demoBattle.isStarted()) {
-			if (demoBattle.isOver()) {
-				feedbackText.setText(demoBattle.playerVictory() ? "You WIN!" : "You LOSE!");
-			} else {
-				//g.getFont().drawString(240, 40, "Keep on battling!", Color.black);
-			}
-		}
-
-
 		drawHUD(container, g);
 		drawBattle(container, g);
 		Animation deathAnim = mon2.getDeathAnimation();
@@ -424,6 +444,8 @@ public class Capstone implements Game {
 	}
 
 	private void drawHUD(GameContainer container, Graphics g) throws SlickException {
+		helpPanel.render(container, g);
+
 		if (demoBattle.isStarted()) {
 			if (demoBattle.isOver()) {
 				battleControlPanel.setEnabled(false);
@@ -438,7 +460,7 @@ public class Capstone implements Game {
 		if (!demoBattle.isOver()) {
 			g.setColor(Color.lightGray);
 			int x = 20, y = 20;
-			for (PlayableCharacter actor : actors) {
+			for (BattlableActor actor : actors) {
 				float w = ( ( actor.HP() * 1.0f ) / actor.getStats().maxHP() );
 				//g.setColor(Color.lightGray);
 				g.fillRoundRect(x - 2, y - 2, 204, 24, 8);
@@ -449,7 +471,7 @@ public class Capstone implements Game {
 			IBattlable active = demoBattle.getActiveActor();
 			x = 240;
 			y = 60;
-			for (PlayableCharacter actor : actors) {
+			for (BattlableActor actor : actors) {
 				Color color = ( actor == active ) ? SELECTION_COLOR : Color.lightGray;
 				g.getFont().drawString(x, y, actor.getName() + " HP: " + actor.HP(), color);
 				y += 20;
@@ -562,7 +584,7 @@ public class Capstone implements Game {
 		this.moveSlot = moveSlot;
 	}
 
-	public void setFeedbackText(String text) {
-		this.feedbackText.setText(text);
+	public void addFeedback(String text) {
+		this.feedbackText.addLine(text);
 	}
 }

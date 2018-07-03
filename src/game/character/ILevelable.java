@@ -19,17 +19,6 @@ public interface ILevelable extends IBattlable {
 	}
 
 	/**
-	 * How much EXP is rewarding for defeating a monster of level <code>theirLevel</code> at <code>yourLevel</code>
-	 * @param yourLevel your level when the foe is defeated
-	 * @param theirLevel the defeated foe's level
-	 * @return the EXP you'll gain
-	 */
-	static int expForDefeating(int yourLevel, int theirLevel) {
-		//TODO: replace with permanent formula
-		return (int) Math.ceil(Math.sqrt(theirLevel + 5));
-	}
-
-	/**
 	 * Attempt to level up
 	 * @return True if levelUp was successful, false otherwise
 	 */
@@ -44,5 +33,4 @@ public interface ILevelable extends IBattlable {
 	Move learnNewMove(Move newMove, int slot);
 
 	void addEXP(int exp);
-	int getLevel();
 }

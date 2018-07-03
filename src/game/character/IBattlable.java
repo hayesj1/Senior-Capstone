@@ -15,43 +15,15 @@ public interface IBattlable extends INamed {
 	int MAX_MOVES = 6;
 
 	/**
-	 * @return True if this character is capturable, false otherwise
+	 * How much EXP is rewarding for defeating a monster of level <code>theirLevel</code> at <code>yourLevel</code>
+	 * @param yourLevel your level when the foe is defeated
+	 * @param theirLevel the defeated foe's level
+	 * @return the EXP you'll gain
 	 */
-	boolean isCapturable();
-
-	/**
-	 * @return True if this IBattlable was captured in the current battle; false otherwise
-	 */
-	boolean wasJustCaptured();
-
-	/** Flags this <code>IBattlable</code> as captured in the current battle */
-	void justCaptured();
-
-	/** Flags this <code>IBattlable</code> as captured in a previous battle */
-	void clearJustCaptured();
-
-	/**
-	 * Attempt to capture this <code>IBattlable</code>. If successful, <code>capturer</code> claims this <code>IBattlable</code>
-	 * @param capturer the <code>IBattlable</code> attempting to capture this <code>IBattlable</code>
-	 * @return true on success, false if failure or this <code>IBattlable</code> is not capturable
-	 * @see #isCapturable()
-	 */
-	default boolean capture(IBattlable capturer) {
-		if (!isCapturable()) { return false; }
-		int randNum = IBattlable.rand.nextInt(100) + 1;
-		int catchChance = (1 - ( HP() / getStats().maxHP() )) * 100;
-		if (randNum <= catchChance) {
-			this.justCaptured();
-			capturer.addToTeam(this);
-			return true;
-		} else { return false; }
+	static int expForDefeating(int yourLevel, int theirLevel) {
+		//TODO: replace with permanent formula
+		return (int) Math.ceil(Math.sqrt(theirLevel + 5));
 	}
-
-	/**
-	 * Adds <code>captured</code> to this <code>IBattlable</code>'s team(if one exists)
-	 * @param captured the newly captured <code>IBattlable</code>
-	 */
-	void addToTeam(IBattlable captured);
 
 	/**
 	 * This <code>IBattlable</code> will select a move to use on its upcoming turn
@@ -109,6 +81,11 @@ public interface IBattlable extends INamed {
 	}
 
 	/**
+	 * @return True if this IBattlable can't fight for any reason(ex. it's KOed, captued, etc.); false otherwise
+	 */
+	default boolean isIncapacitated() { return isKOed(); }
+
+	/**
 	 * Render KO animation
 	 */
 	void KO();
@@ -120,5 +97,7 @@ public interface IBattlable extends INamed {
 
 	int getMoveCount();
 	Move[] getLearnedMoves();
-	int getMoveSlotByLearnedMoveName(String name);
+	int getMoveSlotByMoveName(String name);
+
+	int getLevel();
 }

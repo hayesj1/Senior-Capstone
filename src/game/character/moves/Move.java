@@ -3,6 +3,8 @@ package game.character.moves;
 import java.util.HashMap;
 
 public class Move implements Comparable<Move> {
+	public static final Move capture = new Move("Capture", "Attempt to capture a foe.", 0,100, 30);
+
 	private static int nextID = 0;
 
 	private int id;
