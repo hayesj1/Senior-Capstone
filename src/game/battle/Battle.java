@@ -158,12 +158,13 @@ public class Battle {
 			}
 
 			executeTurns();
+			activeActor = 0;
+
 			if (ended) {
 				Capstone.getInstance().addFeedback(playerWon ? "You WIN!" : "You LOSE!");
 				return;
 			}
 
-			activeActor = 0;
 			needsAction = true;
 		}
 	}

@@ -4,10 +4,7 @@ import game.battle.Battle;
 import game.character.*;
 import game.character.moves.Move;
 import game.character.moves.MoveSet;
-import game.gui.ButtonGrid;
-import game.gui.LabeledButton;
-import game.gui.Panel;
-import game.gui.TextHistory;
+import game.gui.*;
 import game.input.BattleCommandDelegate;
 import game.input.DemoInputHandler;
 import org.newdawn.slick.*;
@@ -19,7 +16,7 @@ import org.newdawn.slick.openal.SoundStore;
 
 public class Capstone implements Game {
 	private static Capstone instance = new Capstone("Capstone");
-	private static final int BUTTON_SPACING = 5;
+	private static final int COMPONENT_SPACING = 5;
 
 	public static final Color SELECTION_COLOR = Color.orange;
 
@@ -126,8 +123,11 @@ public class Capstone implements Game {
 	private Panel battleControlPanel;
 	private LabeledButton[] moveButtons;
 	private ButtonGrid moveGrid;
+	private Label moveSelectorLabel;
 	private LabeledButton[] targetSelectorButtons;
 	private ButtonGrid targetSelectionGrid;
+	private Label targetSelectorLabel;
+
 	private TextHistory feedbackText;
 
 	private boolean needsTarget = false;
@@ -320,8 +320,11 @@ public class Capstone implements Game {
 			moveButtons[i] = new LabeledButton(playerMoves[i], container, container.getDefaultFont(), null, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
 			moveButtons[i].setTextColor(Color.darkGray);
 		}
-		moveGrid = new ButtonGrid(container, 1, 6, BUTTON_SPACING, moveButtons);
+		moveGrid = new ButtonGrid(container, 1, 6, COMPONENT_SPACING, moveButtons);
 		moveGrid.setBackgroundColor(Color.transparent);
+		String label = "Move Selector";
+		moveSelectorLabel = new Label(label, container, 0, 0, container.getDefaultFont().getWidth("__"+label), moveGrid.getHeight());
+		moveSelectorLabel.setTextColor(Color.darkGray);
 
 		targetSelectorButtons = new LabeledButton[Battle.MAX_TEAM_SIZE];
 		int maxWidth = 0;
@@ -335,15 +338,20 @@ public class Capstone implements Game {
 			targetSelectorButtons[i] = new LabeledButton("", container, container.getDefaultFont(), null, new RoundedRectangle(0, 0, maxWidth+10, container.getDefaultFont().getLineHeight()+10, 8));
 			targetSelectorButtons[i].setTextColor(Color.darkGray);
 		}
-		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, BUTTON_SPACING, targetSelectorButtons);
+		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, COMPONENT_SPACING, targetSelectorButtons);
 		targetSelectionGrid.setBackgroundColor(Color.transparent);
+		label = "Target Selector";
+		targetSelectorLabel = new Label(label, container, 0, 0, container.getDefaultFont().getWidth(label), targetSelectionGrid.getHeight());
+		targetSelectorLabel.setTextColor(Color.darkGray);
 
-		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeight() - 5, Color.lightGray);
+		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeight() - container.getDefaultFont().getLineHeight()-COMPONENT_SPACING, Color.lightGray);
 		feedbackText.setTextColor(Color.darkGray);
 		feedbackText.addLine("Battle it out!");
 
 		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidth(), 0);
+		battleControlPanel.addChild(moveSelectorLabel, battleControlPanel.getWidth()-moveGrid.getWidth()-moveSelectorLabel.getWidth()-COMPONENT_SPACING, 0);
 		battleControlPanel.addChild(targetSelectionGrid, 0, 0);
+		battleControlPanel.addChild(targetSelectorLabel, COMPONENT_SPACING+targetSelectionGrid.getWidth(), 0);
 		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeight() - feedbackText.getHeight());
 
 		helpText = new TextHistory(container, 0, 0, helpPanel.getWidth(), helpPanel.getHeight() / 2, Color.lightGray);
@@ -395,7 +403,7 @@ public class Capstone implements Game {
 			} else {
 				demoBattle.advanceTurn(moveSlot);
 
-				if (!demoBattle.isOver()) {
+				//if (!demoBattle.isOver()) {
 					IBattlable activeActor = demoBattle.getActiveActor();
 					for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
 						boolean hasMoreMoves = i < activeActor.getMoveCount();
@@ -403,7 +411,7 @@ public class Capstone implements Game {
 						moveButtons[i].setText(textSrc);
 						moveButtons[i].setAcceptingInput(hasMoreMoves);
 					}
-				}
+				//}
 			}
 		}
 	}
@@ -459,7 +467,7 @@ public class Capstone implements Game {
 		battleControlPanel.render(container, g);
 		if (!demoBattle.isOver()) {
 			g.setColor(Color.lightGray);
-			int x = 20, y = 20;
+			int x = COMPONENT_SPACING, y = COMPONENT_SPACING;
 			for (BattlableActor actor : actors) {
 				float w = ( ( actor.HP() * 1.0f ) / actor.getStats().maxHP() );
 				//g.setColor(Color.lightGray);
@@ -510,7 +518,7 @@ public class Capstone implements Game {
 			//targetSelectionGrid.setShown(false);
 		} else {
 			//int x = container.getWidth() / 2 - targetSelectionGrid.getWidth();
-			//int y = moveGrid.getY() - targetSelectionGrid.getHeight() - BUTTON_SPACING;
+			//int y = moveGrid.getY() - targetSelectionGrid.getHeight() - COMPONENT_SPACING;
 			//targetSelectionGrid.setLocation(x ,y);
 			targetSelectionGrid.setEnabled(true);
 			targetSelectionGrid.setShown(true);

@@ -46,8 +46,8 @@ public class PlayableActor extends BattlableActor implements ILevelable {
 	@Override
 	public Move learnNewMove(Move newMove, int slot) {
 		if (moveCount == MAX_MOVES) {
-			Move old = learnedMoves[slot];
-			learnedMoves[slot] = newMove;
+			Move old = learnedMoves[slot-1];
+			learnedMoves[slot-1] = newMove;
 			return old;
 		} else {
 			learnedMoves[moveCount++] = newMove;
