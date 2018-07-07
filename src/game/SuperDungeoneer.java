@@ -140,7 +140,7 @@ public class SuperDungeoneer implements Game {
 	private TextHistory helpText;
 
 	private Panel partyPanel;
-	private ActorStatPanel[] partyMemberPanels;
+	private ActorStatPane[] partyMemberPanels;
 
 	/**
 	 * Create a new basic game
@@ -319,9 +319,9 @@ public class SuperDungeoneer implements Game {
 		int nActors = PlayerActor.MAX_PARTY_SIZE+1;
 		int pmpX = 0, pmpW = partyPanel.getWidth() - COMPONENT_SPACING;
 		int pmpY = 0, pmpH = partyPanel.getHeight() / nActors;
-		partyMemberPanels = new ActorStatPanel[nActors];
+		partyMemberPanels = new ActorStatPane[nActors];
 		for (int i = 0; i < nActors; i++) {
-			partyMemberPanels[i] = new ActorStatPanel(container, (i == 0 ? player : player.getParty()[i-1]), pmpX, pmpY, pmpW, pmpH - COMPONENT_SPACING, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+			partyMemberPanels[i] = new ActorStatPane(container, (i == 0 ? player : player.getParty()[i-1]), pmpX, pmpY, pmpW, pmpH - COMPONENT_SPACING, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 			pmpY += pmpH;
 		}
 
@@ -505,7 +505,7 @@ public class SuperDungeoneer implements Game {
 				g.getFont().drawString(foeX, foeY, actors[i].getName() + " HP: " + actors[i].HP(), Color.white);
 				foeY += 15 + g.getFont().getLineHeight();
 			}
-			ActorStatPanel activeMemberPanel = null;
+			ActorStatPane activeMemberPanel = null;
 			for (int i = 0; i < partyMemberPanels.length; i++) {
 				if (active == partyMemberPanels[i].getActor()) {
 					activeMemberPanel = partyMemberPanels[i];

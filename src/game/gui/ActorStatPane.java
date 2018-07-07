@@ -9,7 +9,7 @@ import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.gui.GUIContext;
 
-public class ActorStatPanel extends BaseComponent {
+public class ActorStatPane extends BaseComponent {
 	private CompoundComponent emptyHUD;
 	private CompoundComponent HUD;
 	private BattlableActor actor;
@@ -18,8 +18,8 @@ public class ActorStatPanel extends BaseComponent {
 	private RoundedRectangle hpBar;
 	private RoundedRectangle hpGradientBar;
 
-	public ActorStatPanel(GUIContext container, int x, int y, int width, int height) { this(container, null, x, y, width, height, DrawingUtils.DEFAULT_MARGIN, null, null); }
-	public ActorStatPanel(GUIContext container, BattlableActor actor, int x, int y, int width, int height, int margin, Color foregroundColor, Color backgroundColor) {
+	public ActorStatPane(GUIContext container, int x, int y, int width, int height) { this(container, null, x, y, width, height, DrawingUtils.DEFAULT_MARGIN, null, null); }
+	public ActorStatPane(GUIContext container, BattlableActor actor, int x, int y, int width, int height, int margin, Color foregroundColor, Color backgroundColor) {
 		super(container, x, y, width, height, margin, foregroundColor, backgroundColor);
 
 		this.emptyHUD = new CompoundComponent(container, x+margin, y+margin, width-margin, height-margin);
