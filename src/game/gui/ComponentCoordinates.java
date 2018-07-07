@@ -1,11 +1,9 @@
 package game.gui;
 
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.GUIContext;
 
-public class ComponentCoordinates<T extends AbstractComponent> {
+public class ComponentCoordinates<T extends BaseComponent> {
 	private T comp;
 	private int x;
 	private int y;
@@ -21,13 +19,13 @@ public class ComponentCoordinates<T extends AbstractComponent> {
 
 	}
 
-	public void setLocation(int originX, int originY) {
+	public void offsetLocation(int originX, int originY) {
 		comp.setLocation(x + originX, y + originY);
 	}
 
-	public void render(GUIContext container, Graphics g, int originX, int originY) throws SlickException {
+	public void render(GUIContext container, Graphics g, int originX, int originY) {
 		if (invalid) {
-			setLocation(originX, originY);
+			offsetLocation(originX, originY);
 		}
 
 		comp.render(container, g);
@@ -44,14 +42,14 @@ public class ComponentCoordinates<T extends AbstractComponent> {
 	}
 
 	public void setEnabled(boolean enabled) {
-		if (comp instanceof CapstoneComponent) {
-			((CapstoneComponent) comp).setEnabled(enabled);
+		if (comp instanceof BaseComponent) {
+			((BaseComponent) comp).setEnabled(enabled);
 		}
 	}
 
 	public void setShown(boolean shown) {
-		if (comp instanceof CapstoneComponent) {
-			((CapstoneComponent) comp).setShown(shown);
+		if (comp instanceof BaseComponent) {
+			((BaseComponent) comp).setShown(shown);
 		}
 	}
 

@@ -55,7 +55,7 @@ public class BattleCommandDelegate implements ICommandDelegate {
 			LabeledButton clicked = getClicked(mx, my, buttons);
 
 			if (clicked == null) { return; }
-			moveSlot = this.actor.getMoveSlotByMoveName(clicked.getLabel());
+			moveSlot = this.actor.getMoveSlotByMoveName(clicked.getLabelText());
 		}
 
 		if (moveSlot > 0 && moveSlot <= this.actor.getMoveCount() && !battle.isOver()) {
@@ -75,7 +75,7 @@ public class BattleCommandDelegate implements ICommandDelegate {
 		if (buttons == null) { return null; }
 		LabeledButton clicked = null;
 		for (LabeledButton button : buttons) {
-			if (button.getBounds().contains(mx, my)) {
+			if (button.getShape().contains(mx, my)) {
 				clicked = button;
 				break;
 			}

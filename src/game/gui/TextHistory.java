@@ -1,31 +1,30 @@
 package game.gui;
 
+import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.GUIContext;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class TextHistory extends CapstoneComponent {
-	public static final Color DEFAULT_TEXT_COLOR = Color.black;
+public class TextHistory extends BaseComponent {
 
 	private LinkedList<String> history;
 	private Color textColor;
 
 	protected TextHistory(GUIContext container, int x, int y) {
-		this(container, x, y, 0, 0);
+		this(container, x, y, 0, 0, DrawingUtils.DEFAULT_MARGIN, null);
 	}
-	public TextHistory(GUIContext container, int x, int y, int width, int height) {
-		this(container, x, y, width, height, null);
+	public TextHistory(GUIContext container, int x, int y, int width, int height, int margin, Color textColor) {
+		this(container, x, y, width, height, margin, textColor, null, null);
 	}
-	public TextHistory(GUIContext container, int x, int y, int width, int height, Color backgroundColor) {
-		super(container, x, y, width, height, backgroundColor);
+	public TextHistory(GUIContext container, int x, int y, int width, int height, int margin, Color textColor, Color foregroundColor, Color backgroundColor) {
+		super(container, x, y, width, height, margin, foregroundColor, backgroundColor);
 
 		this.history = new LinkedList<>();
-		this.textColor = DEFAULT_TEXT_COLOR;
+		this.textColor = textColor == null ? DrawingUtils.DEFAULT_TEXT_COLOR : textColor;
 	}
 
 	public void addLine(String line) {
@@ -38,10 +37,9 @@ public class TextHistory extends CapstoneComponent {
 	 *
 	 * @param container the GUIContext
 	 * @param g         the Graphics object to draw on
-	 * @throws SlickException
 	 */
 	@Override
-	public void render(GUIContext container, Graphics g) throws SlickException {
+	public void render(GUIContext container, Graphics g) {
 		if (!this.shown) {
 			return;
 		}
@@ -49,7 +47,7 @@ public class TextHistory extends CapstoneComponent {
 		Color old = g.getColor();
 
 		g.setColor(backgroundColor);
-		g.fillRect(x, y, width, height);
+		g.fillRect(getX(), getY(), getWidth(), getHeight());
 		Font f = g.getFont();
 		int lineH = f.getLineHeight();
 		int x = getX(), y = getY() + getHeight();
@@ -66,7 +64,6 @@ public class TextHistory extends CapstoneComponent {
 	public Color getTextColor() {
 		return textColor;
 	}
-
 	public void setTextColor(Color textColor) {
 		this.textColor = textColor;
 	}

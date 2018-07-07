@@ -3,43 +3,40 @@ package game.gui;
 import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.GUIContext;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-public class ButtonGrid extends CapstoneComponent {
+public class ButtonGrid extends BaseComponent {
 	private int rows;
 	private int cols;
 	private int spacing;
 	private int cellW;
 	private int cellH;
 
-	private int pos;
 	private boolean invalid;
 	private boolean populateAcross;
 
-	private Color backgroundColor;
 	private LinkedList<LabeledButton> buttons;
 
 	public ButtonGrid(GUIContext container, int rows, int cols, int spacing, LabeledButton... buttons) {
-		this(container, 0, 0, rows, cols, spacing, true, buttons);
+		this(container, rows, cols, spacing, DrawingUtils.DEFAULT_MARGIN, null, null, buttons);
 	}
-	public ButtonGrid(GUIContext container, int x, int y, int rows, int cols, int spacing, boolean populateAcross, LabeledButton... buttons) {
-		super(container, x, y);
+	public ButtonGrid(GUIContext container, int rows, int cols, int spacing, int margin, Color foregroundColor, Color backgroundColor, LabeledButton... buttons) {
+		this(container, 0, 0, rows, cols, spacing, margin, true, foregroundColor, backgroundColor, buttons);
+	}
+	public ButtonGrid(GUIContext container, int x, int y, int rows, int cols, int spacing, int margin, boolean populateAcross, Color foregroundColor, Color backgroundColor, LabeledButton... buttons) {
+		super(container, x, y, 0, 0, margin, foregroundColor, backgroundColor);
 		this.rows = rows <= 0 ? 1 : rows;
 		this.cols = cols <= 0 ? 1 : cols;
 		this.spacing = spacing < 0 ? 0 : spacing;
 		this.cellW = -1;
 		this.cellH = -1;
 
-		this.pos = 0;
 		this.invalid = true;
 		this.populateAcross = populateAcross;
-
-		this.backgroundColor = Color.gray;
 		this.buttons = new LinkedList<>();
 
 		this.buttons.addAll(Arrays.asList(buttons));
@@ -47,7 +44,6 @@ public class ButtonGrid extends CapstoneComponent {
 			if(this.populateAcross) { this.rows++; } else { this.cols++; }
 		}
 		computeButtonPositions();
-		this.pos = this.buttons.size();
 	}
 
 	/**
@@ -76,8 +72,8 @@ public class ButtonGrid extends CapstoneComponent {
 		ListIterator<LabeledButton> it = this.buttons.listIterator();
 		for (int i = 0; it.hasNext() && i < I; i++) {
 			for (int j = 0; it.hasNext() && j < J; j++) {
-				int cx = this.x + (cw + spacing) * (populateAcross ? j: i);
-				int cy = this.y + (ch + spacing) * (populateAcross ? i : j);
+				int cx = getX() + (cw + spacing) * (populateAcross ? j: i);
+				int cy = getY() + (ch + spacing) * (populateAcross ? i : j);
 				it.next().setLocation(cx, cy);
 			}
 		}
@@ -87,21 +83,20 @@ public class ButtonGrid extends CapstoneComponent {
 	 *
 	 * @param container the GUIContext
 	 * @param g the Graphics object to draw on
-	 * @throws SlickException
 	 */
 	@Override
-	public void render(GUIContext container, Graphics g) throws SlickException {
+	public void render(GUIContext container, Graphics g) {
 		if (!this.shown) {
 			return;
-		}
-
-		Color old = g.getColor();
-
-		g.setColor(backgroundColor);
-		g.fillRect(x, y, width, height);
-		if (this.invalid) {
+		} else if (this.invalid) {
 			computeButtonPositions();
 		}
+
+		Color oldC = g.getColor();
+
+		g.setColor(backgroundColor);
+		g.fillRect(getX(), getY(), getWidth(), getHeight());
+
 		for (LabeledButton button : this.buttons) {
 			button.render(container, g);
 			if (!enabled) {
@@ -109,7 +104,7 @@ public class ButtonGrid extends CapstoneComponent {
 			}
 		}
 
-		g.setColor(old);
+		g.setColor(oldC);
 	}
 
 	/**
@@ -130,6 +125,4 @@ public class ButtonGrid extends CapstoneComponent {
 		super.setEnabled(enabled);
 		buttons.forEach(button -> button.setAcceptingInput(enabled));
 	}
-
-	public void setBackgroundColor(Color color) { this.backgroundColor = color; }
 }

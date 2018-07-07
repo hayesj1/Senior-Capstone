@@ -3,7 +3,7 @@ package game.character;
 import game.character.moves.Move;
 
 public class PlayerActor extends PlayableActor {
-	private static final int MAX_PARTY_SIZE = 6;
+	public static final int MAX_PARTY_SIZE = 6;
 
 	private PlayableActor[] party = new PlayableActor[MAX_PARTY_SIZE];
 	private int nextFreeSlot = 0;
@@ -74,5 +74,9 @@ public class PlayerActor extends PlayableActor {
 		} else {
 			party[nextFreeSlot++] = pendingPartyMember;
 		}
+	}
+
+	public PlayableActor[] getParty() {
+		return party;
 	}
 }

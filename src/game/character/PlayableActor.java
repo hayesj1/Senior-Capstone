@@ -69,7 +69,7 @@ public class PlayableActor extends BattlableActor implements ILevelable {
 			int moveSlot = (this.getMoveCount() < IBattlable.MAX_MOVES) ? this.getMoveCount()+1 : 0;
 			Move move = this.species.getLearnableMoves().moveLearnedAt(this.level);
 			this.learnNewMove(move, moveSlot);
-			SuperDungeoneer.getInstance().getMoveButtons()[moveSlot].setText(move);
+			SuperDungeoneer.getInstance().getMoveButtons()[moveSlot].setLabelText(move);
 		}
 		return true;
 	}

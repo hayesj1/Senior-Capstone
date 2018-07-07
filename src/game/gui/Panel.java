@@ -1,9 +1,8 @@
 package game.gui;
 
+import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.GUIContext;
 
 import java.util.LinkedList;
@@ -11,11 +10,12 @@ import java.util.LinkedList;
 /**
  * A Panel of GUI Elements. Allows drawing GUI Components to coordinates local to a specific segment of the screen
  */
-public class Panel extends CapstoneComponent {
-	private LinkedList<ComponentCoordinates<AbstractComponent>> children;
+public class Panel extends BaseComponent {
+	private LinkedList<ComponentCoordinates<BaseComponent>> children;
 
-	public Panel(GUIContext container, int x, int y, int width, int height) {
-		super(container, x, y, width, height);
+	public Panel(GUIContext container, int x, int y, int width, int height) { this(container, x, y, width, height, DrawingUtils.DEFAULT_MARGIN, null, null); }
+	public Panel(GUIContext container, int x, int y, int width, int height, int margin, Color foreground, Color background) {
+		super(container, x, y, width, height, margin, foreground, background);
 		this.children = new LinkedList<>();
 	}
 
@@ -25,8 +25,10 @@ public class Panel extends CapstoneComponent {
 	 * @param x the panel-local x-coordinate of the pixel to use as the top left corner of this child
 	 * @param y the panel-local y-coordinate of the pixel to use as the top left corner of this child
 	 */
-	public void addChild(AbstractComponent child, int x, int y) {
-		children.add(new ComponentCoordinates<>(child, x ,y));
+	public void addChild(BaseComponent child, int x, int y) {
+		ComponentCoordinates<BaseComponent> tmp = new ComponentCoordinates<>(child, x ,y);
+		children.add(tmp);
+		tmp.invalidate();
 	}
 
 	/**
@@ -40,20 +42,31 @@ public class Panel extends CapstoneComponent {
 	 * Renders the background (if one is set) and the children of this panel
 	 * @param container the GUIContext
 	 * @param g the Graphics object to draw on
-	 * @throws SlickException
 	 */
 	@Override
-	public void render(GUIContext container, Graphics g) throws SlickException {
+	public void render(GUIContext container, Graphics g) {
 		if (!shown) { return; }
 		if (backgroundColor != null) {
 			Color old = g.getColor();
 			g.setColor(backgroundColor);
-			g.fillRect(x, y, width, height);
+			g.fillRect(getX(), getY(), getWidth(), getHeight());
 			g.setColor(old);
 		}
 
 		for (ComponentCoordinates child : children) {
 			child.render(container, g, x, y);
+		}
+	}
+
+	protected void invalidateChildren() {
+		children.forEach(ComponentCoordinates::invalidate);
+	}
+
+	@Override
+	public void setLocation(int x, int y) {
+		super.setLocation(x, y);
+		if (children != null && !children.isEmpty()) {
+			invalidateChildren();
 		}
 	}
 
