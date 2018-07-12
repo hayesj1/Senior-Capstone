@@ -4,6 +4,7 @@ import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.gui.GUIContext;
 
 public class Label extends BaseComponent {
@@ -33,19 +34,26 @@ public class Label extends BaseComponent {
 	}
 
 	public void fitWidth(){
-		setWidth(font.getWidth("_"+str+"_"));
+		setWidth(getWidthOfText("_"+str+"_"));
 	}
 
 	private int findCutoff() {
 		int cutoff;
-		int tw = font.getWidth(str);
-		for (cutoff = str.length()-1; tw >= width && cutoff >= 0; cutoff--) { tw = font.getWidth(str.substring(0, cutoff +1)); }
+		int tw = getTextWidth();
+		for (cutoff = str.length()-1; tw >= width && cutoff >= 0; cutoff--) { tw = getWidthOfText(str.substring(0, cutoff +1)); }
 
 		if (cutoff < 0) {
 			cutoff = 0;
 		}
 
 		return cutoff;
+	}
+
+	private int getWidthOfText(String text) {
+		return this.font.getWidth(text);
+	}
+	private int getHeightOfText(String text) {
+		return this.font.getHeight(text);
 	}
 
 	/**
@@ -63,32 +71,36 @@ public class Label extends BaseComponent {
 		if (fitStr) {
 			fitWidth();
 			setCutoff(findCutoff());
-		} else if (width < font.getWidth(str)) {
+		} else if (width < getWidthOfText(str)) {
 			setCutoff(findCutoff());
 		}
+
 		Color oldC = g.getColor();
+		Rectangle oldClip = g.getClip();
+		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 
 		g.setColor(foregroundColor);
-		g.fillRoundRect(getX(), getY(), getWidth(), getHeight(), 6);
-		int tw = font.getWidth(str);
-		int th = font.getHeight(str);
-		int tx = getX() + ((getWidth() - tw) / 2);
-		int ty = getY() + ((getHeight() - th) / 2);
+		g.fillRoundRect(x, y, width, height, 6);
+		int tw = getWidthOfText(str);
+		int th = getHeightOfText(str);
+		int tx = x + ((width - tw) / 2);
+		int ty = y + ((height - th) / 2);
 		g.getFont().drawString(tx, ty, str, textColor, 0, cutoff);
 
+		g.setClip(oldClip);
 		g.setColor(oldC);
 	}
 
-	@Override
-	public int getWidth() {
-		return this.font.getWidth(this.getText()) + this.margin;
-	}
-	@Override
-	public int getHeight() {
-		return this.font.getHeight(this.getText()) + this.margin;
-	}
 	public String getText() {
 		return str;
+	}
+	public int getTextWidth() { return this.getWidthOfText(this.getText()); }
+	public int getTextHeight() { return this.getHeightOfText(this.getText()); }
+	public int getTextWidthWithMargin() {
+		return getTextWidth() + this.margin;
+	}
+	public int getTextHeightWithMargin() {
+		return this.getTextHeight() + this.margin;
 	}
 
 	public void setText(Object textSrc) {
@@ -99,6 +111,10 @@ public class Label extends BaseComponent {
 	}
 	public void setCutoff(int lastChar) {
 		this.cutoff = lastChar;
+	}
+
+	public void setFitToText(boolean fitText) {
+		this.fitStr = fitText;
 	}
 
 	/**

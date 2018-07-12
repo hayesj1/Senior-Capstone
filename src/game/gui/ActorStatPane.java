@@ -1,11 +1,11 @@
 package game.gui;
 
-import game.SuperDungeoneer;
 import game.character.BattlableActor;
 import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.fills.GradientFill;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.gui.GUIContext;
 
@@ -41,15 +41,17 @@ public class ActorStatPane extends BaseComponent {
 
 		Color oldC = g.getColor();
 		float oldLW = g.getLineWidth();
+		Rectangle oldClip = g.getClip();
+		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 
 		if (backgroundColor != null) {
 			g.setColor(backgroundColor);
-			g.fillRect(getX(), getY(), getWidth(), getHeight());
+			g.fillRect(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 		}
 
 		g.setLineWidth(2.0f);
 		g.setColor(foregroundColor);
-		g.drawRect(getX()+margin, getY()+margin, getWidth()-margin, getHeight()-margin);
+		g.drawRect(getX(), getY(), getWidth(), getHeight());
 
 		if (actor != null) {
 			hpGradientBar.setWidth(( actor.HP()*1.0f / actor.getStats().maxHP() ) * ( hpBar.getWidth() - 4 ));
@@ -58,6 +60,15 @@ public class ActorStatPane extends BaseComponent {
 			emptyHUD.render(container, g);
 		}
 
+//		//Debug Code
+//		g.setColor(Color.red);
+//		int w = width/3 - margin, h = height/4 - margin;
+//		for (int i = 0; i < 5; i++) {
+//			g.drawLine(x + i*w + i*margin, y, x +i*w + i*margin, y + height);
+//			g.drawLine(x, y + i*h + i*margin, x + width, y + i*h + i*margin);
+//		}
+
+		g.setClip(oldClip);
 		g.setLineWidth(oldLW);
 		g.setColor(oldC);
 	}
@@ -65,60 +76,107 @@ public class ActorStatPane extends BaseComponent {
 	private void addStats(GUIContext container) {
 		if (!invalid) { return; }
 
-		int w = this.width / 3, h = this.height / 3;
-		int hpx = this.x + SuperDungeoneer.COMPONENT_SPACING + w, hpy = this.y + SuperDungeoneer.COMPONENT_SPACING;
-		hpBar = new RoundedRectangle(hpx, hpy, w, 20, 6);
-		ShapeComponent tmp = new ShapeComponent(container, hpBar, true, DrawingUtils.DEFAULT_MARGIN, foregroundColor, backgroundColor);
-		emptyHUD.addChild(tmp, SuperDungeoneer.COMPONENT_SPACING, SuperDungeoneer.COMPONENT_SPACING);
+		int w = width / 3, h = height / 4;
+		int widthMinusMargins = w - 2*margin, heightMinusMargins = h - 2*margin;
+		int topLeftX = x + margin, topLeftY = y + margin;
+		int hpBarX = topLeftX + w, hpBarY = topLeftY;
+		int hpBarWidth = widthMinusMargins, hpBarHeight = heightMinusMargins;
+		hpBar = new RoundedRectangle(hpBarX, hpBarY, hpBarWidth, hpBarHeight, 6);
+		ShapeComponent tmp = new ShapeComponent(container, hpBar, true, margin, foregroundColor, backgroundColor);
+		emptyHUD.addChild(tmp, hpBarX, hpBarY);
 
 		if (actor != null) {
 			int HP = actor.HP();
 			int maxHP = actor.getStats().maxHP();
+			int inset = Math.max(margin / 2, 2);
 			float hpRatio = ( ( HP * 1.0f ) / maxHP );
-			String name = actor.getName();
+			int hpGBarX = hpBarX + inset, hpGBarY = hpBarY + inset;
+			float hpGBarWidth = hpBarWidth - 2*inset, hpGBarHeight = hpBarHeight - 2*inset;
+			hpGradientBar = new RoundedRectangle(hpGBarX, hpGBarY, hpRatio * hpGBarWidth, hpGBarHeight, 6);
+			GradientFill hpGradient = DrawingUtils.getHPGradient(hpGBarX, hpGBarY, hpGBarX + hpGBarWidth, hpGBarY + hpGBarHeight);
 
-			hpGradientBar = new RoundedRectangle(hpx + 2, hpy + 2, hpRatio * ( w - 4 ), 16, 6);
-			GradientFill hpGradient = DrawingUtils.getHPGradient(hpx + 2, hpy + 2, ( hpx + 2 ) + ( hpBar.getWidth() - 4 ), ( hpy + 2 ) + ( 16 - 4 ));
-			tmp = new ShapeComponent(container, hpBar, true, DrawingUtils.DEFAULT_MARGIN, foregroundColor, backgroundColor);
-			HUD.addChild(tmp, SuperDungeoneer.COMPONENT_SPACING, SuperDungeoneer.COMPONENT_SPACING);
-			tmp = new ShapeComponent(container, hpGradientBar, true, DrawingUtils.DEFAULT_MARGIN, foregroundColor, null);
+			HUD.addChild(tmp, hpBarX, hpBarY);
+			tmp = new ShapeComponent(container, hpGradientBar, true, margin, foregroundColor, Color.transparent);
 			tmp.setFill(hpGradient);
-			HUD.addChild(tmp, SuperDungeoneer.COMPONENT_SPACING, SuperDungeoneer.COMPONENT_SPACING);
+			HUD.addChild(tmp, hpGBarX, hpGBarY);
 
-			Label l = new Label(container, name, hpx, hpy + h, true);
-			HUD.addChild(l, w, h);
+			String name = actor.getName();
+			Label l = new Label(container, name, hpBarX, hpBarY + heightMinusMargins, widthMinusMargins, heightMinusMargins, margin, true, DrawingUtils.TEXT_COLOR, foregroundColor, backgroundColor);
+			HUD.addChild(l, margin, margin);
 		}
 
+		int statW = widthMinusMargins;
+		int statH = heightMinusMargins;
 		String[] stats = new String[] { "ATT: ", "DEF: ", "SPD: " };
-		int x = width - w - SuperDungeoneer.COMPONENT_SPACING;
-		int y = SuperDungeoneer.COMPONENT_SPACING;
+		int statX = width - widthMinusMargins;
+		int statY = margin;
 		for (int i = 0; i < stats.length; i++) {
-			Label l = new Label(container, stats[i]+"--", x, y, true);
-			l.setTextColor(DrawingUtils.TEXT_COLOR);
-			l.setForegroundColor(foregroundColor);
-			l.setBackgroundColor(backgroundColor);
+			Label l;
+			int labelW;
+			int labelH;
+			int statYCentered;
+			if (i == 0) {
+				l = new Label(container, "HP: --/--", statX, statY, statW, statH, margin, true, DrawingUtils.TEXT_COLOR, Color.transparent, Color.transparent);
+				labelW = l.getTextWidthWithMargin();
+				labelH = l.getTextHeightWithMargin();
+				if (labelW > widthMinusMargins) {
+					l.setFitToText(false);
+					l.setWidth(widthMinusMargins);
+					statW = labelW = l.getTextWidthWithMargin();
+				}
+				if (labelH > heightMinusMargins) {
+					l.setHeight(heightMinusMargins);
+					statH = labelH = l.getTextHeightWithMargin();
+				}
 
-			int sw = l.getWidth();
-			int sh = l.getHeight();
-			if (sw > w) {
-				l.setWidth(w);
-				sw = l.getWidth();
-			}
-			if (sh > h) {
-				l.setHeight(h);
-				sh = l.getHeight();
+				statYCentered = statY + ( heightMinusMargins - statH ) / 2;
+
+				emptyHUD.addChild(l, statX, statYCentered);
+				statY += statH + margin;
 			}
 
-			int sx = x + ( w - sw ) / 2;
-			int sy = y + ( h - sh ) / 2;
-			l.setLocation(sx, sy);
-			emptyHUD.addChild(l, sx, sy);
+			l = new Label(container, stats[i]+"--", statX, statY, statW, statH, margin, true, DrawingUtils.TEXT_COLOR, Color.transparent, Color.transparent);
+			labelW = l.getTextWidthWithMargin();
+			labelH = l.getTextHeightWithMargin();
+			if (labelW > widthMinusMargins) {
+				l.setFitToText(false);
+				l.setWidth(widthMinusMargins);
+				statW = labelW = l.getTextWidthWithMargin();
+			}
+			if (labelH > heightMinusMargins) {
+				l.setHeight(heightMinusMargins);
+				statH = labelH = l.getTextHeightWithMargin();
+			}
+
+			statYCentered = statY + ( heightMinusMargins - statH ) / 2;
+			emptyHUD.addChild(l, statX, statYCentered);
 
 			if (actor != null) {
 				int statVal = 0;
 				switch (i) {
 					case 0:
 						statVal = actor.getStats().attack();
+						int HP = actor.HP();
+						int maxHP = actor.getStats().maxHP();
+						statY -= statH + margin;
+
+						l = new Label(container, "HP: "+HP+"/"+maxHP, statX, statY, statW, statH, margin, true, DrawingUtils.TEXT_COLOR, Color.transparent, Color.transparent);
+						labelW = l.getTextWidthWithMargin();
+						labelH = l.getTextHeightWithMargin();
+						if (labelW > widthMinusMargins) {
+							l.setFitToText(false);
+							l.setWidth(widthMinusMargins);
+							statW = labelW = l.getTextWidthWithMargin();
+						}
+						if (labelH > heightMinusMargins) {
+							l.setHeight(heightMinusMargins);
+							statH = labelH = l.getTextHeightWithMargin();
+						}
+
+						statYCentered = statY + ( heightMinusMargins - statH ) / 2;
+						HUD.addChild(l, statX, statYCentered);
+
+						statY += statH + margin;
 						break;
 					case 1:
 						statVal = actor.getStats().defense();
@@ -128,29 +186,25 @@ public class ActorStatPane extends BaseComponent {
 						break;
 				}
 
-				l = new Label(container, stats[i]+statVal, x, y, true);
-				l.setTextColor(DrawingUtils.TEXT_COLOR);
-				l.setForegroundColor(foregroundColor);
-				l.setBackgroundColor(backgroundColor);
-
-				sw = l.getWidth();
-				sh = l.getHeight();
-				if (sw > w) {
-					l.setWidth(w);
-					sw = l.getWidth();
+				String padding = statVal < 10 ? " " : "";
+				l = new Label(container, stats[i]+padding+statVal, statX, statY, statW, statH, margin, true, DrawingUtils.TEXT_COLOR, Color.transparent, Color.transparent);
+				labelW = l.getTextWidthWithMargin();
+				labelH = l.getTextHeightWithMargin();
+				if (labelW > widthMinusMargins) {
+					l.setFitToText(false);
+					l.setWidth(widthMinusMargins);
+					statW = labelW = l.getTextWidthWithMargin();
 				}
-				if (sh > h) {
-					l.setHeight(h);
-					sh = l.getHeight();
+				if (labelH > heightMinusMargins) {
+					l.setHeight(heightMinusMargins);
+					statH = labelH = l.getTextHeightWithMargin();
 				}
 
-				sx = x + ( w - sw ) / 2;
-				sy = y + ( h - sh ) / 2;
-				l.setLocation(sx, sy);
-				HUD.addChild(l, sx, sy);
+				statYCentered = statY + ( heightMinusMargins - statH ) / 2;
+				HUD.addChild(l, statX, statYCentered);
 			}
 
-			y += sh + SuperDungeoneer.COMPONENT_SPACING;
+			statY += statH + margin;
 		}
 
 		invalid = false;
@@ -167,10 +221,10 @@ public class ActorStatPane extends BaseComponent {
 	@Override
 	public void setLocation(int x, int y) {
 		super.setLocation(x, y);
+
 		if (emptyHUD != null) {
 			emptyHUD.setLocation(x+margin, y+margin);
 		}
-
 		if (HUD != null) {
 			HUD.setLocation(x+margin, y+margin);
 		}

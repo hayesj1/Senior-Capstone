@@ -3,6 +3,7 @@ package game.gui;
 import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.gui.GUIContext;
 
 import java.util.LinkedList;
@@ -46,16 +47,22 @@ public class Panel extends BaseComponent {
 	@Override
 	public void render(GUIContext container, Graphics g) {
 		if (!shown) { return; }
+
+		Rectangle oldClip = g.getClip();
+		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
+
 		if (backgroundColor != null) {
 			Color old = g.getColor();
 			g.setColor(backgroundColor);
-			g.fillRect(getX(), getY(), getWidth(), getHeight());
+			g.fillRect(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 			g.setColor(old);
 		}
 
 		for (ComponentCoordinates child : children) {
 			child.render(container, g, x, y);
 		}
+
+		g.setClip(oldClip);
 	}
 
 	protected void invalidateChildren() {

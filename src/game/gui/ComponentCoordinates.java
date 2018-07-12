@@ -3,7 +3,7 @@ package game.gui;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.gui.GUIContext;
 
-public class ComponentCoordinates<T extends BaseComponent> {
+public class ComponentCoordinates<T extends IBaseComponent> {
 	private T comp;
 	private int x;
 	private int y;

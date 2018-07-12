@@ -14,7 +14,7 @@ public class PlayerActor extends PlayableActor {
 		super(species, name, stats, level, learnedMoves);
 
 		if (party != null) {
-			for (int i = 0, j = 0; i < party.length && nextFreeSlot < MAX_PARTY_SIZE; i++) {
+			for (int i = 0; i < party.length && nextFreeSlot < MAX_PARTY_SIZE; i++) {
 				if (party[i] != null) {
 					this.party[nextFreeSlot] = party[i];
 					nextFreeSlot++;

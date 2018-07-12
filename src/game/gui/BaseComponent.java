@@ -10,9 +10,9 @@ import org.newdawn.slick.gui.GUIContext;
 
 /**
  * Extends {@link AbstractComponent} with enable/disable and shown/not-shown functionality.
- * Also provides a routine to display a simple disabled overlay.
+ * Also provides a routine to display a simple disabled overlay over this component.
  */
-public abstract class BaseComponent extends AbstractComponent {
+public abstract class BaseComponent extends AbstractComponent implements IBaseComponent {
 	protected int x;
 	protected int y;
 	protected int width;
@@ -65,55 +65,99 @@ public abstract class BaseComponent extends AbstractComponent {
 	}
 
 	@Override
+	public int getMargin() {
+		return margin;
+	}
+	@Override
+	public int getXWithMargin() {
+		return this.getX() - this.margin;
+	}
+	@Override
+	public int getYWithMargin() {
+		return this.getY() - this.margin;
+	}
+	@Override
+	public int getWidthWithMargin() {
+		return this.getWidth() + this.margin;
+	}
+	@Override
+	public int getHeightWithMargin() {
+		return this.getHeight() + this.margin;
+	}
+
+	@Override
 	public int getX() {
-		return this.x - this.margin;
+		return x;
 	}
 	@Override
 	public int getY() {
-		return this.y - this.margin;
+		return y;
 	}
 	@Override
 	public int getWidth() {
-		return this.width + this.margin;
+		return width;
 	}
 	@Override
 	public int getHeight() {
-		return this.height + this.margin;
+		return height;
 	}
 
+	@Override
+	public void setMargin(int margin) {
+		this.margin = margin;
+	}
+	@Override
+	public void setX(int x) {
+		this.x = x;
+	}
+	@Override
+	public void setY(int y) {
+		this.y = y;
+	}
+	@Override
 	public void setWidth(int width) {
 		this.width = width;
 	}
+	@Override
 	public void setHeight(int height) {
 		this.height = height;
 	}
+
 	@Override
 	public void setLocation(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return this.enabled;
 	}
+	@Override
 	public boolean isShown() {
 		return this.shown;
 	}
+	@Override
 	public Color getForegroundColor() {
 		return foregroundColor;
 	}
+	@Override
 	public Color getBackgroundColor() { return this.backgroundColor; }
 
+	@Override
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+	@Override
 	public void setShown(boolean shown) {
 		this.shown = shown;
 	}
+	@Override
 	public void setForegroundColor(Color foregroundColor) {
 		this.foregroundColor = foregroundColor;
 	}
-	public void setBackgroundColor(Color c) {
-		this.backgroundColor = c;
+	@Override
+	public void setBackgroundColor(Color backgroundColor) {
+		this.backgroundColor = backgroundColor;
 	}
 }

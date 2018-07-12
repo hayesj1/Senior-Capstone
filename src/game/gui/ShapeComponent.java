@@ -4,6 +4,7 @@ import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.ShapeFill;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.gui.GUIContext;
 
@@ -34,6 +35,9 @@ public class ShapeComponent extends BaseComponent {
 	@Override
 	public void render(GUIContext container, Graphics g) {
 		Color oldC = g.getColor();
+		Rectangle oldClip = g.getClip();
+		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
+
 		if (backgroundColor != null) {
 			g.setColor(backgroundColor);
 			g.fillRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
@@ -55,6 +59,7 @@ public class ShapeComponent extends BaseComponent {
 			g.draw(shape);
 		}
 
+		g.setClip(oldClip);
 		g.setColor(oldC);
 	}
 
@@ -62,7 +67,23 @@ public class ShapeComponent extends BaseComponent {
 		this.fill = fill;
 	}
 
+	public float getShapeX() { return this.shape.getX(); }
+	public float getShapeY() { return this.shape.getY(); }
 	public float getShapeWidth() { return this.shape.getWidth(); }
 	public float getShapeHeight() { return this.shape.getHeight(); }
 
+	@Override
+	public int getXWithMargin() {
+		return Math.round(this.getShapeX() - this.margin);
+	}
+	@Override
+	public int getYWithMargin() {
+		return Math.round(this.getShapeY() - this.margin);
+	}
+	@Override
+	public int getWidthWithMargin() {
+		return Math.round(this.getShapeWidth() + this.margin);	}
+	@Override
+	public int getHeightWithMargin() {
+		return Math.round(this.getShapeHeight() + this.margin);	}
 }

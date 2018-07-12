@@ -3,6 +3,7 @@ package game.gui;
 import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.gui.GUIContext;
 
 import java.util.Collections;
@@ -65,12 +66,16 @@ public class CompoundComponent extends Panel {
 	public void render(GUIContext container, Graphics g) {
 		if (!shown) { return; }
 
+		Rectangle oldClip = g.getClip();
+		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 		for (ComponentCoordinates<BaseComponent> comp : components) {
 			comp.render(container, g, x, y);
 			if (!enabled) {
-				DrawingUtils.drawDisabledOverlay(container, g, comp.getComponent().getX(), comp.getComponent().getY(), comp.getComponent().getWidth(), comp.getComponent().getHeight());
+				DrawingUtils.drawDisabledOverlay(container, g, comp.getComponent().getXWithMargin(), comp.getComponent().getYWithMargin(), comp.getComponent().getWidthWithMargin(), comp.getComponent().getHeightWithMargin());
 			}
 		}
+
+		g.setClip(oldClip);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package game.gui;
 import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.gui.GUIContext;
 
 import java.util.Arrays;
@@ -55,8 +56,8 @@ public class ButtonGrid extends BaseComponent {
 		int ch = this.cellH;
 		for (LabeledButton button : this.buttons) {
 			if (button == null) { continue; }
-			if (button.getWidth() > cw) { cw = button.getWidth(); }
-			if (button.getHeight() > ch) { ch = button.getHeight(); }
+			if (button.getWidthWithMargin() > cw) { cw = button.getWidthWithMargin(); }
+			if (button.getHeightWithMargin() > ch) { ch = button.getHeightWithMargin(); }
 		}
 
 		if (cw <= 0) { cw = 120; }
@@ -74,9 +75,15 @@ public class ButtonGrid extends BaseComponent {
 			for (int j = 0; it.hasNext() && j < J; j++) {
 				int cx = getX() + (cw + spacing) * (populateAcross ? j: i);
 				int cy = getY() + (ch + spacing) * (populateAcross ? i : j);
-				it.next().setLocation(cx, cy);
+				LabeledButton lb = it.next();
+				//System.out.println(lb.toString()+" : cx, cy : "+cx+", "+cy);
+				//System.out.println(lb.toString()+" : lbX, lbY : "+lb.getX()+", "+lb.getY());
+				lb.setLocation(cx, cy);
+				//System.out.println(lb.toString()+" : lbX, lbY : "+lb.getX()+", "+lb.getY());
 			}
 		}
+
+		this.invalid = false;
 	}
 
 	/**
@@ -93,6 +100,8 @@ public class ButtonGrid extends BaseComponent {
 		}
 
 		Color oldC = g.getColor();
+		Rectangle oldClip = g.getClip();
+		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 
 		g.setColor(backgroundColor);
 		g.fillRect(getX(), getY(), getWidth(), getHeight());
@@ -100,10 +109,11 @@ public class ButtonGrid extends BaseComponent {
 		for (LabeledButton button : this.buttons) {
 			button.render(container, g);
 			if (!enabled) {
-				DrawingUtils.drawDisabledOverlay(container, g, button.getX(), button.getY(), button.getWidth(), button.getHeight());
+				//DrawingUtils.drawDisabledOverlay(container, g, button.getXWithMargin(), button.getYWithMargin(), button.getWidthWithMargin(), button.getHeightWithMargin());
 			}
 		}
 
+		g.setClip(oldClip);
 		g.setColor(oldC);
 	}
 
@@ -118,11 +128,22 @@ public class ButtonGrid extends BaseComponent {
 	public void setLocation(int x, int y) {
 		super.setLocation(x, y);
 		this.invalid = true;
+		if (this.buttons != null) {
+			computeButtonPositions();
+		}
 	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
+		buttons.forEach(button -> button.setEnabled(enabled));
 		buttons.forEach(button -> button.setAcceptingInput(enabled));
+	}
+
+	@Override
+	public void setShown(boolean shown) {
+		super.setShown(shown);
+		buttons.forEach(button -> button.setShown(shown));
+		buttons.forEach(button -> button.setAcceptingInput(shown));
 	}
 }

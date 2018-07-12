@@ -307,30 +307,32 @@ public class SuperDungeoneer implements Game {
 		int bcpX = 0, bcpW = container.getWidth(), bcpY = container.getHeight() - (container.getHeight() / 5), bcpH = container.getHeight() / 5;
 		battleControlPanel = new Panel(container, bcpX, bcpY, bcpW, bcpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 
-		int hpX = container.getWidth() - (container.getWidth() / 5) - COMPONENT_SPACING, hpW = (container.getWidth() / 5);
+		int hpX = container.getWidth() - (container.getWidth() / 5) - DrawingUtils.DEFAULT_MARGIN, hpW = (container.getWidth() / 5);
 		int hpY = 0, hpH = battleControlPanel.getY() / 9;
 		helpPanel = new Panel(container, hpX, hpY, hpW, hpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
-		//helpPanel.setShown(false);
 
 		int ppX = hpX, ppW = hpW;
-		int ppY = helpPanel.getY() + helpPanel.getHeight() + COMPONENT_SPACING, ppH = battleControlPanel.getY() - COMPONENT_SPACING - (hpY + hpH);
+		int ppY = helpPanel.getY() + helpPanel.getHeightWithMargin(), ppH = battleControlPanel.getY() - (hpY + hpH);
 		partyPanel = new Panel(container, ppX, ppY, ppW, ppH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 
 		int nActors = PlayerActor.MAX_PARTY_SIZE+1;
-		int pmpX = 0, pmpW = partyPanel.getWidth() - COMPONENT_SPACING;
-		int pmpY = 0, pmpH = partyPanel.getHeight() / nActors;
+		int pmpX = 0, pmpW = partyPanel.getWidthWithMargin() - DrawingUtils.DEFAULT_MARGIN;
+		int pmpY = 0, pmpH = partyPanel.getHeightWithMargin() / nActors;
 		partyMemberPanels = new ActorStatPane[nActors];
 		for (int i = 0; i < nActors; i++) {
-			partyMemberPanels[i] = new ActorStatPane(container, (i == 0 ? player : player.getParty()[i-1]), pmpX, pmpY, pmpW, pmpH - COMPONENT_SPACING, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+			partyMemberPanels[i] = new ActorStatPane(container, (i == 0 ? player : player.getParty()[i-1]), pmpX, pmpY, pmpW, pmpH - DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 			pmpY += pmpH;
 		}
 
 		moveButtons = new LabeledButton[IBattlable.MAX_MOVES];
 		for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
-			Object textSrc = player.getLearnedMoves()[i] == null ? " -- " : player.getLearnedMoves()[i];
-			moveButtons[i] = new LabeledButton(textSrc, container, DrawingUtils.TEXT_COLOR, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR, new RoundedRectangle(0,0,200,container.getDefaultFont().getLineHeight()+10, 8));
+			Object textSrc = i >= player.getMoveCount() ? " --- " : player.getLearnedMoves()[i];
+			moveButtons[i] = new LabeledButton(textSrc, container, DrawingUtils.TEXT_COLOR, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR, new RoundedRectangle(0,0,container.getDefaultFont().getWidth("________________")+DrawingUtils.DEFAULT_MARGIN, container.getDefaultFont().getLineHeight()+DrawingUtils.DEFAULT_MARGIN, 6));
+			if (i >= player.getMoveCount()) {
+				moveButtons[i].setEnabled(false);
+			}
 		}
-		moveGrid = new ButtonGrid(container, 1, 6, COMPONENT_SPACING, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR, moveButtons);
+		moveGrid = new ButtonGrid(container, 1, 6, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR, moveButtons);
 
 		String label = "Move Selector";
 		moveSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth("__"+label), moveGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
@@ -338,26 +340,27 @@ public class SuperDungeoneer implements Game {
 		targetSelectorButtons = new LabeledButton[Battle.MAX_TEAM_SIZE];
 		int maxWidth = container.getDefaultFont().getWidth("No Targets");
 		for (BattlableActor actor : actors) {
-			int width = container.getDefaultFont().getWidth("___" + actor.getName());
+			int width = container.getDefaultFont().getWidth("__________" + actor.getName());
 			if (width > maxWidth) {
 				maxWidth = width;
 			}
 		}
 		for (int i = 0; i < Battle.MAX_TEAM_SIZE; i++) {
-			targetSelectorButtons[i] = new LabeledButton("No Targets", container, DrawingUtils.TEXT_COLOR, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR, new RoundedRectangle(0, 0, maxWidth+10, container.getDefaultFont().getLineHeight()+10, 8));
+			targetSelectorButtons[i] = new LabeledButton("No Targets", container, DrawingUtils.TEXT_COLOR, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR, new RoundedRectangle(0, 0, maxWidth+DrawingUtils.DEFAULT_MARGIN, container.getDefaultFont().getLineHeight()+DrawingUtils.DEFAULT_MARGIN, 6));
+			targetSelectorButtons[i].setEnabled(false);
 		}
-		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, COMPONENT_SPACING, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR, targetSelectorButtons);
+		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR, targetSelectorButtons);
 		label = "Target Selector";
 		targetSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth(label), targetSelectionGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
 
-		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeight() - container.getDefaultFont().getLineHeight()-COMPONENT_SPACING, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeightWithMargin() - container.getDefaultFont().getLineHeight(), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 		feedbackText.addLine("Battle it out!");
 
-		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidth(), 0);
-		battleControlPanel.addChild(moveSelectorLabel, battleControlPanel.getWidth()-moveGrid.getWidth()-moveSelectorLabel.getWidth()-COMPONENT_SPACING, 0);
+		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidthWithMargin(), 0);
+		battleControlPanel.addChild(moveSelectorLabel, battleControlPanel.getWidth()-moveGrid.getWidthWithMargin()-moveSelectorLabel.getWidthWithMargin(), 0);
 		battleControlPanel.addChild(targetSelectionGrid, 0, 0);
-		battleControlPanel.addChild(targetSelectorLabel, COMPONENT_SPACING+targetSelectionGrid.getWidth(), 0);
-		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeight() - feedbackText.getHeight());
+		battleControlPanel.addChild(targetSelectorLabel, targetSelectionGrid.getWidthWithMargin(), 0);
+		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeightWithMargin() - feedbackText.getHeightWithMargin());
 
 		helpText = new TextHistory(container, 0, 0, hpW, hpH - (hpH / 5), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
 		helpText.addLine("Use the mouse to select a target \nafter selecting a move!");
@@ -374,7 +377,6 @@ public class SuperDungeoneer implements Game {
 
 		}
 	}
-
 	private void initSound(GameContainer container) {
 		SoundStore.get().init();
 		container.setMusicOn(true);
@@ -497,14 +499,14 @@ public class SuperDungeoneer implements Game {
 				foeY += 35;
 			}
 
-			IBattlable active = demoBattle.getActiveActor();
 			foeX = 240;
 			foeY = COMPONENT_SPACING;
 			for (int i = 2; i < actors.length; i++) {
-				BattlableActor actor = actors[i];
-				g.getFont().drawString(foeX, foeY, actors[i].getName() + " HP: " + actors[i].HP(), Color.white);
+				g.getFont().drawString(foeX, foeY, actors[i].getName() + " HP: " + actors[i].HP() + " / "+actors[i].getStats().maxHP(), Color.white);
 				foeY += 15 + g.getFont().getLineHeight();
 			}
+
+			IBattlable active = demoBattle.getActiveActor();
 			ActorStatPane activeMemberPanel = null;
 			for (int i = 0; i < partyMemberPanels.length; i++) {
 				if (active == partyMemberPanels[i].getActor()) {
@@ -513,8 +515,8 @@ public class SuperDungeoneer implements Game {
 				}
 			}
 			if (activeMemberPanel != null) {
-				int x = activeMemberPanel.getX(), y = activeMemberPanel.getY();
-				int w = activeMemberPanel.getWidth(), h = activeMemberPanel.getHeight();
+				int x = activeMemberPanel.getXWithMargin(), y = activeMemberPanel.getYWithMargin();
+				int w = activeMemberPanel.getWidthWithMargin(), h = activeMemberPanel.getHeightWithMargin();
 
 				g.setColor(SELECTION_COLOR);
 				g.drawRect(x, y, w, h);
@@ -525,8 +527,6 @@ public class SuperDungeoneer implements Game {
 	}
 
 	private void drawMoves(GameContainer container, Graphics g) throws SlickException {
-		//moveGrid.setLocation(20, container.getHeight()-(moveGrid.getHeight()+20));
-		//moveGrid.render(container, g);
 		if (moveSlot > 0) {
 			int x = moveButtons[moveSlot-1].getX() - 2;
 			int y = moveButtons[moveSlot-1].getY() - 2;
@@ -549,19 +549,7 @@ public class SuperDungeoneer implements Game {
 	}
 
 	private void drawTargetSelector(GameContainer container, Graphics g) throws SlickException {
-		if (!needsTarget) {
-			//targetSelectionGrid.setLocation(container.getWidth(), container.getHeight());
-			targetSelectionGrid.setEnabled(false);
-			//targetSelectionGrid.setShown(false);
-		} else {
-			//int x = container.getWidth() / 2 - targetSelectionGrid.getWidth();
-			//int y = moveGrid.getY() - targetSelectionGrid.getHeight() - COMPONENT_SPACING;
-			//targetSelectionGrid.setLocation(x ,y);
-			targetSelectionGrid.setEnabled(true);
-			targetSelectionGrid.setShown(true);
-
-		}
-
+		targetSelectionGrid.setEnabled(needsTarget);
 		targetSelectionGrid.render(container, g);
 	}
 
@@ -602,9 +590,6 @@ public class SuperDungeoneer implements Game {
 	public LabeledButton[] getMoveButtons(){
 		return this.moveButtons;
 	}
-	public LabeledButton[] getTargetSelectorButtons() {
-		return this.targetSelectorButtons;
-	}
 
 	public int getSelectedTargetSlot() {
 		if (!this.selectedTarget) {
@@ -617,7 +602,7 @@ public class SuperDungeoneer implements Game {
 		return ret;
 	}
 
-	public void setSelectedTargetSlot(int targetSlot) {
+	private void setSelectedTargetSlot(int targetSlot) {
 		this.targetSlot = targetSlot;
 		this.selectedTarget = targetSlot > 0 && targetSlot < 3;
 		this.needsTarget = !this.selectedTarget;

@@ -4,6 +4,7 @@ import game.util.DrawingUtils;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.gui.GUIContext;
 
 import java.util.Iterator;
@@ -45,19 +46,22 @@ public class TextHistory extends BaseComponent {
 		}
 
 		Color old = g.getColor();
+		Rectangle oldClip = g.getClip();
+		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 
 		g.setColor(backgroundColor);
-		g.fillRect(getX(), getY(), getWidth(), getHeight());
+		g.fillRect(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 		Font f = g.getFont();
 		int lineH = f.getLineHeight();
-		int x = getX(), y = getY() + getHeight();
+		int x = getXWithMargin(), y = getYWithMargin() + getHeightWithMargin();
 		Iterator<String> it = history.descendingIterator();
-		while(it.hasNext() && y >= getY()) {
+		while(it.hasNext() && y >= getYWithMargin()) {
 			String str = it.next();
 			y -= f.getHeight(str);
 			f.drawString(x, y, str, textColor);
 		}
 
+		g.setClip(oldClip);
 		g.setColor(old);
 	}
 
