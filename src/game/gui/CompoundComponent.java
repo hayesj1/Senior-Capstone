@@ -19,6 +19,7 @@ public class CompoundComponent extends Panel {
 		super(container, x, y, width, height, margin, foreground, background);
 
 		this.components = new LinkedList<>();
+		this.drawBorder = false;
 	}
 	@SafeVarargs
 	public CompoundComponent(GUIContext container, int x, int y, int width, int height, ComponentCoordinates<BaseComponent>... components) {
@@ -32,6 +33,7 @@ public class CompoundComponent extends Panel {
 		if (components != null) {
 			Collections.addAll(this.components, components);
 		}
+		this.drawBorder = false;
 	}
 
 	/**
@@ -68,6 +70,7 @@ public class CompoundComponent extends Panel {
 
 		Rectangle oldClip = g.getClip();
 		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
+		this.drawBorder(container, g);
 		for (ComponentCoordinates<BaseComponent> comp : components) {
 			comp.render(container, g, x, y);
 			if (!enabled) {

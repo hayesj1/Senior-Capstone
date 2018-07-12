@@ -140,7 +140,7 @@ public class SuperDungeoneer implements Game {
 	private TextHistory helpText;
 
 	private Panel partyPanel;
-	private ActorStatPane[] partyMemberPanels;
+	private ActorStatPane[] partyMemberPanes;
 
 	/**
 	 * Create a new basic game
@@ -304,23 +304,23 @@ public class SuperDungeoneer implements Game {
 
 	}
 	private void initGUI(GameContainer container) {
-		int bcpX = 0, bcpW = container.getWidth(), bcpY = container.getHeight() - (container.getHeight() / 5), bcpH = container.getHeight() / 5;
-		battleControlPanel = new Panel(container, bcpX, bcpY, bcpW, bcpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+		int bcpX = DrawingUtils.DEFAULT_MARGIN, bcpW = container.getWidth() - 2*DrawingUtils.DEFAULT_MARGIN, bcpY = container.getHeight() - (container.getHeight() / 5), bcpH = container.getHeight() / 5;
+		battleControlPanel = new Panel(container, bcpX, bcpY, bcpW, bcpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER1_BACKGROUND_COLOR);
 
 		int hpX = container.getWidth() - (container.getWidth() / 5) - DrawingUtils.DEFAULT_MARGIN, hpW = (container.getWidth() / 5);
 		int hpY = 0, hpH = battleControlPanel.getY() / 9;
-		helpPanel = new Panel(container, hpX, hpY, hpW, hpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+		helpPanel = new Panel(container, hpX, hpY, hpW, hpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER1_BACKGROUND_COLOR);
 
 		int ppX = hpX, ppW = hpW;
 		int ppY = helpPanel.getY() + helpPanel.getHeightWithMargin(), ppH = battleControlPanel.getY() - (hpY + hpH);
-		partyPanel = new Panel(container, ppX, ppY, ppW, ppH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+		partyPanel = new Panel(container, ppX, ppY, ppW, ppH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER1_BACKGROUND_COLOR);
 
 		int nActors = PlayerActor.MAX_PARTY_SIZE+1;
 		int pmpX = 0, pmpW = partyPanel.getWidthWithMargin() - DrawingUtils.DEFAULT_MARGIN;
 		int pmpY = 0, pmpH = partyPanel.getHeightWithMargin() / nActors;
-		partyMemberPanels = new ActorStatPane[nActors];
+		partyMemberPanes = new ActorStatPane[nActors];
 		for (int i = 0; i < nActors; i++) {
-			partyMemberPanels[i] = new ActorStatPane(container, (i == 0 ? player : player.getParty()[i-1]), pmpX, pmpY, pmpW, pmpH - DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+			partyMemberPanes[i] = new ActorStatPane(container, (i == 0 ? player : player.getParty()[i-1]), pmpX, pmpY, pmpW, pmpH - DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 			pmpY += pmpH;
 		}
 
@@ -351,18 +351,19 @@ public class SuperDungeoneer implements Game {
 		}
 		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR, targetSelectorButtons);
 		label = "Target Selector";
-		targetSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth(label), targetSelectionGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
+		targetSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth("__"+label), targetSelectionGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
 
 		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeightWithMargin() - container.getDefaultFont().getLineHeight(), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+		//feedbackText.shouldDrawBorder(false);
 		feedbackText.addLine("Battle it out!");
 
-		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidthWithMargin(), 0);
-		battleControlPanel.addChild(moveSelectorLabel, battleControlPanel.getWidth()-moveGrid.getWidthWithMargin()-moveSelectorLabel.getWidthWithMargin(), 0);
-		battleControlPanel.addChild(targetSelectionGrid, 0, 0);
-		battleControlPanel.addChild(targetSelectorLabel, targetSelectionGrid.getWidthWithMargin(), 0);
-		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeightWithMargin() - feedbackText.getHeightWithMargin());
+		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
+		battleControlPanel.addChild(moveSelectorLabel, battleControlPanel.getWidth()-moveGrid.getWidthWithMargin()-moveSelectorLabel.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
+		battleControlPanel.addChild(targetSelectionGrid, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN);
+		battleControlPanel.addChild(targetSelectorLabel, targetSelectionGrid.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
+		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeight() - feedbackText.getHeight());
 
-		helpText = new TextHistory(container, 0, 0, hpW, hpH - (hpH / 5), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
+		helpText = new TextHistory(container, 0, 0, hpW, hpH - (hpH / 5), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 		helpText.addLine("Use the mouse to select a target \nafter selecting a move!");
 		helpText.addLine("");
 		helpText.addLine("1-6 -- Select Move (or use the mouse)");
@@ -370,10 +371,10 @@ public class SuperDungeoneer implements Game {
 
 		helpPanel.addChild(helpText, 0, 0);
 
-		for (int i = partyMemberPanels.length -1; i >= 0; i--) {
+		for (int i = partyMemberPanes.length -1; i >= 0; i--) {
 			pmpY -= pmpH;
-			//partyMemberPanels[i].setLocation(pmpX, pmpY);
-			partyPanel.addChild(partyMemberPanels[i], pmpX, pmpY);
+			//partyMemberPanes[i].setLocation(pmpX, pmpY);
+			partyPanel.addChild(partyMemberPanes[i], pmpX, pmpY);
 
 		}
 	}
@@ -425,6 +426,8 @@ public class SuperDungeoneer implements Game {
 						moveButtons[i].setAcceptingInput(hasMoreMoves);
 					}
 				}
+
+				updateTargetSelector(container);
 			}
 		}
 	}
@@ -448,7 +451,7 @@ public class SuperDungeoneer implements Game {
 		// ##### PRODUCTION CODE ##### //
 		g.clear();
 
-		g.setBackground(DrawingUtils.TIER1_BACKGROUND_COLOR);
+		g.setBackground(DrawingUtils.BASE_COLOR);
 		g.setAntiAlias(true);
 		g.setLineWidth(4.0f);
 
@@ -484,7 +487,7 @@ public class SuperDungeoneer implements Game {
 			if (actors[i] instanceof CapturableActor){
 				if (actors[i].isIncapacitated()) {
 					LabeledButton btn = targetSelectorButtons[i-Battle.MAX_TEAM_SIZE];
-					DrawingUtils.drawDisabledOverlay(container, g, btn.getX(), btn.getY(), btn.getWidth(), btn.getHeight());
+					//DrawingUtils.drawDisabledOverlay(container, g, btn.getX(), btn.getY(), btn.getWidth(), btn.getHeight());
 				}
 			}
 		}
@@ -508,9 +511,9 @@ public class SuperDungeoneer implements Game {
 
 			IBattlable active = demoBattle.getActiveActor();
 			ActorStatPane activeMemberPanel = null;
-			for (int i = 0; i < partyMemberPanels.length; i++) {
-				if (active == partyMemberPanels[i].getActor()) {
-					activeMemberPanel = partyMemberPanels[i];
+			for (int i = 0; i < partyMemberPanes.length; i++) {
+				if (active == partyMemberPanes[i].getActor()) {
+					activeMemberPanel = partyMemberPanes[i];
 					break;
 				}
 			}
@@ -545,12 +548,17 @@ public class SuperDungeoneer implements Game {
 	}
 
 	private void drawBattle(GameContainer container, Graphics g) throws SlickException {
-			drawTargetSelector(container, g);
+
 	}
 
 	private void drawTargetSelector(GameContainer container, Graphics g) throws SlickException {
+		targetSelectionGrid.setEnabled(needsTarget && moveSlot > 0);
+		//targetSelectionGrid.render(container, g);
+	}
+
+
+	private void updateTargetSelector(GameContainer container) throws SlickException {
 		targetSelectionGrid.setEnabled(needsTarget);
-		targetSelectionGrid.render(container, g);
 	}
 
 	public void selectTarget(IBattlable[] targets) {
@@ -604,7 +612,7 @@ public class SuperDungeoneer implements Game {
 
 	private void setSelectedTargetSlot(int targetSlot) {
 		this.targetSlot = targetSlot;
-		this.selectedTarget = targetSlot > 0 && targetSlot < 3;
+		this.selectedTarget = targetSlot > 0 && targetSlot <= Battle.MAX_TEAM_SIZE;
 		this.needsTarget = !this.selectedTarget;
 		this.targetSelectionGrid.setEnabled(this.needsTarget);
 	}

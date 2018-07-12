@@ -82,9 +82,9 @@ public class LabeledButton extends MouseOverArea implements IBaseComponent {
 		int tx = getX() + ((bw - tw) / 2);
 		int ty = getY() + ((bh / 2) - (th / 2));
 		label = new Label(container, text, tx, ty, tw, th, margin, true, textColor, Color.transparent, backgroundColor);
-
-		System.out.println(toString()+" : tx, ty : "+tx+", "+ty);
-		System.out.println(toString()+" : x, y :"+getX()+", "+getY());
+		label.shouldDrawBorder(false);
+//		System.out.println(toString()+" : tx, ty : "+tx+", "+ty);
+//		System.out.println(toString()+" : x, y :"+getX()+", "+getY());
 		labelInvalid = false;
 		fontChanged = false;
 	}
@@ -101,8 +101,8 @@ public class LabeledButton extends MouseOverArea implements IBaseComponent {
 		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 
 		g.setColor(foregroundColor);
-		//super.render(container, g);
 		g.fill(this.shape);
+		super.render(container, g);
 		label.render(container, g);
 
 		if (!enabled) {
@@ -222,7 +222,7 @@ public class LabeledButton extends MouseOverArea implements IBaseComponent {
 		this.foregroundColor = foregroundColor;
 		this.label.setForegroundColor(foregroundColor);
 		super.setNormalColor(foregroundColor);
-		super.setMouseDownColor(foregroundColor.darker());
+		super.setMouseDownColor(foregroundColor);
 		super.setMouseOverColor(foregroundColor.darker());
 	}
 	@Override
@@ -244,13 +244,12 @@ public class LabeledButton extends MouseOverArea implements IBaseComponent {
 		this.enabled = enabled;
 		this.label.setEnabled(enabled);
 		if (enabled) {
+			this.label.setTextColor(textColor);
 			super.setNormalColor(foregroundColor);
-			super.setMouseDownColor(foregroundColor.darker());
-			super.setMouseOverColor(foregroundColor.darker());
 		} else {
-			super.setNormalColor(foregroundColor.darker(1.0f));
-			super.setMouseDownColor(foregroundColor.darker(1.0f));
-			super.setMouseOverColor(foregroundColor.darker(1.0f));
+			this.label.setTextColor(textColor.brighter(1.0f));
+			super.setNormalColor(foregroundColor.darker(0.75f));
+
 		}
 	}
 	@Override

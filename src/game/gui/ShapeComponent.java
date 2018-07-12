@@ -23,6 +23,7 @@ public class ShapeComponent extends BaseComponent {
 		super(container, (int) shape.getX(), (int) shape.getY(), (int) shape.getWidth(), (int) shape.getHeight(), margin, foregroundColor, backgroundColor);
 		this.shape = shape;
 		this.filled = filled;
+		this.drawBorder = false;
 	}
 
 	/**
@@ -42,6 +43,8 @@ public class ShapeComponent extends BaseComponent {
 			g.setColor(backgroundColor);
 			g.fillRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
 		}
+
+		this.drawBorder(container, g);
 
 		if (foregroundColor != null) {
 			g.setColor(foregroundColor);

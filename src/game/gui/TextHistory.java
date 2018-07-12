@@ -51,11 +51,13 @@ public class TextHistory extends BaseComponent {
 
 		g.setColor(backgroundColor);
 		g.fillRect(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
+		this.drawBorder(container, g);
+
 		Font f = g.getFont();
 		int lineH = f.getLineHeight();
-		int x = getXWithMargin(), y = getYWithMargin() + getHeightWithMargin();
+		int x = getX() + getMargin(), y = getY() + getHeight() - getMargin();
 		Iterator<String> it = history.descendingIterator();
-		while(it.hasNext() && y >= getYWithMargin()) {
+		while(it.hasNext() && y >= getY()) {
 			String str = it.next();
 			y -= f.getHeight(str);
 			f.drawString(x, y, str, textColor);

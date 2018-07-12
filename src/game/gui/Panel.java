@@ -18,6 +18,7 @@ public class Panel extends BaseComponent {
 	public Panel(GUIContext container, int x, int y, int width, int height, int margin, Color foreground, Color background) {
 		super(container, x, y, width, height, margin, foreground, background);
 		this.children = new LinkedList<>();
+		//this.drawBorder = false;
 	}
 
 	/**
@@ -57,6 +58,8 @@ public class Panel extends BaseComponent {
 			g.fillRect(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 			g.setColor(old);
 		}
+
+		this.drawBorder(container, g);
 
 		for (ComponentCoordinates child : children) {
 			child.render(container, g, x, y);

@@ -19,10 +19,12 @@ public abstract class BaseComponent extends AbstractComponent implements IBaseCo
 	protected int height;
 	protected int margin;
 
-	protected boolean enabled;
-	protected boolean shown;
 	protected Color backgroundColor;
 	protected Color foregroundColor;
+
+	protected boolean enabled;
+	protected boolean shown;
+	protected boolean drawBorder;
 
 	protected BaseComponent(GUIContext container, int x, int y) { this(container, x, y, 0 ,0, DrawingUtils.DEFAULT_MARGIN); }
 	public BaseComponent(GUIContext container, int x, int y, int width, int height, int margin) { this(container, x, y, width, height, margin, null, null); }
@@ -34,10 +36,12 @@ public abstract class BaseComponent extends AbstractComponent implements IBaseCo
 		this.height = height;
 		this.margin = Math.max(margin, 0);
 
-		this.enabled = true;
-		this.shown = true;
 		this.foregroundColor = foregroundColor == null ? DrawingUtils.DEFAULT_FOREGROUND_COLOR : foregroundColor;
 		this.backgroundColor = backgroundColor == null ? DrawingUtils.DEFAULT_BACKGROUND_COLOR : backgroundColor;
+
+		this.enabled = true;
+		this.shown = true;
+		this.drawBorder = true;
 	}
 
 	/**
@@ -49,6 +53,9 @@ public abstract class BaseComponent extends AbstractComponent implements IBaseCo
 	@Override
 	public void render(GUIContext container, Graphics g) {
 		if (!shown) { return; }
+
+		this.drawBorder(container, g);
+
 		if (!enabled) {
 			drawDisabledOverlay(container, g);
 		}
@@ -62,6 +69,21 @@ public abstract class BaseComponent extends AbstractComponent implements IBaseCo
 	 */
 	protected void drawDisabledOverlay(GUIContext container, Graphics g) {
 		DrawingUtils.drawDisabledOverlay(container, g, x, y, width, height);
+	}
+
+	protected void drawBorder(GUIContext container, Graphics g) {
+		if (drawBorder) {
+			Color oldColor = g.getColor();
+			float oldLineW = g.getLineWidth();
+
+			g.setColor(foregroundColor);
+			g.setLineWidth(2.0f);
+			g.drawRoundRect(getX(), getY(), getWidth(), getHeight(), 6);
+
+			g.setLineWidth(oldLineW);
+			g.setColor(oldColor);
+		}
+
 	}
 
 	@Override
@@ -130,28 +152,11 @@ public abstract class BaseComponent extends AbstractComponent implements IBaseCo
 	}
 
 	@Override
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-	@Override
-	public boolean isShown() {
-		return this.shown;
-	}
-	@Override
 	public Color getForegroundColor() {
 		return foregroundColor;
 	}
 	@Override
 	public Color getBackgroundColor() { return this.backgroundColor; }
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-	@Override
-	public void setShown(boolean shown) {
-		this.shown = shown;
-	}
 	@Override
 	public void setForegroundColor(Color foregroundColor) {
 		this.foregroundColor = foregroundColor;
@@ -160,4 +165,23 @@ public abstract class BaseComponent extends AbstractComponent implements IBaseCo
 	public void setBackgroundColor(Color backgroundColor) {
 		this.backgroundColor = backgroundColor;
 	}
+
+
+	@Override
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+	@Override
+	public boolean isShown() {
+		return this.shown;
+	}
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	@Override
+	public void setShown(boolean shown) {
+		this.shown = shown;
+	}
+	public void shouldDrawBorder(boolean drawBorder) { this.drawBorder = drawBorder; }
 }

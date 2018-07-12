@@ -12,14 +12,15 @@ public class DrawingUtils {
 	public static final Color DEFAULT_TEXT_COLOR = Color.darkGray;
 	public static final Color DEFAULT_FOREGROUND_COLOR = Color.lightGray;
 	public static final Color DEFAULT_BACKGROUND_COLOR = Color.transparent;
-	public static final Color DEFAULT_BASE_COLOR = Color.lightGray;
+	public static final Color DEFAULT_BASE_COLOR = Color.darkGray;
 
-	public static final Color TEXT_COLOR = Color.darkGray;
-	public static final Color BUTTON_COLOR = Color.white;
-	public static final Color FOREGROUND_COLOR = Color.lightGray;
+	public static final Color TEXT_COLOR = Color.white;
+	public static final Color BUTTON_COLOR = Color.blue.addToCopy(Color.white.scaleCopy(0.125f)).darker(0.25f);
+	public static final Color FOREGROUND_COLOR = Color.white;
+	public static final Color TIER1_BACKGROUND_COLOR = Color.blue.addToCopy(Color.white.scaleCopy(0.25f));
+	public static final Color TIER2_BACKGROUND_COLOR = Color.blue.addToCopy(Color.white.scaleCopy(0.25f));
 	public static final Color TIER3_BACKGROUND_COLOR = Color.transparent;
-	public static final Color TIER2_BACKGROUND_COLOR = Color.lightGray;
-	public static final Color TIER1_BACKGROUND_COLOR = Color.darkGray;
+	public static final Color BASE_COLOR = Color.gray;
 
 	public static void drawDisabledOverlay(GUIContext container, Graphics g, int x, int y, int width, int height) {
 		Color oldC = g.getColor();

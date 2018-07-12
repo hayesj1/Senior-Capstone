@@ -27,6 +27,7 @@ public class Label extends BaseComponent {
 		this.str = textSrc.toString();
 		this.fitStr = fitText;
 		this.textColor = textColor == null ? DrawingUtils.DEFAULT_TEXT_COLOR : textColor;
+		this.drawBorder = true;
 		if (fitText) {
 			this.fitWidth();
 		}
@@ -75,12 +76,18 @@ public class Label extends BaseComponent {
 			setCutoff(findCutoff());
 		}
 
-		Color oldC = g.getColor();
+		Color oldColor = g.getColor();
+		float oldLineW = g.getLineWidth();
 		Rectangle oldClip = g.getClip();
+
+		g.setLineWidth(2.0f);
 		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 
-		g.setColor(foregroundColor);
+		g.setColor(backgroundColor);
 		g.fillRoundRect(x, y, width, height, 6);
+
+		this.drawBorder(container, g);
+
 		int tw = getWidthOfText(str);
 		int th = getHeightOfText(str);
 		int tx = x + ((width - tw) / 2);
@@ -88,7 +95,8 @@ public class Label extends BaseComponent {
 		g.getFont().drawString(tx, ty, str, textColor, 0, cutoff);
 
 		g.setClip(oldClip);
-		g.setColor(oldC);
+		g.setLineWidth(oldLineW);
+		g.setColor(oldColor);
 	}
 
 	public String getText() {

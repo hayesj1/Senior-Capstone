@@ -37,6 +37,7 @@ public class ButtonGrid extends BaseComponent {
 		this.cellH = -1;
 
 		this.invalid = true;
+		this.drawBorder = false;
 		this.populateAcross = populateAcross;
 		this.buttons = new LinkedList<>();
 
@@ -105,6 +106,7 @@ public class ButtonGrid extends BaseComponent {
 
 		g.setColor(backgroundColor);
 		g.fillRect(getX(), getY(), getWidth(), getHeight());
+		this.drawBorder(container, g);
 
 		for (LabeledButton button : this.buttons) {
 			button.render(container, g);

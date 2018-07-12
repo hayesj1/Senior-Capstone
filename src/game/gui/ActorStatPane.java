@@ -49,9 +49,8 @@ public class ActorStatPane extends BaseComponent {
 			g.fillRect(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 		}
 
-		g.setLineWidth(2.0f);
-		g.setColor(foregroundColor);
-		g.drawRect(getX(), getY(), getWidth(), getHeight());
+		//g.setLineWidth(2.0f);
+		this.drawBorder(container, g);
 
 		if (actor != null) {
 			hpGradientBar.setWidth(( actor.HP()*1.0f / actor.getStats().maxHP() ) * ( hpBar.getWidth() - 4 ));
