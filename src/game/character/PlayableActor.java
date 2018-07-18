@@ -1,6 +1,7 @@
 package game.character;
 
 import game.SuperDungeoneer;
+import game.battle.Turn;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
 
@@ -15,6 +16,38 @@ public class PlayableActor extends BattlableActor implements ILevelable {
 
 		this.exp =  ILevelable.requiredExpForLevel(this.level);
 		this.requiredExp = ILevelable.requiredExpForLevel(this.level+1);
+	}
+
+	/**
+	 * This <code>BattlableActor</code> will select a move to use on its upcoming turn
+	 *
+	 * @param targets the available targets for a move
+	 * @return a <code>Turn</code> instance for later execution of the move chosen
+	 */
+	@Override
+	public Turn planMove(IBattlable[] targets) {
+		if (plannedTurn) {
+			return turn;
+		}
+		turn.setTarget(null);
+		turn.setAttack(null);
+
+		if (selectedSlot < 0) {
+			return turn;
+		} else if (selectedSlot == 0) {
+			turn.setAttack(Move.capture);
+		} else {
+			turn.setAttack(learnedMoves[selectedSlot - 1]);
+			selectedSlot = -1;
+		}
+
+		if (!targets[0].isIncapacitated() && targets[1].isIncapacitated()) {
+			turn.setTarget(targets[0]);
+		} else if (targets[0].isIncapacitated() && !targets[1].isIncapacitated()) {
+			turn.setTarget(targets[1]);
+		}
+		plannedTurn = true;
+		return turn;
 	}
 
 	/**
@@ -53,6 +86,14 @@ public class PlayableActor extends BattlableActor implements ILevelable {
 			learnedMoves[moveCount++] = newMove;
 			return null;
 		}
+	}
+
+	@Override
+	public void setSelectedMove(int slot) {
+		if (slot <= 0) {
+			return;
+		}
+		super.setSelectedMove(slot);
 	}
 
 	/**

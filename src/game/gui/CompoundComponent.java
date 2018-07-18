@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 public class CompoundComponent extends Panel {
-	protected LinkedList<ComponentCoordinates<BaseComponent>> components;
+	protected LinkedList<ComponentCoordinates<IBaseComponent>> components;
 
 	public CompoundComponent(GUIContext container, int x, int y, int width, int height) {
 		this(container, x, y, width, height, DrawingUtils.DEFAULT_MARGIN, null, null);
@@ -22,11 +22,11 @@ public class CompoundComponent extends Panel {
 		this.drawBorder = false;
 	}
 	@SafeVarargs
-	public CompoundComponent(GUIContext container, int x, int y, int width, int height, ComponentCoordinates<BaseComponent>... components) {
+	public CompoundComponent(GUIContext container, int x, int y, int width, int height, ComponentCoordinates<IBaseComponent>... components) {
 		this(container, x, y, width, height, DrawingUtils.DEFAULT_MARGIN, null, null, components);
 	}
 	@SafeVarargs
-	public CompoundComponent(GUIContext container, int x, int y, int width, int height, int margin, Color foreground, Color background, ComponentCoordinates<BaseComponent>... components) {
+	public CompoundComponent(GUIContext container, int x, int y, int width, int height, int margin, Color foreground, Color background, ComponentCoordinates<IBaseComponent>... components) {
 		super(container, x, y, width, height, margin, foreground, background);
 
 		this.components = new LinkedList<>();
@@ -44,8 +44,8 @@ public class CompoundComponent extends Panel {
 	 * @param y     the panel-local y-coordinate of the pixel to use as the top left corner of this child
 	 */
 	@Override
-	public void addChild(BaseComponent child, int x, int y) {
-		ComponentCoordinates<BaseComponent> tmp = new ComponentCoordinates<>(child, x, y);
+	public void addChild(IBaseComponent child, int x, int y) {
+		ComponentCoordinates<IBaseComponent> tmp = new ComponentCoordinates<>(child, x, y);
 		components.add(tmp);
 		tmp.invalidate();
 	}
@@ -71,7 +71,7 @@ public class CompoundComponent extends Panel {
 		Rectangle oldClip = g.getClip();
 		g.setClip(getXWithMargin(), getYWithMargin(), getWidthWithMargin(), getHeightWithMargin());
 		this.drawBorder(container, g);
-		for (ComponentCoordinates<BaseComponent> comp : components) {
+		for (ComponentCoordinates<IBaseComponent> comp : components) {
 			comp.render(container, g, x, y);
 			if (!enabled) {
 				DrawingUtils.drawDisabledOverlay(container, g, comp.getComponent().getXWithMargin(), comp.getComponent().getYWithMargin(), comp.getComponent().getWidthWithMargin(), comp.getComponent().getHeightWithMargin());

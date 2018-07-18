@@ -56,6 +56,23 @@ public class CapturableActor extends BattlableActor implements ICapturable {
 	}
 
 	/**
+	 * Deals damage to <code>this</code> monster with <code>move</code> used by <code>attacker</code>
+	 * via the Damage Equation: <code>damage = attacker.stats.attack() / this.stats.defense() * move.power()</code>
+	 *
+	 * @param attacker opposing monster
+	 * @param move     the incoming attack
+	 * @return True if this monster is Incapacitated - i.e. <code>this.HP == 0 || this.justCaptured</code> - by this attack, false otherwise
+	 */
+	@Override
+	public boolean attackedBy(IBattlable attacker, Move move) {
+		if (move == Move.capture) {
+			return this.capture(attacker);
+		} else {
+			return super.attackedBy(attacker, move);
+		}
+	}
+
+	/**
 	 * @return True if this character is capturable, false otherwise
 	 */
 	@Override

@@ -15,6 +15,8 @@ public class ActorStatPane extends BaseComponent {
 	private BattlableActor actor;
 	private boolean invalid;
 
+	private Label HPLabel;
+
 	private RoundedRectangle hpBar;
 	private RoundedRectangle hpGradientBar;
 
@@ -54,6 +56,7 @@ public class ActorStatPane extends BaseComponent {
 
 		if (actor != null) {
 			hpGradientBar.setWidth(( actor.HP()*1.0f / actor.getStats().maxHP() ) * ( hpBar.getWidth() - 4 ));
+			HPLabel.setText("HP: "+actor.HP()+"/"+actor.getStats().maxHP());
 			HUD.render(container, g);
 		} else {
 			emptyHUD.render(container, g);
@@ -160,6 +163,7 @@ public class ActorStatPane extends BaseComponent {
 						statY -= statH + margin;
 
 						l = new Label(container, "HP: "+HP+"/"+maxHP, statX, statY, statW, statH, margin, true, DrawingUtils.TEXT_COLOR, Color.transparent, Color.transparent);
+						HPLabel = l;
 						labelW = l.getTextWidthWithMargin();
 						labelH = l.getTextHeightWithMargin();
 						if (labelW > widthMinusMargins) {

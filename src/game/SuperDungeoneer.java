@@ -36,6 +36,12 @@ public class SuperDungeoneer implements Game {
 		@Override
 		public void mouseReleased(int button, int x, int y) {
 			if (button == Input.MOUSE_LEFT_BUTTON) {
+				if (!needsTarget) {
+					if (captureButton.getShape().contains(x, y)) {
+						setMoveSlot(0);
+					}
+				}
+
 				if (needsTarget) {
 					for (int i = 0; i < targetSelectorButtons.length; i++) {
 						if (targetSelectorButtons[i].getShape().contains(x, y)) {
@@ -125,6 +131,7 @@ public class SuperDungeoneer implements Game {
 	private LabeledButton[] moveButtons;
 	private ButtonGrid moveGrid;
 	private Label moveSelectorLabel;
+	private LabeledButton captureButton;
 	private LabeledButton[] targetSelectorButtons;
 	private ButtonGrid targetSelectionGrid;
 	private Label targetSelectorLabel;
@@ -327,7 +334,7 @@ public class SuperDungeoneer implements Game {
 		moveButtons = new LabeledButton[IBattlable.MAX_MOVES];
 		for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
 			Object textSrc = i >= player.getMoveCount() ? " --- " : player.getLearnedMoves()[i];
-			moveButtons[i] = new LabeledButton(textSrc, container, DrawingUtils.TEXT_COLOR, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR, new RoundedRectangle(0,0,container.getDefaultFont().getWidth("________________")+DrawingUtils.DEFAULT_MARGIN, container.getDefaultFont().getLineHeight()+DrawingUtils.DEFAULT_MARGIN, 6));
+			moveButtons[i] = new LabeledButton(textSrc, container, DrawingUtils.TEXT_COLOR, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR, new RoundedRectangle(0,0,container.getDefaultFont().getWidth("________________"), container.getDefaultFont().getLineHeight(), 6));
 			if (i >= player.getMoveCount()) {
 				moveButtons[i].setEnabled(false);
 			}
@@ -337,6 +344,8 @@ public class SuperDungeoneer implements Game {
 		String label = "Move Selector";
 		moveSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth("__"+label), moveGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
 
+		label = "Capture!";
+		captureButton = new LabeledButton(label, container, DrawingUtils.TEXT_COLOR, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR, new RoundedRectangle(0, 0, container.getDefaultFont().getWidth("___"+label)+DrawingUtils.DEFAULT_MARGIN, container.getDefaultFont().getLineHeight(), 6));
 		targetSelectorButtons = new LabeledButton[Battle.MAX_TEAM_SIZE];
 		int maxWidth = container.getDefaultFont().getWidth("No Targets");
 		for (BattlableActor actor : actors) {
@@ -358,7 +367,9 @@ public class SuperDungeoneer implements Game {
 		feedbackText.addLine("Battle it out!");
 
 		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
-		battleControlPanel.addChild(moveSelectorLabel, battleControlPanel.getWidth()-moveGrid.getWidthWithMargin()-moveSelectorLabel.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
+		int mslX = battleControlPanel.getWidth()-moveGrid.getWidthWithMargin()-moveSelectorLabel.getWidthWithMargin();
+		battleControlPanel.addChild(moveSelectorLabel, mslX, DrawingUtils.DEFAULT_MARGIN);
+		battleControlPanel.addChild(captureButton, mslX - captureButton.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
 		battleControlPanel.addChild(targetSelectionGrid, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN);
 		battleControlPanel.addChild(targetSelectorLabel, targetSelectionGrid.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
 		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeight() - feedbackText.getHeight());
@@ -428,6 +439,17 @@ public class SuperDungeoneer implements Game {
 				}
 
 				updateTargetSelector(container);
+
+				for (BattlableActor a : actors) {
+					if (a instanceof ICapturable) {
+						ICapturable actor = (ICapturable) a;
+						if (actor.wasJustCaptured()) {
+							int nMembers = player.getPartySize();
+							partyMemberPanes[nMembers].setActor(a);
+						}
+					}
+
+				}
 			}
 		}
 	}

@@ -12,7 +12,7 @@ import java.util.LinkedList;
  * A Panel of GUI Elements. Allows drawing GUI Components to coordinates local to a specific segment of the screen
  */
 public class Panel extends BaseComponent {
-	private LinkedList<ComponentCoordinates<BaseComponent>> children;
+	private LinkedList<ComponentCoordinates<IBaseComponent>> children;
 
 	public Panel(GUIContext container, int x, int y, int width, int height) { this(container, x, y, width, height, DrawingUtils.DEFAULT_MARGIN, null, null); }
 	public Panel(GUIContext container, int x, int y, int width, int height, int margin, Color foreground, Color background) {
@@ -27,8 +27,8 @@ public class Panel extends BaseComponent {
 	 * @param x the panel-local x-coordinate of the pixel to use as the top left corner of this child
 	 * @param y the panel-local y-coordinate of the pixel to use as the top left corner of this child
 	 */
-	public void addChild(BaseComponent child, int x, int y) {
-		ComponentCoordinates<BaseComponent> tmp = new ComponentCoordinates<>(child, x ,y);
+	public void addChild(IBaseComponent child, int x, int y) {
+		ComponentCoordinates<IBaseComponent> tmp = new ComponentCoordinates<>(child, x ,y);
 		children.add(tmp);
 		tmp.invalidate();
 	}

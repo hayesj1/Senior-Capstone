@@ -79,4 +79,5 @@ public class PlayerActor extends PlayableActor {
 	public PlayableActor[] getParty() {
 		return party;
 	}
+	public int getPartySize() { return nextFreeSlot; }
 }

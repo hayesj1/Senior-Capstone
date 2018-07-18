@@ -130,7 +130,7 @@ public class Battle {
 	 * @param moveSlot The slot of the selected move
 	 */
 	public void advanceTurn(int moveSlot) {
-		if (!started || (moveSlot < 1 || moveSlot > players[activeActor].getMoveCount())) { return; }
+		if (!started || (moveSlot < 0 || moveSlot > players[activeActor].getMoveCount())) { return; }
 
 		// Do player moves
 		Turn turn = players[activeActor].planMove(moveSlot, foes);
