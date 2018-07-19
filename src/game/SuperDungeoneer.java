@@ -15,6 +15,8 @@ import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.SoundStore;
 
+import java.util.Random;
+
 public class SuperDungeoneer implements Game {
 	private static SuperDungeoneer instance = new SuperDungeoneer("Super Dungeoneer");
 
@@ -645,5 +647,12 @@ public class SuperDungeoneer implements Game {
 
 	public void addFeedback(String text) {
 		this.feedbackText.addLine(text);
+	}
+
+
+	public CapturableActor getRandMonster(Random rand) {
+		return new CapturableActor(new Species("Tmp", null, null), new Stats(0,0,0,0), new Move[0] );
+		//int idx = rand.nextInt(actors.length-2) + 2;
+		//return (CapturableActor) actors[idx];
 	}
 }
