@@ -18,7 +18,7 @@ public class Turn {
 	/**
 	 * Executes the saved move
 	 * @return true if the move lands, false if it missed, if it is out of uses, or if there is some other failure
-	 * @throws MoveOutOfUsesException if the move has no uses left
+	 * @throws MoveOutOfUsesException if the move has no uses up
 	 */
 	public boolean execute() throws MoveOutOfUsesException {
 		boolean res = attacker.attack(target, attack);

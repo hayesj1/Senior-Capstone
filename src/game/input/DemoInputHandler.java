@@ -20,8 +20,8 @@ public class DemoInputHandler implements InputProviderListener {
 
 	public static final BasicCommand forward = new BasicCommand("Forward");
 	public static final BasicCommand backward = new BasicCommand("backward");
-	public static final BasicCommand left = new BasicCommand("Left");
-	public static final BasicCommand right = new BasicCommand("Right");
+	public static final BasicCommand up = new BasicCommand("Up");
+	public static final BasicCommand down = new BasicCommand("Down");
 
 	public static final BasicCommand interact = new BasicCommand("Interact");
 
@@ -65,14 +65,14 @@ public class DemoInputHandler implements InputProviderListener {
 		//provider.bindCommand(new MouseButtonControl(Input.MOUSE_LEFT_BUTTON), selectTarget);
 		provider.bindCommand(new KeyControl(Input.KEY_R), runAway);
 
-		provider.bindCommand(new KeyControl(Input.KEY_W), forward);
-		provider.bindCommand(new KeyControl(Input.KEY_S), backward);
-		provider.bindCommand(new KeyControl(Input.KEY_A), left);
-		provider.bindCommand(new KeyControl(Input.KEY_D), right);
-		provider.bindCommand(new KeyControl(Input.KEY_UP), forward);
-		provider.bindCommand(new KeyControl(Input.KEY_DOWN), backward);
-		provider.bindCommand(new KeyControl(Input.KEY_LEFT), left);
-		provider.bindCommand(new KeyControl(Input.KEY_RIGHT), right);
+		provider.bindCommand(new KeyControl(Input.KEY_D), forward);
+		provider.bindCommand(new KeyControl(Input.KEY_A), backward);
+		provider.bindCommand(new KeyControl(Input.KEY_W), up);
+		provider.bindCommand(new KeyControl(Input.KEY_S), down);
+		provider.bindCommand(new KeyControl(Input.KEY_RIGHT), forward);
+		provider.bindCommand(new KeyControl(Input.KEY_LEFT), backward);
+		provider.bindCommand(new KeyControl(Input.KEY_UP), up);
+		provider.bindCommand(new KeyControl(Input.KEY_DOWN), down);
 
 		provider.bindCommand(new KeyControl(Input.KEY_SPACE), interact);
 

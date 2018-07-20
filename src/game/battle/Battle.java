@@ -7,8 +7,8 @@ import game.character.PlayableActor;
 import game.character.PlayerActor;
 import game.input.BattleCommandDelegate;
 
-import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class Battle {
 	public static class BattleOrder implements Comparator<IBattlable> {
@@ -74,9 +74,10 @@ public class Battle {
 	private boolean needsAction = false;
 	private boolean playerWon;
 	private int activeActor = -1;
-
-	private PlayableActor[] players;
-	private CapturableActor[] foes;
+	private int playerIdx;
+	private PlayerActor player;
+	private ArrayList<PlayableActor> players;
+	private ArrayList<CapturableActor> foes;
 	private TreeSet<IBattlable> order;
 
 	public Battle(BattleCommandDelegate del) {
@@ -85,8 +86,8 @@ public class Battle {
 		this.started = false;
 		this.ended = false;
 		this.playerWon = false;
-		this.players = new PlayableActor[2];
-		this.foes = new CapturableActor[2];
+		this.players = new ArrayList<>(2);
+		this.foes = new ArrayList<>(2);
 		this.order = new TreeSet<>(BattleOrder.getInstance());
 	}
 
@@ -98,13 +99,20 @@ public class Battle {
 	private void prepare(PlayableActor[] playerteam, CapturableActor[] foeTeam) {
 		if (prepared) { return; }
 
-		System.arraycopy(playerteam, 0, this.players, 0, MAX_TEAM_SIZE);
-		System.arraycopy(foeTeam, 0, this.foes, 0, MAX_TEAM_SIZE);
+		for (int i = 0; i < playerteam.length; i++) {
+			if (playerteam[i] instanceof PlayerActor) {
+				this.player = (PlayerActor) playerteam[i];
 
-		this.order.add(playerteam[0]);
-		this.order.add(playerteam[1]);
-		this.order.add(foeTeam[0]);
-		this.order.add(foeTeam[1]);
+				if (i >= MAX_TEAM_SIZE) {
+					playerteam[0] = this.player;
+				}
+			}
+		}
+
+		Collections.addAll(this.players, Arrays.copyOf(playerteam, MAX_TEAM_SIZE));
+		Collections.addAll(this.foes, Arrays.copyOf(foeTeam, MAX_TEAM_SIZE));
+		this.order.addAll(this.players);
+		this.order.addAll(this.foes);
 
 		this.prepared = true;
 	}
@@ -130,31 +138,32 @@ public class Battle {
 	 * @param moveSlot The slot of the selected move
 	 */
 	public void advanceTurn(int moveSlot) {
-		if (!started || (moveSlot < 0 || moveSlot > players[activeActor].getMoveCount())) { return; }
+		if (!started || (moveSlot < 0 || moveSlot > players.get(activeActor).getMoveCount())) { return; }
 
+		CapturableActor[] foeArr = foes.toArray(new CapturableActor[0]);
 		// Do player moves
-		Turn turn = players[activeActor].planMove(moveSlot, foes);
+		Turn turn = players.get(activeActor).planMove(moveSlot, foeArr);
 		if (turn.getTarget() == null) {
-			SuperDungeoneer.getInstance().selectTarget(foes);
+			SuperDungeoneer.getInstance().selectTarget(foeArr);
 			try {
 				int targetSlot = SuperDungeoneer.getInstance().getSelectedTargetSlot();
-				turn.setTarget(foes[targetSlot - 1]);
+				turn.setTarget(foes.get(targetSlot - 1));
 			} catch (IllegalStateException ise) {
 				return;
 			}
 		}
 
 		if (turn.ready()) {
-			if (activeActor == 0 && players[1].isIncapacitated()) { activeActor++; }
+			if (activeActor == 0 && players.get(1).isIncapacitated()) { activeActor++; }
 			activeActor++;
 		}
 
 		// Do AI moves
-		if (activeActor >= players.length) {
+		if (activeActor >= players.size()) {
 			needsAction = false;
 			for (CapturableActor foe : foes) {
 				if (foe.isIncapacitated()) { continue; }
-				foe.planMove(players);
+				foe.planMove(players.toArray(new PlayableActor[0]));
 			}
 
 			executeTurns();
@@ -174,23 +183,43 @@ public class Battle {
 		order.descendingSet().forEach(IBattlable::executeTurn);
 		order.descendingSet().removeIf(IBattlable::isIncapacitated);
 
+		Predicate<CapturableActor> isIncapacited = CapturableActor::isIncapacitated;
+		boolean allIncapacitated = foes.stream().allMatch(isIncapacited);
+		boolean someIncapacitated = foes.stream().anyMatch(isIncapacited);
 		if (order.size() < 4) {
-			if (players[0].isKOed()) {
+			if (player.isKOed()) {
 				playerWon = false; // you LOSE cause you DEAD
 				ended = true;
-			} else if (foes[0].isIncapacitated() && foes[1].isIncapacitated()) {
+			} else if (allIncapacitated) {
 				playerWon = true; // you WIN cause foes is DEAD or CAPTURED
 				ended = true;
-			} else if (players[1].isKOed()) {
-				players[1] = ((PlayerActor) players[0]).getNextAvailablePartyMember(players[1]);
+			} else if (players.get(1).isKOed()) {
+				players.set(1, player.getNextAvailablePartyMember(players.get(1)));
 			}
 		}
+	}
+
+	public void clearState() {
+		this.ended = false;
+		this.playerWon = false;
+		this.playerIdx = 0;
+
+		this.players.clear();
+		this.foes.clear();
+		this.prepared = false;
+
+		this.activeActor = 0;
+		this.needsAction = false;
+		this.started = false;
 	}
 
 	public boolean isOver() { return this.ended; }
 	public boolean isStarted() { return this.started; }
 	public boolean playerVictory() { return this.playerWon; }
 	public boolean needsUserAction() { return this.needsAction; }
-	public IBattlable getActiveActor() { return this.players[this.activeActor]; }
+	public IBattlable getActiveActor() { return this.activeActor >= 0 ? this.players.get(this.activeActor) : null; }
+
+	public ArrayList<PlayableActor> getPlayers() { return players; }
+	public ArrayList<CapturableActor> getFoes() { return foes; }
 
 }

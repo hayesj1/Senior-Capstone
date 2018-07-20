@@ -1,6 +1,7 @@
 package game.dungeon;
 
 import game.SuperDungeoneer;
+import game.character.CapturableActor;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -22,7 +23,10 @@ public class Dungeon {
 	private final int maxPassageLength;
 	private final int minPassageLength;
 
-	public Dungeon(final int width, final int height ){
+	private boolean initialized;
+	private boolean generated = false;
+
+	public Dungeon(final int width, final int height ) {
 		this.width = width;
 		this.height = height;
 		this.maxPassageLength = (width / 4);
@@ -33,12 +37,16 @@ public class Dungeon {
 				this.map[i][j] = new Tile(i, j);
 			}
 		}
-
+		initialized = true;
 	}
+	public void generateDungeon() { this.generateDungeon( (int) Math.ceil(Math.pow(width * height, 0.4f)) ); }
+	public void generateDungeon(int numMonsters) {
+		if (generated) { return; }
 
-	public void generateDungeon() {
 		generateLayout();
-		generateMonsters( (int) Math.ceil(Math.pow(width * height, 0.5f)) );
+		generateMonsters(numMonsters);
+
+		generated = true;
 	}
 	private void generateLayout() {
 		final LinkedList<int[]> frontiers = new LinkedList<>();
@@ -101,11 +109,14 @@ public class Dungeon {
 		while (n > 0) {
 			int x = random.nextInt(width);
 			int y = random.nextInt(height);
-			System.out.println(n);
-			if (map[x][y].isPassage()) {
-				map[x][y].setStateAndOccupant(Tile.MONSTER, SuperDungeoneer.getInstance().getRandMonster(random));
+			if (( x < 3 ||  x >= width-3 ) || ( y < 3 ||  y >= height-3 )) { continue; }
+			boolean neighborsArePassages = (map[x-1][y].isPassage() || map[x-1][y].getOccupant() == null) && (map[x+1][y].isPassage() || map[x+1][y].getOccupant() == null) && (map[x][y-1].isPassage() || map[x][y-1].getOccupant() == null) && (map[x][y+1].isPassage() || map[x][y+1].getOccupant() == null);
+			if (map[x][y].isPassage() && neighborsArePassages) {
+				CapturableActor randMonster = SuperDungeoneer.getInstance().getRandMonster(random);
+				map[x][y].setStateAndOccupant(Tile.ACTOR, randMonster);
+				System.out.println(map[x][y].getOccupant());
+				SuperDungeoneer.getInstance().addMonster(map[x][y], randMonster);
 				n--;
-				System.out.println("Generated Monster");
 			}
 		}
 
@@ -164,9 +175,9 @@ public class Dungeon {
 	@Override
 	public String toString(){
 		final StringBuilder b = new StringBuilder();
-		for (int x = 0; x < width + 2; x++)
-			b.append(WALL_CHAR);
-		b.append('\n');
+		for (int x = 0; x < width + 2; x++);
+			//b.append(WALL_CHAR);
+		//b.append('\n');
 		for (int y = 0; y < height; y++ ){
 			b.append(WALL_CHAR);
 			for (int x = 0; x < width; x++)
@@ -176,8 +187,22 @@ public class Dungeon {
 		}
 		for (int x = 0; x < width + 2; x++)
 			b.append(WALL_CHAR);
-		b.append('\n');
+		//b.append('\n');
 
 		return b.toString();
+	}
+
+	public Tile getTileAt(int x, int y) {
+		if (x < 0 || x >= this.getWidth() || y < 0 || y>= this.getHeight()) { throw new IllegalArgumentException("x or y is out of bounds!"); }
+		return map[x][y];
+	}
+	public int getWidth() {
+		return width;
+	}
+	public int getHeight() {
+		return height;
+	}
+	public boolean isGenerated() {
+		return this.generated;
 	}
 }

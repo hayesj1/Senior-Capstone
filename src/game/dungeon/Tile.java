@@ -8,10 +8,10 @@ public class Tile {
 	static final char PASSAGE_CHAR = '\u25A2';
 	static final char WALL_CHAR    = '\u25A6';
 	static final char BLOCKED_CHAR = '\u25A3';
-	static final int WALL      = 0;
-	static final int PASSAGE   = 1;
-	static final int MONSTER   = 2;
-	static final int BOSS      = 4;
+	public static final int WALL      = 1;
+	public static final int PASSAGE   = 2;
+	public static final int ACTOR     = 4;
+	public static final int BOSS      = 8;
 
 	private int x;
 	private int y;
@@ -28,7 +28,33 @@ public class Tile {
 
 	public boolean isWall() { return state == WALL; }
 	public boolean isPassage() { return state == PASSAGE; }
-	public boolean isBlocked() { return state == WALL || (( state == MONSTER || state == BOSS ) && occupant != null); }
+	public boolean isBlocked() { return state == WALL || (( state == ACTOR || state == BOSS ) && occupant != null); }
+
+	/**
+	 * Returns a string representation of the object. In general, the
+	 * {@code toString} method returns a string that
+	 * "textually represents" this object. The result should
+	 * be a concise but informative representation that is easy for a
+	 * person to read.
+	 * It is recommended that all subclasses override this method.
+	 * <p>
+	 * The {@code toString} method for class {@code Object}
+	 * returns a string consisting of the name of the class of which the
+	 * object is an instance, the at-sign character `{@code @}', and
+	 * the unsigned hexadecimal representation of the hash code of the
+	 * object. In other words, this method returns a string equal to the
+	 * value of:
+	 * <blockquote>
+	 * <pre>
+	 * getClass().getName() + '@' + Integer.toHexString(hashCode())
+	 * </pre></blockquote>
+	 *
+	 * @return a string representation of the object.
+	 */
+	@Override
+	public String toString() {
+		return "("+this.getX()+", "+this.getY()+"): "+this.getState()+" | "+(this.getOccupant() == null ? "NULL" : this.getOccupant().toString());
+	}
 
 	public int getX() {
 		return x;

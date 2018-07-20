@@ -4,17 +4,21 @@ import game.battle.Battle;
 import game.character.*;
 import game.character.moves.Move;
 import game.character.moves.MoveSet;
+import game.dungeon.Dungeon;
+import game.dungeon.DungeonComponent;
+import game.dungeon.Tile;
 import game.gui.*;
 import game.input.BattleCommandDelegate;
 import game.input.DemoInputHandler;
+import game.input.MovementCommandDelegate;
 import game.util.DrawingUtils;
 import org.newdawn.slick.*;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.geom.RoundedRectangle;
-import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.SoundStore;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class SuperDungeoneer implements Game {
@@ -25,11 +29,11 @@ public class SuperDungeoneer implements Game {
 
 
 	private String title;
-	private Image im = null;
-	private Animation anim = null;
-	private Audio bgm = null;
-	private InputProvider provider = null;
+//	private Image im = null;
+//	private Animation anim = null;
+//	private Audio bgm = null;
 	private DemoInputHandler handler = null;
+
 	private MouseListener onFlyMouseListner = new MouseListener() {
 		private boolean isAcceptingInput = false;
 		@Override
@@ -86,16 +90,15 @@ public class SuperDungeoneer implements Game {
 		}
 	};
 
-
-	private MoveSet testMoveSet;
-	private Move[] testMoves;
-	private Species testSpecies;
-	private Move punch;
-	private Move kick;
-	private Move slap;
-	private Move elbow;
-	private Move bite;
-	private Move slam;
+//	private MoveSet testMoveSet;
+//	private Move[] testMoves;
+//	private Species testSpecies;
+//	private Move punch;
+//	private Move kick;
+//	private Move slap;
+//	private Move elbow;
+//	private Move bite;
+//	private Move slam;
 
 	private MoveSet allMoveSet;
 	private MoveSet playerMoveSet;
@@ -103,8 +106,6 @@ public class SuperDungeoneer implements Game {
 	private Move[] allMoves;
 	private Move[] playerMoves;
 	private Move[] monsterMoves;
-	private Species playerSpecies;
-	private Species orcSpecies;
 	private Move jab;
 	private Move comboPunch;
 	private Move slash;
@@ -119,17 +120,31 @@ public class SuperDungeoneer implements Game {
 	private Move killerStab;
 	private Move fireFist;
 
+	private int spriteSize;
+	private SpriteSheet humanSheet;
+	private SpriteSheet orcSheet;
+
+
+	private Species playerSpecies;
+	private Species orcSpecies;
+
+
 	private PlayerActor player;
-	private PlayableActor mon1;
+	private PlayableActor buddy;
 	private CapturableActor mon2;
 	private CapturableActor mon3;
-	private BattlableActor[] actors;
+	private ArrayList<PlayableActor> actors;
+	private ArrayList<CapturableActor> foes;
+	private ArrayList<Tile> foeTiles;
 
 	private Battle demoBattle;
 	private BattleCommandDelegate battleCommandDelegate;
-	private SpriteSheet orcSheet;
+	private MovementCommandDelegate movementCommandDelegate;
+
+	private DungeonComponent dungeon;
 
 	private Panel battleControlPanel;
+	private TextHistory feedbackText;
 	private LabeledButton[] moveButtons;
 	private ButtonGrid moveGrid;
 	private Label moveSelectorLabel;
@@ -138,18 +153,16 @@ public class SuperDungeoneer implements Game {
 	private ButtonGrid targetSelectionGrid;
 	private Label targetSelectorLabel;
 
-	private TextHistory feedbackText;
+	private Panel helpPanel;
+	private TextHistory helpText;
+	private Panel partyPanel;
+	private ActorStatPane[] partyMemberPanes;
 
+	private ArrayList<Animation> anims;
 	private boolean needsTarget = false;
 	private boolean selectedTarget = false;
 	private int targetSlot = -1;
 	private int moveSlot = -1;
-
-	private Panel helpPanel;
-	private TextHistory helpText;
-
-	private Panel partyPanel;
-	private ActorStatPane[] partyMemberPanes;
 
 	/**
 	 * Create a new basic game
@@ -179,39 +192,43 @@ public class SuperDungeoneer implements Game {
 		initInput(container);
 		initMoves(container);
 		initSpecies(container);
-		initDungeon(container);
 		initGUI(container);
 		initSound(container);
 
+		anims.forEach(Animation::start);
+
 		// ##### DEMO CODE ##### //
-		demoBattle.start(new PlayableActor[] { player, mon1 }, new CapturableActor[] { mon2, mon3 });
+		//demoBattle.start(new PlayableActor[] { player, buddy }, foes.toArray(new CapturableActor[0]));
 		battleCommandDelegate.init(demoBattle);
+		movementCommandDelegate.init(dungeon.getDungeon());
 	}
 	private void initInput(GameContainer container) {
 		Input input = container.getInput();
 		input.addMouseListener(onFlyMouseListner);
 
 		battleCommandDelegate = new BattleCommandDelegate();
-		provider = new InputProvider(input);
+		movementCommandDelegate = new MovementCommandDelegate();
+		InputProvider provider = new InputProvider(input);
 		handler = new DemoInputHandler(container);
 		handler.addCommandDelegate(battleCommandDelegate);
+		handler.addCommandDelegate(movementCommandDelegate);
 		handler.registerCommands(provider);
 		provider.addListener(handler);
 
 	}
 	private void initMoves(GameContainer container) {
 		// ##### TESTING CODE ##### //
-		punch = new Move("Punch", "", 5, 80, 30);
-		kick = new Move("Kick", "", 4, 90, 30);
-		slap = new Move("Slap", "", 3, 100, 20);
-		elbow = new Move("Elbow", "", 4, 85, 30);
-		bite = new Move("Bite", "", 5, 90, 20);
-		slam = new Move("Slam", "", 6, 80, 10);
-
-		testMoveSet = new MoveSet();
-		testMoves = new Move[] { punch, kick, slap, elbow, bite, slam };
-		int[] levels = new int[] {-1, 2, 4, 7, 11, 16 };
-		testMoveSet.init(testMoves, levels);
+//		punch = new Move("Punch", "", 5, 80, 30);
+//		kick = new Move("Kick", "", 4, 90, 30);
+//		slap = new Move("Slap", "", 3, 100, 20);
+//		elbow = new Move("Elbow", "", 4, 85, 30);
+//		bite = new Move("Bite", "", 5, 90, 20);
+//		slam = new Move("Slam", "", 6, 80, 10);
+//
+//		testMoveSet = new MoveSet();
+//		testMoves = new Move[] { punch, kick, slap, elbow, bite, slam };
+//		int[] levels = new int[] {-1, 2, 4, 7, 11, 16 };
+//		testMoveSet.init(testMoves, levels);
 
 		// ##### PRODUCTION CODE ##### //
 
@@ -243,8 +260,8 @@ public class SuperDungeoneer implements Game {
 			allMovesLevels[i] = -1;
 		}
 
-		int[] playerMovesLevels = new int[]  { 0, 3, 7, 12, 14, 20 }; //Josh please fill in the proper levels or remove this comment if they're fine
-		int[] monsterMovesLevels = new int[] { 0, 3, 6, 8, 13, 20, 25, 30 }; //Josh please fill in the proper levels or remove this comment if they're fine
+		int[] playerMovesLevels = new int[]  { 0, 3, 7, 12, 14, 20 };
+		int[] monsterMovesLevels = new int[] { 0, 3, 6, 8, 13, 20, 25, 30 };
 
 		allMoveSet.init(allMoves, allMovesLevels);
 		playerMoveSet.init(playerMoves, playerMovesLevels);
@@ -260,23 +277,37 @@ public class SuperDungeoneer implements Game {
 
 
 		// ##### DEMO CODE ##### //
-		playerSpecies = new Species("Human", playerMoveSet, orcSheet);
+		playerSpecies = new Species("Human", playerMoveSet, humanSheet);
 		orcSpecies = new Species("Orc", monsterMoveSet, orcSheet);
 	}
 	private void initSprites(GameContainer container) {
 		try {
-			orcSheet = new SpriteSheet("assets/sprite/orc/orc_regular_hair.png", 20, 20, 0);
+			spriteSize = 20;
+			humanSheet = new SpriteSheet("assets/sprite/Human/human_regular_hair.png", spriteSize, spriteSize, 0);
+			orcSheet = new SpriteSheet("assets/sprite/Orc/orc_regular_bald.png", spriteSize, spriteSize, 0);
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 	}
 	private void initDungeon(GameContainer container) {
-		initMonsters();
+		// ##### TESTING CODE ##### //
+		//initMonsters();
 		initPlayer(container);
-		initBoss();
 
-		actors = new BattlableActor[] { player, mon1, mon2, mon3 };
+		actors = new ArrayList<>(PlayerActor.MAX_PARTY_SIZE+1);
+		actors.add(player);
+		actors.add(buddy);
+		foes = new ArrayList<>();
+		foeTiles = new ArrayList<>();
+
 		demoBattle = new Battle(battleCommandDelegate);
+
+		// ##### PRODUCTION CODE ##### //
+		int dcX = DrawingUtils.DEFAULT_MARGIN, dcY = DrawingUtils.DEFAULT_MARGIN;
+		int dcW = container.getWidth() - (container.getWidth() / 5) + dcX, dcH = container.getHeight() - (container.getHeight() / 5) + dcY;
+		dungeon = new DungeonComponent(container, dcX, dcY, dcW, dcH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+		dungeon.generateDungeon(container, spriteSize);
+		dungeon.addPlayer(player);
 	}
 	private void initMonsters() {
 		// ##### TESTING CODE ##### //
@@ -297,27 +328,27 @@ public class SuperDungeoneer implements Game {
 	private void initPlayer(GameContainer container) {
 		// ##### TESTING CODE ##### //
 		//player = new Player(testSpecies, new Stats(30, 5, 5, 4), testMoves, "Player1");
-		//mon1 = new PlayableActor(testSpecies, new Stats(20, 4, 6, 3), testMoves);
+		//buddy = new PlayableActor(testSpecies, new Stats(20, 4, 6, 3), testMoves);
 
 		// ##### PRODUCTION CODE ##### //
 		Move[] playerStartMoves = new Move[] { playerMoves[0] };
-		Stats playerStats = new Stats(30, 5, 5, 4); // Josh please fix these values or agree with them and remove this comment
+		Stats playerStats = new Stats(30, 5, 5, 4);
 		player = new PlayerActor(playerSpecies, "You", playerStartMoves, playerStats);
 
 		// ##### DEMO CODE ##### //
 		Move[] monsterStartMoves = new Move[] { monsterMoves[0] };
-		mon1 = new PlayableActor(orcSpecies, "Olaf", new Stats(20, 4, 6, 3), monsterStartMoves); // Josh please fix these stats or agree with them and remove this comment
-		player.addToTeam(mon1);
-	}
-	private void initBoss() {
-
+		buddy = new PlayableActor(orcSpecies, "Olaf", new Stats(20, 4, 6, 3), monsterStartMoves);
+		player.addToTeam(buddy);
 	}
 	private void initGUI(GameContainer container) {
-		int bcpX = DrawingUtils.DEFAULT_MARGIN, bcpW = container.getWidth() - 2*DrawingUtils.DEFAULT_MARGIN, bcpY = container.getHeight() - (container.getHeight() / 5), bcpH = container.getHeight() / 5;
+		initDungeon(container);
+
+		int bcpX = DrawingUtils.DEFAULT_MARGIN, bcpY = dungeon.getHeight() + DrawingUtils.DEFAULT_MARGIN;
+		int bcpW = container.getWidth() - DrawingUtils.DEFAULT_MARGIN, bcpH = container.getHeight() / 5;
 		battleControlPanel = new Panel(container, bcpX, bcpY, bcpW, bcpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER1_BACKGROUND_COLOR);
 
-		int hpX = container.getWidth() - (container.getWidth() / 5) - DrawingUtils.DEFAULT_MARGIN, hpW = (container.getWidth() / 5);
-		int hpY = 0, hpH = battleControlPanel.getY() / 9;
+		int hpX = dungeon.getWidth() + DrawingUtils.DEFAULT_MARGIN, hpW = (container.getWidth() / 5);
+		int hpY = DrawingUtils.DEFAULT_MARGIN, hpH = battleControlPanel.getY() / 9;
 		helpPanel = new Panel(container, hpX, hpY, hpW, hpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER1_BACKGROUND_COLOR);
 
 		int ppX = hpX, ppW = hpW;
@@ -386,9 +417,7 @@ public class SuperDungeoneer implements Game {
 
 		for (int i = partyMemberPanes.length -1; i >= 0; i--) {
 			pmpY -= pmpH;
-			//partyMemberPanes[i].setLocation(pmpX, pmpY);
 			partyPanel.addChild(partyMemberPanes[i], pmpX, pmpY);
-
 		}
 	}
 	private void initSound(GameContainer container) {
@@ -420,11 +449,15 @@ public class SuperDungeoneer implements Game {
 		//}
 
 		// ##### PRODUCTION CODE ##### //
+		anims.forEach(anim -> anim.update(delta));
+		anims.forEach(anim -> anim.setSpeed(0.05f));
 
 		// ##### DEMO CODE ##### //
 		if (demoBattle.isStarted()) {
+			battleControlPanel.setEnabled(true);
 			if (demoBattle.isOver()) {
-				handler.removeCommandDelegate(battleCommandDelegate);
+				boolean playerVictory = demoBattle.playerVictory();
+				demoBattle.clearState();
 			} else {
 				IBattlable activeActor = demoBattle.getActiveActor();
 				demoBattle.advanceTurn(moveSlot);
@@ -453,9 +486,10 @@ public class SuperDungeoneer implements Game {
 
 				}
 			}
+		} else {
+			battleControlPanel.setEnabled(false);
 		}
 	}
-
 
 	/**
 	 * Render the game's screen here.
@@ -481,23 +515,21 @@ public class SuperDungeoneer implements Game {
 
 		drawHUD(container, g);
 		drawBattle(container, g);
-		Animation deathAnim = mon2.getDeathAnimation();
+		/*Animation deathAnim = mon2.getDeathAnimation();
 		if (deathAnim != null) {
 			deathAnim.setLooping(false);
 			//g.drawAnimation(deathAnim, 20, 200);
 			//deathAnim.setDuration(0, 2000);
-		}
+		}*/
 
 		g.flush();
 	}
 
 	private void drawHUD(GameContainer container, Graphics g) throws SlickException {
+		dungeon.render(container, g);
 		helpPanel.render(container, g);
 		partyPanel.render(container, g);
 		if (demoBattle.isStarted()) {
-			if (demoBattle.isOver()) {
-				battleControlPanel.setEnabled(false);
-			}
 			drawBattleHUD(container, g);
 			drawMoves(container, g);
 		}
@@ -507,10 +539,10 @@ public class SuperDungeoneer implements Game {
 		Color oldC = g.getColor();
 
 		battleControlPanel.render(container, g);
-		for (int i = 0; i < actors.length; i++) {
-			if (actors[i] instanceof CapturableActor){
-				if (actors[i].isIncapacitated()) {
-					LabeledButton btn = targetSelectorButtons[i-Battle.MAX_TEAM_SIZE];
+		for (int i = 0; i < foes.size(); i++) {
+			if (foes.get(i) != null){
+				if (foes.get(i).isIncapacitated()) {
+					LabeledButton btn = targetSelectorButtons[i];
 					//DrawingUtils.drawDisabledOverlay(container, g, btn.getX(), btn.getY(), btn.getWidth(), btn.getHeight());
 				}
 			}
@@ -518,8 +550,8 @@ public class SuperDungeoneer implements Game {
 		if (!demoBattle.isOver()) {
 			g.setColor(DrawingUtils.FOREGROUND_COLOR);
 			int foeX = COMPONENT_SPACING, foeY = COMPONENT_SPACING;
-			for (int i = 2; i < actors.length; i++) {
-				float w = ( ( actors[i].HP() * 1.0f ) / actors[i].getStats().maxHP() );
+			for (int i = 2; i < actors.size(); i++) {
+				float w = ( ( actors.get(i).HP() * 1.0f ) / actors.get(i).getStats().maxHP() );
 				//g.setColor(DrawingUtils.FOREGROUND_COLOR);
 				g.fillRoundRect(foeX - 2, foeY - 2, 204, 24, 8);
 				g.fill(new RoundedRectangle(foeX, foeY, w * 200, 20, 8), new GradientFill(foeX, foeY, Color.red, foeX + 200, foeX + 20, Color.green));
@@ -528,8 +560,8 @@ public class SuperDungeoneer implements Game {
 
 			foeX = 240;
 			foeY = COMPONENT_SPACING;
-			for (int i = 2; i < actors.length; i++) {
-				g.getFont().drawString(foeX, foeY, actors[i].getName() + " HP: " + actors[i].HP() + " / "+actors[i].getStats().maxHP(), Color.white);
+			for (int i = 2; i < actors.size(); i++) {
+				g.getFont().drawString(foeX, foeY, actors.get(i).getName() + " HP: " + actors.get(i).HP() + " / "+actors.get(i).getStats().maxHP(), Color.white);
 				foeY += 15 + g.getFont().getLineHeight();
 			}
 
@@ -619,6 +651,12 @@ public class SuperDungeoneer implements Game {
 		return instance;
 	}
 
+	public PlayerActor getPlayer() { return this.player; }
+	public int[] getPlayerPos() { return dungeon.getPlayerPos(); }
+	public void movePlayer(int x, int y) {
+		dungeon.offsetPlayerPos(new int[] { x*spriteSize, y*spriteSize });
+	}
+
 	public LabeledButton[] getMoveButtons(){
 		return this.moveButtons;
 	}
@@ -649,10 +687,58 @@ public class SuperDungeoneer implements Game {
 		this.feedbackText.addLine(text);
 	}
 
-
+	public void addAnim(Animation anim) {
+		if (anims == null) {
+			anims = new ArrayList<Animation>();
+		}
+		anims.add(anim);
+	}
+	public void addActor(PlayableActor a) {
+		actors.add(a);
+	}
+	public void addMonster(Tile t, CapturableActor a) {
+		foes.add(a);
+		foeTiles.add(t);
+	}
 	public CapturableActor getRandMonster(Random rand) {
-		return new CapturableActor(new Species("Tmp", null, null), new Stats(0,0,0,0), new Move[0] );
-		//int idx = rand.nextInt(actors.length-2) + 2;
-		//return (CapturableActor) actors[idx];
+		Species[] species = new Species[] { orcSpecies };
+		int speciesIdx = rand.nextInt(species.length);
+		return new CapturableActor(species[speciesIdx], new Stats(rand.nextInt(10)+10,rand.nextInt(10),rand.nextInt(10),rand.nextInt(5)), new Move[] { monsterMoves[0] } );
+	}
+
+	public void interacted() {
+		int x = getPlayerPos()[0], y = getPlayerPos()[1];
+		Dungeon d = dungeon.getDungeon();
+		CapturableActor foe = null;
+		System.out.println("Interaction! "+x+", "+y);
+		try {
+			if (d.getTileAt(x + 1, y).getState() == Tile.ACTOR && d.getTileAt(x + 1, y).getOccupant() != player) {
+				foe = (CapturableActor) d.getTileAt(x + 1, y).getOccupant();
+			}
+		} catch (IllegalArgumentException iae) {}
+		try {
+			if (d.getTileAt(x, y - 1).getState() == Tile.ACTOR && d.getTileAt(x, y - 1).getOccupant() != player) {
+				foe = (CapturableActor) d.getTileAt(x, y - 1).getOccupant();
+			}
+		} catch (IllegalArgumentException iae) {}
+		try {
+			if (d.getTileAt(x - 1, y).getState() == Tile.ACTOR && d.getTileAt(x - 1, y).getOccupant() != player) {
+				foe = (CapturableActor) d.getTileAt(x - 1, y).getOccupant();
+			}
+		} catch (IllegalArgumentException iae) {}
+		try {
+			if (d.getTileAt(x, y + 1).getState() == Tile.ACTOR && d.getTileAt(x, y + 1).getOccupant() != player) {
+				foe = (CapturableActor) d.getTileAt(x, y + 1).getOccupant();
+			}
+		} catch (IllegalArgumentException iae) {}
+
+		if (foe != null) {
+			try {
+				demoBattle.start(new PlayableActor[] { player, player.getParty()[0]}, new CapturableActor[] { foe, (CapturableActor) foe.clone() });
+				System.out.println("Battle Time!");
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

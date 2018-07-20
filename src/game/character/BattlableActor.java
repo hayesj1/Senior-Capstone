@@ -14,7 +14,7 @@ public abstract class BattlableActor extends Actor implements IBattlable {
 	protected int level;
 	protected Stats stats;
 
-	protected final Move[] learnedMoves = new Move[MAX_MOVES];
+	protected Move[] learnedMoves = new Move[MAX_MOVES];
 	protected int moveCount = 0;
 	protected int selectedSlot = -1;
 
