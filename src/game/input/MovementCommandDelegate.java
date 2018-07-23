@@ -5,7 +5,6 @@ import game.character.PlayerActor;
 import game.dungeon.Dungeon;
 import game.dungeon.Tile;
 import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.command.Command;
 
 public class MovementCommandDelegate implements ICommandDelegate {
@@ -37,7 +36,6 @@ public class MovementCommandDelegate implements ICommandDelegate {
 	public void action(Command command, GameContainer container) {
 		if (!initialized || SuperDungeoneer.getInstance().getPlayer() == null || !map.isGenerated()) { return; }
 
-		Input input = container.getInput();
 		int x = 0, y = 0;
 		if (command == DemoInputHandler.forward) { x = 1; }
 		else if (command == DemoInputHandler.backward) { x = -1; }
@@ -57,7 +55,7 @@ public class MovementCommandDelegate implements ICommandDelegate {
 				SuperDungeoneer.getInstance().movePlayer(x, y);
 			}
 		} catch (IllegalArgumentException iae) {
-			System.err.println("Out of bounds movement attmepted!"); return; }
+			System.err.println("Out of bounds movement attempted!"); return; }
 	}
 
 }

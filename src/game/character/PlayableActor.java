@@ -26,11 +26,9 @@ public class PlayableActor extends BattlableActor implements ILevelable {
 	 */
 	@Override
 	public Turn planMove(IBattlable[] targets) {
-		if (plannedTurn) {
-			return turn;
-		}
-		turn.setTarget(null);
-		turn.setAttack(null);
+		if (plannedTurn) { return turn; }
+		//turn.setTarget(null);
+		//turn.setAttack(null);
 
 		if (selectedSlot < 0) {
 			return turn;

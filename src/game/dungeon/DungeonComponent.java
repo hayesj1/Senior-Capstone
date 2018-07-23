@@ -138,9 +138,9 @@ public class DungeonComponent extends BaseComponent {
 		for (int i = 2; i < dungeon.getHeight() - 2; i++) {
 			for (int j = 2; j < dungeon.getWidth() - 2; j++) {
 				Tile t = this.dungeon.getTileAt(j, i);
-				System.out.print(t);
+				//System.out.print(t);
 				if (t.isPassage()) {
-					System.out.println(" | True");
+					//System.out.println(" | True");
 					t.setStateAndOccupant(Tile.ACTOR, player);
 					this.playerComponent = new ActorComponent(container, player, getX() + j*spriteLength, getY() + i*spriteLength, spriteLength);
 					this.lastPlayerX = j;
@@ -148,14 +148,20 @@ public class DungeonComponent extends BaseComponent {
 					return;
 				}
 
-				System.out.println("");
+				//System.out.println("");
 			}
+		}
+	}
+
+	public void removeFoeComponent(Actor a) {
+		if (foeComponents.removeIf(actorComponent -> actorComponent.getActor().equals(a))) {
+			System.out.println("Removed foe!");
 		}
 	}
 
 	public int[] getPlayerPos() { return new int[] { lastPlayerX, lastPlayerY }; }
 	public void offsetPlayerPos(int[] pos) {
-		System.out.println(lastPlayerX+","+lastPlayerY);
+		//System.out.println(lastPlayerX+","+lastPlayerY);
 		this.playerComponent.setLocation(this.playerComponent.getX() + pos[0], this.playerComponent.getY() + pos[1]);
 		this.lastPlayerX = (playerComponent.getX() / spriteLength);
 		this.lastPlayerY = (playerComponent.getY() / spriteLength);

@@ -1,10 +1,7 @@
 package game.battle;
 
 import game.SuperDungeoneer;
-import game.character.CapturableActor;
-import game.character.IBattlable;
-import game.character.PlayableActor;
-import game.character.PlayerActor;
+import game.character.*;
 import game.input.BattleCommandDelegate;
 
 import java.util.*;
@@ -78,7 +75,7 @@ public class Battle {
 	private PlayerActor player;
 	private ArrayList<PlayableActor> players;
 	private ArrayList<CapturableActor> foes;
-	private TreeSet<IBattlable> order;
+	private TreeSet<BattlableActor> order;
 
 	public Battle(BattleCommandDelegate del) {
 		this.commandDelegate = del;
@@ -140,6 +137,7 @@ public class Battle {
 	public void advanceTurn(int moveSlot) {
 		if (!started || (moveSlot < 0 || moveSlot > players.get(activeActor).getMoveCount())) { return; }
 
+		PlayableActor[] playerArr = players.toArray(new PlayableActor[0]);
 		CapturableActor[] foeArr = foes.toArray(new CapturableActor[0]);
 		// Do player moves
 		Turn turn = players.get(activeActor).planMove(moveSlot, foeArr);
@@ -163,14 +161,23 @@ public class Battle {
 			needsAction = false;
 			for (CapturableActor foe : foes) {
 				if (foe.isIncapacitated()) { continue; }
-				foe.planMove(players.toArray(new PlayableActor[0]));
+				turn = foe.planMove(playerArr);
+				if (!turn.ready() && !foe.planMove(playerArr).ready()) {
+					return;
+				}
 			}
 
+			boolean ready = order.stream().allMatch(iBattlable -> iBattlable.getTurn().ready());
+			if (!ready) {
+				return;
+				//	Stream<BattlableActor> unready = order.stream().filter(iBattlable -> !iBattlable.getTurn().ready());
+				//	unready.forEachOrdered(iBattlable -> System.out.println(iBattlable.getTurn().getAttack()));//iBattlable.planMove(moveSlot, (iBattlable instanceof CapturableActor ? playerArr : foeArr)));
+			}
 			executeTurns();
 			activeActor = 0;
 
 			if (ended) {
-				SuperDungeoneer.getInstance().addFeedback(playerWon ? "You WIN!" : "You LOSE!");
+				SuperDungeoneer.getInstance().addFeedback(playerWon ? "You WIN!" : "You LOST!");
 				return;
 			}
 
@@ -183,9 +190,9 @@ public class Battle {
 		order.descendingSet().forEach(IBattlable::executeTurn);
 		order.descendingSet().removeIf(IBattlable::isIncapacitated);
 
-		Predicate<CapturableActor> isIncapacited = CapturableActor::isIncapacitated;
-		boolean allIncapacitated = foes.stream().allMatch(isIncapacited);
-		boolean someIncapacitated = foes.stream().anyMatch(isIncapacited);
+		Predicate<CapturableActor> isIncapacitated = CapturableActor::isIncapacitated;
+		boolean allIncapacitated = foes.stream().allMatch(isIncapacitated);
+		boolean someIncapacitated = foes.stream().anyMatch(isIncapacitated);
 		if (order.size() < 4) {
 			if (player.isKOed()) {
 				playerWon = false; // you LOSE cause you DEAD
@@ -217,7 +224,7 @@ public class Battle {
 	public boolean isStarted() { return this.started; }
 	public boolean playerVictory() { return this.playerWon; }
 	public boolean needsUserAction() { return this.needsAction; }
-	public IBattlable getActiveActor() { return this.activeActor >= 0 ? this.players.get(this.activeActor) : null; }
+	public IBattlable getActiveActor() { return this.activeActor >= 0 && this.activeActor < this.players.size() ? this.players.get(this.activeActor) : null; }
 
 	public ArrayList<PlayableActor> getPlayers() { return players; }
 	public ArrayList<CapturableActor> getFoes() { return foes; }

@@ -86,7 +86,7 @@ public class DemoInputHandler implements InputProviderListener {
 
 	@Override
 	public void controlReleased(Command command) {
-		System.out.println(command+" released!");
+		//System.out.println(command+" released!");
 		if (command == quit) {
 			container.exit();
 		}

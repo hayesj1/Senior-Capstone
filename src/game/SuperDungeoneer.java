@@ -28,10 +28,11 @@ public class SuperDungeoneer implements Game {
 	public static final Color SELECTION_COLOR = Color.orange;
 
 
+	private int countDown = 1500;
+	private boolean showingSplash = true;
+	private Image splash;
+
 	private String title;
-//	private Image im = null;
-//	private Animation anim = null;
-//	private Audio bgm = null;
 	private DemoInputHandler handler = null;
 
 	private MouseListener onFlyMouseListner = new MouseListener() {
@@ -124,10 +125,8 @@ public class SuperDungeoneer implements Game {
 	private SpriteSheet humanSheet;
 	private SpriteSheet orcSheet;
 
-
 	private Species playerSpecies;
 	private Species orcSpecies;
-
 
 	private PlayerActor player;
 	private PlayableActor buddy;
@@ -195,11 +194,17 @@ public class SuperDungeoneer implements Game {
 		initGUI(container);
 		initSound(container);
 
+		try {
+			this.splash = new Image("assets/image/splash.png");
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+
 		anims.forEach(Animation::start);
 
 		// ##### DEMO CODE ##### //
 		//demoBattle.start(new PlayableActor[] { player, buddy }, foes.toArray(new CapturableActor[0]));
-		battleCommandDelegate.init(demoBattle);
+		//1battleCommandDelegate.init(demoBattle);
 		movementCommandDelegate.init(dungeon.getDungeon());
 	}
 	private void initInput(GameContainer container) {
@@ -449,6 +454,10 @@ public class SuperDungeoneer implements Game {
 		//}
 
 		// ##### PRODUCTION CODE ##### //
+		if (showingSplash) {
+			showingSplash = countDown-- > 0;
+			return;
+		}
 		anims.forEach(anim -> anim.update(delta));
 		anims.forEach(anim -> anim.setSpeed(0.05f));
 
@@ -456,26 +465,39 @@ public class SuperDungeoneer implements Game {
 		if (demoBattle.isStarted()) {
 			battleControlPanel.setEnabled(true);
 			if (demoBattle.isOver()) {
-				boolean playerVictory = demoBattle.playerVictory();
+				if (demoBattle.playerVictory()) {
+					foes.removeAll(demoBattle.getFoes());
+					foeTiles.removeIf(tile -> foes.stream().noneMatch(capturableActor -> tile.getOccupant().equals(capturableActor)));
+					foeTiles.forEach(tile -> {
+						if (demoBattle.getFoes().stream().anyMatch(capturableActor -> tile.getOccupant().equals(capturableActor))) {
+							dungeon.removeFoeComponent((Actor) tile.getOccupant());
+							tile.setStateAndOccupant(Tile.PASSAGE, null);
+
+						}
+					});
+				} else {
+					System.out.println("YOU LOSE!!");
+				}
 				demoBattle.clearState();
 			} else {
 				IBattlable activeActor = demoBattle.getActiveActor();
 				demoBattle.advanceTurn(moveSlot);
 
-				if (!activeActor.equals(demoBattle.getActiveActor())) {
+				if (activeActor != (demoBattle.getActiveActor())) {
 					moveSlot = -1;
 					activeActor = demoBattle.getActiveActor();
-					for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
-						boolean hasMoreMoves = i < activeActor.getMoveCount();
-						Object textSrc = hasMoreMoves ? activeActor.getLearnedMoves()[i] : "";
-						moveButtons[i].setLabelText(textSrc);
-						moveButtons[i].setAcceptingInput(hasMoreMoves);
+					if (activeActor != null) {
+						for (int i = 0; i < IBattlable.MAX_MOVES; i++) {
+							boolean hasMoreMoves = i < activeActor.getMoveCount();
+							Object textSrc = hasMoreMoves ? activeActor.getLearnedMoves()[i] : "";
+							moveButtons[i].setLabelText(textSrc);
+							moveButtons[i].setAcceptingInput(hasMoreMoves);
+						}
 					}
 				}
-
 				updateTargetSelector(container);
 
-				for (BattlableActor a : actors) {
+				for (BattlableActor a : demoBattle.getFoes()) {
 					if (a instanceof ICapturable) {
 						ICapturable actor = (ICapturable) a;
 						if (actor.wasJustCaptured()) {
@@ -487,7 +509,7 @@ public class SuperDungeoneer implements Game {
 				}
 			}
 		} else {
-			battleControlPanel.setEnabled(false);
+			//battleControlPanel.setEnabled(false);
 		}
 	}
 
@@ -512,6 +534,11 @@ public class SuperDungeoneer implements Game {
 		g.setBackground(DrawingUtils.BASE_COLOR);
 		g.setAntiAlias(true);
 		g.setLineWidth(4.0f);
+
+		if (showingSplash) {
+			splash.draw((container.getWidth() / 2) - (splash.getWidth() / 2), (container.getHeight() / 2) - (splash.getHeight() / 2));
+			return;
+		}
 
 		drawHUD(container, g);
 		drawBattle(container, g);
@@ -542,7 +569,7 @@ public class SuperDungeoneer implements Game {
 		for (int i = 0; i < foes.size(); i++) {
 			if (foes.get(i) != null){
 				if (foes.get(i).isIncapacitated()) {
-					LabeledButton btn = targetSelectorButtons[i];
+					//LabeledButton btn = targetSelectorButtons[i];
 					//DrawingUtils.drawDisabledOverlay(container, g, btn.getX(), btn.getY(), btn.getWidth(), btn.getHeight());
 				}
 			}
@@ -550,9 +577,10 @@ public class SuperDungeoneer implements Game {
 		if (!demoBattle.isOver()) {
 			g.setColor(DrawingUtils.FOREGROUND_COLOR);
 			int foeX = COMPONENT_SPACING, foeY = COMPONENT_SPACING;
-			for (int i = 2; i < actors.size(); i++) {
-				float w = ( ( actors.get(i).HP() * 1.0f ) / actors.get(i).getStats().maxHP() );
-				//g.setColor(DrawingUtils.FOREGROUND_COLOR);
+			ArrayList<CapturableActor> foes = demoBattle.getFoes();
+			for (int i = 0; i < foes.size(); i++) {
+				float w = ( ( foes.get(i).HP() * 1.0f ) / foes.get(i).getStats().maxHP() );
+				g.setColor(DrawingUtils.FOREGROUND_COLOR);
 				g.fillRoundRect(foeX - 2, foeY - 2, 204, 24, 8);
 				g.fill(new RoundedRectangle(foeX, foeY, w * 200, 20, 8), new GradientFill(foeX, foeY, Color.red, foeX + 200, foeX + 20, Color.green));
 				foeY += 35;
@@ -560,8 +588,8 @@ public class SuperDungeoneer implements Game {
 
 			foeX = 240;
 			foeY = COMPONENT_SPACING;
-			for (int i = 2; i < actors.size(); i++) {
-				g.getFont().drawString(foeX, foeY, actors.get(i).getName() + " HP: " + actors.get(i).HP() + " / "+actors.get(i).getStats().maxHP(), Color.white);
+			for (int i = 0; i < foes.size(); i++) {
+				g.getFont().drawString(foeX, foeY, foes.get(i).getName() + " HP: " + foes.get(i).HP() + " / "+foes.get(i).getStats().maxHP(), Color.white);
 				foeY += 15 + g.getFont().getLineHeight();
 			}
 
@@ -703,14 +731,21 @@ public class SuperDungeoneer implements Game {
 	public CapturableActor getRandMonster(Random rand) {
 		Species[] species = new Species[] { orcSpecies };
 		int speciesIdx = rand.nextInt(species.length);
-		return new CapturableActor(species[speciesIdx], new Stats(rand.nextInt(10)+10,rand.nextInt(10),rand.nextInt(10),rand.nextInt(5)), new Move[] { monsterMoves[0] } );
+		return new CapturableActor(species[speciesIdx], new Stats(rand.nextInt(10)+10, rand.nextInt(10)+1, rand.nextInt(10)+1, rand.nextInt(5)+1), new Move[] { monsterMoves[0] } );
 	}
 
 	public void interacted() {
 		int x = getPlayerPos()[0], y = getPlayerPos()[1];
 		Dungeon d = dungeon.getDungeon();
 		CapturableActor foe = null;
-		System.out.println("Interaction! "+x+", "+y);
+		Tile[] tiles = new Tile[] { d.getTileAt(x-1,y), d.getTileAt(x, y-1), d.getTileAt(x+1,y), d.getTileAt(x, y+1) };
+		for (int i = 0; i < tiles.length; i++) {
+			boolean found = foeTiles.contains(tiles[i]);
+			if (found) {
+				foe = (CapturableActor) tiles[i].getOccupant();
+			}
+		}
+		/*
 		try {
 			if (d.getTileAt(x + 1, y).getState() == Tile.ACTOR && d.getTileAt(x + 1, y).getOccupant() != player) {
 				foe = (CapturableActor) d.getTileAt(x + 1, y).getOccupant();
@@ -731,10 +766,12 @@ public class SuperDungeoneer implements Game {
 				foe = (CapturableActor) d.getTileAt(x, y + 1).getOccupant();
 			}
 		} catch (IllegalArgumentException iae) {}
+		*/
 
 		if (foe != null) {
 			try {
-				demoBattle.start(new PlayableActor[] { player, player.getParty()[0]}, new CapturableActor[] { foe, (CapturableActor) foe.clone() });
+				demoBattle.start(new PlayableActor[] { player, player.getParty()[0] }, new CapturableActor[] { foe, (CapturableActor) foe.clone() });
+				battleCommandDelegate.init(demoBattle);
 				System.out.println("Battle Time!");
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();

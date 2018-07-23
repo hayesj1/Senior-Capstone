@@ -35,12 +35,15 @@ public class CapturableActor extends BattlableActor implements ICapturable, Clon
 	@Override
 	public Turn planMove(IBattlable[] targets) {
 		if (plannedTurn) { return turn; }
-		turn.setTarget(null);
-		turn.setAttack(null);
 
-		selectedSlot = IBattlable.rand.nextInt(getMoveCount()) + 1;
-		turn.setAttack(learnedMoves[selectedSlot-1]);
-		turn.setAttack(learnedMoves[selectedSlot-1]);
+		Move move;
+		do {
+			selectedSlot = IBattlable.rand.nextInt(getMoveCount()) + 1;
+			move = learnedMoves[selectedSlot-1];
+			System.out.println(move);
+		} while (move == null);
+		turn.setAttack(move);
+		System.out.println(this.toString()+".turn.attack="+turn.getAttack());
 
 		if (!targets[0].isIncapacitated() && targets[1].isIncapacitated()) {
 			turn.setTarget(targets[0]);

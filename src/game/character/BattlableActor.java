@@ -51,13 +51,16 @@ public abstract class BattlableActor extends Actor implements IBattlable {
 	@Override
 	public Turn planMove(IBattlable[] targets) {
 		if (plannedTurn) { return turn; }
-		turn.setTarget(null);
-		turn.setAttack(null);
 
 		if (selectedSlot <= 0) {
 			return turn;
 		}
-		turn.setAttack(learnedMoves[selectedSlot-1]);
+		Move move = learnedMoves[selectedSlot-1];
+		if (move == null) {
+			return turn;
+		}
+		turn.setAttack(move);
+
 		selectedSlot = -1;
 		if (!targets[0].isIncapacitated() && targets[1].isIncapacitated()) {
 			turn.setTarget(targets[0]);
@@ -89,11 +92,13 @@ public abstract class BattlableActor extends Actor implements IBattlable {
 	public boolean executeTurn() {
 		if (this.isIncapacitated()) { return false; }
 		try {
-			boolean ret = turn.execute();
+			System.out.println("ba.turn.attack="+turn.getAttack());
+			boolean ret = this.turn.execute();
 			plannedTurn = false;
 			return ret;
 		} catch (MoveOutOfUsesException e) {
 			System.out.println(e.getMessage());
+			plannedTurn = false;
 			return false;
 		}
 	}
@@ -230,4 +235,6 @@ public abstract class BattlableActor extends Actor implements IBattlable {
 	public int getLevel() {
 		return this.level;
 	}
+
+	public Turn getTurn() { return this.turn; }
 }

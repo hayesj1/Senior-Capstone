@@ -114,7 +114,7 @@ public class Dungeon {
 			if (map[x][y].isPassage() && neighborsArePassages) {
 				CapturableActor randMonster = SuperDungeoneer.getInstance().getRandMonster(random);
 				map[x][y].setStateAndOccupant(Tile.ACTOR, randMonster);
-				System.out.println(map[x][y].getOccupant());
+				//System.out.println(map[x][y].getOccupant());
 				SuperDungeoneer.getInstance().addMonster(map[x][y], randMonster);
 				n--;
 			}
@@ -175,9 +175,6 @@ public class Dungeon {
 	@Override
 	public String toString(){
 		final StringBuilder b = new StringBuilder();
-		for (int x = 0; x < width + 2; x++);
-			//b.append(WALL_CHAR);
-		//b.append('\n');
 		for (int y = 0; y < height; y++ ){
 			b.append(WALL_CHAR);
 			for (int x = 0; x < width; x++)
@@ -187,7 +184,6 @@ public class Dungeon {
 		}
 		for (int x = 0; x < width + 2; x++)
 			b.append(WALL_CHAR);
-		//b.append('\n');
 
 		return b.toString();
 	}
