@@ -92,7 +92,7 @@ public abstract class BattlableActor extends Actor implements IBattlable {
 	public boolean executeTurn() {
 		if (this.isIncapacitated()) { return false; }
 		try {
-			System.out.println("ba.turn.attack="+turn.getAttack());
+			//System.out.println(this.turn.toString()+" | "+this.plannedTurn);
 			boolean ret = this.turn.execute();
 			plannedTurn = false;
 			return ret;

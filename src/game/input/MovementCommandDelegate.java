@@ -42,8 +42,9 @@ public class MovementCommandDelegate implements ICommandDelegate {
 		else if (command == DemoInputHandler.up) { y = -1; }
 		else if (command == DemoInputHandler.down) { y = 1; }
 		else if (command == DemoInputHandler.interact) { SuperDungeoneer.getInstance().interacted(); }
+		else if (command == DemoInputHandler.runAway) { SuperDungeoneer.getInstance().runAway(); }
 
-		if (x == 0 && y == 0) { return; }
+		if ((x == 0 && y == 0) || SuperDungeoneer.getInstance().isBattling()) { return; }
 
 		int[] pp = SuperDungeoneer.getInstance().getPlayerPos();
 		int xP = pp[0], yP = pp[1];

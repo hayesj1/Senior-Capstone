@@ -135,52 +135,60 @@ public class Battle {
 	 * @param moveSlot The slot of the selected move
 	 */
 	public void advanceTurn(int moveSlot) {
-		if (!started || (moveSlot < 0 || moveSlot > players.get(activeActor).getMoveCount())) { return; }
+		if (!started) { return; }
 
 		PlayableActor[] playerArr = players.toArray(new PlayableActor[0]);
 		CapturableActor[] foeArr = foes.toArray(new CapturableActor[0]);
+
 		// Do player moves
-		Turn turn = players.get(activeActor).planMove(moveSlot, foeArr);
-		if (turn.getTarget() == null) {
-			SuperDungeoneer.getInstance().selectTarget(foeArr);
-			try {
-				int targetSlot = SuperDungeoneer.getInstance().getSelectedTargetSlot();
-				turn.setTarget(foes.get(targetSlot - 1));
-			} catch (IllegalStateException ise) {
-				return;
-			}
-		}
-
-		if (turn.ready()) {
-			if (activeActor == 0 && players.get(1).isIncapacitated()) { activeActor++; }
-			activeActor++;
-		}
-
-		// Do AI moves
-		if (activeActor >= players.size()) {
-			needsAction = false;
-			for (CapturableActor foe : foes) {
-				if (foe.isIncapacitated()) { continue; }
-				turn = foe.planMove(playerArr);
-				if (!turn.ready() && !foe.planMove(playerArr).ready()) {
+		if (activeActor < players.size() && (moveSlot > 0 && moveSlot <= players.get(activeActor).getMoveCount())) {
+			Turn turn = players.get(activeActor).planMove(moveSlot, foeArr);
+			if (turn.getTarget() == null) {
+				SuperDungeoneer.getInstance().selectTarget(foeArr);
+				try {
+					int targetSlot = SuperDungeoneer.getInstance().getSelectedTargetSlot();
+					turn.setTarget(foes.get(targetSlot - 1));
+				} catch (IllegalStateException ise) {
 					return;
 				}
 			}
 
-			boolean ready = order.stream().allMatch(iBattlable -> iBattlable.getTurn().ready());
-			if (!ready) {
-				return;
-				//	Stream<BattlableActor> unready = order.stream().filter(iBattlable -> !iBattlable.getTurn().ready());
-				//	unready.forEachOrdered(iBattlable -> System.out.println(iBattlable.getTurn().getAttack()));//iBattlable.planMove(moveSlot, (iBattlable instanceof CapturableActor ? playerArr : foeArr)));
+			if (turn.ready()) {
+				if (activeActor == 0 && (players.size() == 1 || players.get(1).isIncapacitated())) {
+					activeActor++;
+				}
+				activeActor++;
 			}
+		}
+
+		// Do AI moves
+		if (activeActor >= players.size()) {
+			if (activeActor >= players.size()) {
+				needsAction = false;
+				for (CapturableActor foe : foes) {
+					if (foe.isIncapacitated()) {
+						continue;
+					}
+					Turn turn = foe.planMove(playerArr);
+					if (!turn.ready() && !foe.planMove(playerArr).ready()) {
+						return;
+					}
+				}
+			}
+		}
+
+		boolean ready = order.stream().allMatch(iBattlable -> iBattlable.getTurn().ready());
+		if (ready) {
 			executeTurns();
 			activeActor = 0;
+		} else {
+			//	Stream<BattlableActor> unready = order.stream().filter(iBattlable -> !iBattlable.getTurn().ready());
+			//	unready.forEachOrdered(iBattlable -> System.out.println(iBattlable.getTurn().getAttack()));//iBattlable.planMove(moveSlot, (iBattlable instanceof CapturableActor ? playerArr : foeArr)));
+		}
 
-			if (ended) {
-				SuperDungeoneer.getInstance().addFeedback(playerWon ? "You WIN!" : "You LOST!");
-				return;
-			}
-
+		if (ended) {
+			SuperDungeoneer.getInstance().addFeedback(playerWon ? "You WIN!" : "You LOST!");
+		} else {
 			needsAction = true;
 		}
 	}
@@ -201,23 +209,28 @@ public class Battle {
 				playerWon = true; // you WIN cause foes is DEAD or CAPTURED
 				ended = true;
 			} else if (players.get(1).isKOed()) {
-				players.set(1, player.getNextAvailablePartyMember(players.get(1)));
+				PlayableActor next = player.getNextAvailablePartyMember(players.get(1));
+				if (next != null) {
+					players.set(1, next);
+				}
 			}
 		}
 	}
 
 	public void clearState() {
-		this.ended = false;
 		this.playerWon = false;
 		this.playerIdx = 0;
 
 		this.players.clear();
 		this.foes.clear();
+		this.order.clear();
+		this.player = null;
 		this.prepared = false;
 
-		this.activeActor = 0;
+		this.activeActor = -1;
 		this.needsAction = false;
 		this.started = false;
+		this.ended = false;
 	}
 
 	public boolean isOver() { return this.ended; }

@@ -349,7 +349,7 @@ public class SuperDungeoneer implements Game {
 		initDungeon(container);
 
 		int bcpX = DrawingUtils.DEFAULT_MARGIN, bcpY = dungeon.getHeight() + DrawingUtils.DEFAULT_MARGIN;
-		int bcpW = container.getWidth() - DrawingUtils.DEFAULT_MARGIN, bcpH = container.getHeight() / 5;
+		int bcpW = container.getWidth() - DrawingUtils.DEFAULT_MARGIN, bcpH = container.getHeight() / 5 - DrawingUtils.DEFAULT_MARGIN;
 		battleControlPanel = new Panel(container, bcpX, bcpY, bcpW, bcpH, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER1_BACKGROUND_COLOR);
 
 		int hpX = dungeon.getWidth() + DrawingUtils.DEFAULT_MARGIN, hpW = (container.getWidth() / 5);
@@ -400,9 +400,15 @@ public class SuperDungeoneer implements Game {
 		label = "Target Selector";
 		targetSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth("__"+label), targetSelectionGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
 
-		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeightWithMargin() - container.getDefaultFont().getLineHeight(), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeightWithMargin() - 2*container.getDefaultFont().getLineHeight(), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 		//feedbackText.shouldDrawBorder(false);
-		feedbackText.addLine("Battle it out!");
+		feedbackText.addLine("Welcome to Super Dungeoneer!");
+		feedbackText.addLine("Press ESCAPE to quit at anytime!");
+		feedbackText.addLine("Use WASD or the ARROW KEYS to move!");
+		feedbackText.addLine("If you're standing next to a monster, press SPACEBAR to begin a battle!");
+		feedbackText.addLine("If you're in a battle use the mouse or press 1-6 to choose a move, then choose a target if there is more than one foe left!");
+		feedbackText.addLine("If the battle goes bad, press R to run away!");
+
 
 		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
 		int mslX = battleControlPanel.getWidth()-moveGrid.getWidthWithMargin()-moveSelectorLabel.getWidthWithMargin();
@@ -476,7 +482,7 @@ public class SuperDungeoneer implements Game {
 						}
 					});
 				} else {
-					System.out.println("YOU LOSE!!");
+					System.out.println("YOU LOST!!");
 				}
 				demoBattle.clearState();
 			} else {
@@ -509,7 +515,13 @@ public class SuperDungeoneer implements Game {
 				}
 			}
 		} else {
-			//battleControlPanel.setEnabled(false);
+			moveGrid.setEnabled(false);
+			targetSelectionGrid.setEnabled(false);
+			player.setHP(player.getStats().maxHP());
+			for (PlayableActor buddy : player.getParty()) {
+				if (buddy == null) { continue; }
+				buddy.setHP(buddy.getStats().maxHP());
+			}
 		}
 	}
 
@@ -556,8 +568,8 @@ public class SuperDungeoneer implements Game {
 		dungeon.render(container, g);
 		helpPanel.render(container, g);
 		partyPanel.render(container, g);
+		drawBattleHUD(container, g);
 		if (demoBattle.isStarted()) {
-			drawBattleHUD(container, g);
 			drawMoves(container, g);
 		}
 	}
@@ -566,10 +578,11 @@ public class SuperDungeoneer implements Game {
 		Color oldC = g.getColor();
 
 		battleControlPanel.render(container, g);
+		ArrayList<CapturableActor> foes = demoBattle.getFoes();
 		for (int i = 0; i < foes.size(); i++) {
 			if (foes.get(i) != null){
 				if (foes.get(i).isIncapacitated()) {
-					//LabeledButton btn = targetSelectorButtons[i];
+					LabeledButton btn = targetSelectorButtons[i];
 					//DrawingUtils.drawDisabledOverlay(container, g, btn.getX(), btn.getY(), btn.getWidth(), btn.getHeight());
 				}
 			}
@@ -577,7 +590,6 @@ public class SuperDungeoneer implements Game {
 		if (!demoBattle.isOver()) {
 			g.setColor(DrawingUtils.FOREGROUND_COLOR);
 			int foeX = COMPONENT_SPACING, foeY = COMPONENT_SPACING;
-			ArrayList<CapturableActor> foes = demoBattle.getFoes();
 			for (int i = 0; i < foes.size(); i++) {
 				float w = ( ( foes.get(i).HP() * 1.0f ) / foes.get(i).getStats().maxHP() );
 				g.setColor(DrawingUtils.FOREGROUND_COLOR);
@@ -595,7 +607,7 @@ public class SuperDungeoneer implements Game {
 
 			IBattlable active = demoBattle.getActiveActor();
 			ActorStatPane activeMemberPanel = null;
-			for (int i = 0; i < partyMemberPanes.length; i++) {
+			for (int i = 0; active != null && i < partyMemberPanes.length; i++) {
 				if (active == partyMemberPanes[i].getActor()) {
 					activeMemberPanel = partyMemberPanes[i];
 					break;
@@ -734,6 +746,7 @@ public class SuperDungeoneer implements Game {
 		return new CapturableActor(species[speciesIdx], new Stats(rand.nextInt(10)+10, rand.nextInt(10)+1, rand.nextInt(10)+1, rand.nextInt(5)+1), new Move[] { monsterMoves[0] } );
 	}
 
+	public boolean isBattling() { return demoBattle.isStarted() && !demoBattle.isOver(); }
 	public void interacted() {
 		int x = getPlayerPos()[0], y = getPlayerPos()[1];
 		Dungeon d = dungeon.getDungeon();
@@ -777,5 +790,8 @@ public class SuperDungeoneer implements Game {
 				e.printStackTrace();
 			}
 		}
+	}
+	public void runAway() {
+		demoBattle.clearState();
 	}
 }

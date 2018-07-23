@@ -40,10 +40,8 @@ public class CapturableActor extends BattlableActor implements ICapturable, Clon
 		do {
 			selectedSlot = IBattlable.rand.nextInt(getMoveCount()) + 1;
 			move = learnedMoves[selectedSlot-1];
-			System.out.println(move);
 		} while (move == null);
 		turn.setAttack(move);
-		System.out.println(this.toString()+".turn.attack="+turn.getAttack());
 
 		if (!targets[0].isIncapacitated() && targets[1].isIncapacitated()) {
 			turn.setTarget(targets[0]);
@@ -178,6 +176,9 @@ public class CapturableActor extends BattlableActor implements ICapturable, Clon
 		clone.stats = this.getStats();
 		clone.level = this.getLevel();
 		clone.learnedMoves = this.getLearnedMoves();
+		clone.name = this.getName()+" 2";
+		clone.HP = clone.stats.maxHP();
+		clone.turn = new Turn(clone, null, null);
 
 		return clone;
 	}

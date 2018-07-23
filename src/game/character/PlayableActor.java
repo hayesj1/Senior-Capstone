@@ -104,7 +104,7 @@ public class PlayableActor extends BattlableActor implements ILevelable {
 
 		this.requiredExp = ILevelable.requiredExpForLevel(++this.level);
 		if (this.species.getLearnableMoves().containsMoveAtLevel(this.level)) {
-			// TODO ask user for moveslot to swap
+			// TODO ask user for moveSlot to swap
 			int moveSlot = (this.getMoveCount() < IBattlable.MAX_MOVES) ? this.getMoveCount()+1 : 0;
 			Move move = this.species.getLearnableMoves().moveLearnedAt(this.level);
 			this.learnNewMove(move, moveSlot);

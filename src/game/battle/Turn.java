@@ -78,6 +78,6 @@ public class Turn {
 	 */
 	@Override
 	public String toString() {
-		return attacker.toString()+" --> "+attack+" --> "+target;
+		return super.toString()+" | "+attacker.toString()+" --> "+attack+" --> "+target;
 	}
 }

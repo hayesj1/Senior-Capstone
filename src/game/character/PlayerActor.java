@@ -37,7 +37,7 @@ public class PlayerActor extends PlayableActor {
 
 	public PlayableActor getNextAvailablePartyMember(PlayableActor old) {
 		int partySlot = 1;
-		while (party[partySlot-1] == old || party[partySlot-1].isIncapacitated()) {
+		while (party[partySlot-1] != null && (party[partySlot-1] == old || party[partySlot-1].isIncapacitated())) {
 			if (partySlot >= MAX_PARTY_SIZE) {
 				return null;
 			}
