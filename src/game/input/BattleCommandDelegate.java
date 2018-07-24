@@ -10,12 +10,10 @@ import org.newdawn.slick.command.Command;
 
 public class BattleCommandDelegate implements ICommandDelegate {
 	private Battle battle;
-	private IBattlable actor;
 	private boolean initialized;
 
 	public BattleCommandDelegate() {
 		this.battle = null;
-		this.actor = null;
 		this.initialized = false;
 	}
 
@@ -27,7 +25,6 @@ public class BattleCommandDelegate implements ICommandDelegate {
 	 */
 	public void init(Battle battle) {
 		this.battle = battle;
-		this.actor = battle.getActiveActor();
 		this.initialized = true;
 	}
 
@@ -38,7 +35,9 @@ public class BattleCommandDelegate implements ICommandDelegate {
 	 */
 	@Override
 	public void action(Command command, GameContainer container) {
-		if (!initialized || actor == null || !battle.needsUserAction()) { return; }
+		IBattlable actor = null;
+		if (initialized && battle.needsUserAction()) { actor = battle.getActiveActor(); }
+		else { return; }
 
 		Input input = container.getInput();
 		int moveSlot = -1;
@@ -55,14 +54,13 @@ public class BattleCommandDelegate implements ICommandDelegate {
 			LabeledButton clicked = getClicked(mx, my, buttons);
 
 			if (clicked == null) { return; }
-			moveSlot = this.actor.getMoveSlotByMoveName(clicked.getLabelText());
+			moveSlot = actor.getMoveSlotByMoveName(clicked.getLabelText());
 		} else if (command == DemoInputHandler.runAway) {
 			this.battle.clearState();
 		}
 
-		if (moveSlot > 0 && moveSlot <= this.actor.getMoveCount() && !battle.isOver()) {
+		if (moveSlot > 0 && moveSlot <= actor.getMoveCount() && !battle.isOver()) {
 			SuperDungeoneer.getInstance().setMoveSlot(moveSlot);
-			this.actor = this.battle.getActiveActor();
 		}
 	}
 

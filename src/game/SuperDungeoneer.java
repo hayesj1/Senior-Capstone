@@ -519,7 +519,7 @@ public class SuperDungeoneer implements Game {
 			targetSelectionGrid.setEnabled(false);
 			player.setHP(player.getStats().maxHP());
 			for (PlayableActor buddy : player.getParty()) {
-				if (buddy == null) { continue; }
+				if (buddy == null || buddy.isKOed()) { continue; }
 				buddy.setHP(buddy.getStats().maxHP());
 			}
 		}
