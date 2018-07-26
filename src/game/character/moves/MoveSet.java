@@ -3,7 +3,6 @@ package game.character.moves;
 import game.character.ILevelable;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -87,12 +86,8 @@ public class MoveSet {
 	 * @return null if there aren't any moves in the set learned at the passed level; otherwise, the first move learned at the passed level
 	 */
 	public Move moveLearnedAt(int levelLearned) {
-		Iterator<Map.Entry<Move, Integer>> it = moves.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<Move, Integer> e = it.next();
-			if (e.getValue().equals(levelLearned)) {
-				return e.getKey();
-			}
+		for (Map.Entry<Move, Integer> e : moves.entrySet()) {
+			if (e.getValue().equals(levelLearned)) { return e.getKey(); }
 		}
 
 		return null;

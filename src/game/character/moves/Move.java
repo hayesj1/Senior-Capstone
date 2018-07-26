@@ -2,6 +2,7 @@ package game.character.moves;
 
 import java.util.HashMap;
 
+/** A move or attack to be used by a BattlableActor in a battle. The special move "Capture" is a static member. */
 public class Move implements Comparable<Move> {
 	public static final Move capture = new Move("Capture", "Attempt to capture a foe.", 0,100, 30);
 
@@ -156,7 +157,7 @@ public class Move implements Comparable<Move> {
 	}
 
 	/**
-	 * @return "<code>{@link #getName()}</code>: <code>{@link #getDescription()}</code>"
+	 * @return "<code>{@link #getName()}: {@link #getDescription()}</code>"
 	 */
 	public String describe() {
 		return this.name+": "+this.description;
@@ -205,7 +206,9 @@ public class Move implements Comparable<Move> {
 		return Integer.compare(this.id, o.id);
 	}
 
-	public String getName() { return name; }
+	public String getName() {
+		return name;
+	}
 	public String getDescription() {
 		return description;
 	}
@@ -233,6 +236,7 @@ public class Move implements Comparable<Move> {
 		this.validateUses();
 	}
 
+	/** Ensures uses remains valid */
 	private void validateUses() {
 		if (this.uses < 0) {
 			this.uses = 0;
