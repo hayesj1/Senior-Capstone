@@ -1,8 +1,8 @@
 package game.character;
 
 /**
- * The base stats for a given Playable Character. These are increased overtime by spending stat-points,
- * which are awarded from leveling up.
+ * The base stats for a given BattlableActor.
+ * These are increased overtime by spending stat-points, which are awarded from leveling up (NYI).
  */
 public class Stats {
 

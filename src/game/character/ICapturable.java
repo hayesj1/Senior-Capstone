@@ -1,5 +1,8 @@
 package game.character;
 
+/**
+ * Interface for capturable Actors
+ */
 public interface ICapturable extends IBattlable {
 
 	/**

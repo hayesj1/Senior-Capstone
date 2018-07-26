@@ -5,6 +5,7 @@ import game.battle.Turn;
 import game.character.moves.Move;
 import game.exception.MoveOutOfUsesException;
 
+/** leaf actor class, for all actors who can be controlled by the user. Part of the Actor Hierarchy */
 public class PlayableActor extends BattlableActor implements ILevelable {
 	protected int exp;
 	protected int requiredExp;
@@ -113,6 +114,7 @@ public class PlayableActor extends BattlableActor implements ILevelable {
 		return true;
 	}
 
+	/** Adds exp to the experience pool, and causes a levelup if this actor has enough experience afterwards */
 	@Override
 	public void addEXP(int exp) {
 		this.exp += exp;

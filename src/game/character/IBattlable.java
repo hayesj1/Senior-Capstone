@@ -7,7 +7,7 @@ import game.exception.MoveOutOfUsesException;
 import java.util.Random;
 
 /**
- * For characters which can use the battle system
+ * Interface for actors which can battle other actors
  */
 public interface IBattlable extends INamed {
 

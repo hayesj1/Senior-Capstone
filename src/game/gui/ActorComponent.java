@@ -6,6 +6,7 @@ import org.newdawn.slick.Animation;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.gui.GUIContext;
 
+/** Component responsible for rendering the an actor in the dungeon */
 public class ActorComponent extends BaseComponent {
 	private Actor actor;
 	private Animation anim;

@@ -6,6 +6,7 @@ import org.newdawn.slick.ShapeFill;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
+/** Fill for shapes with a solid color. While {@link org.newdawn.slick.fills.GradientFill} could potentially fulfill this purpose, it would feel unnatural. */
 public class SolidFill implements ShapeFill {
 	private Color fill;
 	private boolean local;

@@ -15,6 +15,7 @@ import org.newdawn.slick.gui.GUIContext;
 
 import java.util.ArrayList;
 
+/** Component responsible for rendering the dungeon and its contents */
 public class DungeonComponent extends BaseComponent {
 	private static final char PASSAGE_CHAR = Tile.PASSAGE_CHAR;
 	private static final char WALL_CHAR    = Tile.WALL_CHAR;
@@ -132,6 +133,7 @@ public class DungeonComponent extends BaseComponent {
 		g.setColor(oldColor);
 	}
 
+	/** Places the player in a random, valid position starting from the top left. */
 	public void addPlayer(PlayerActor player) {
 		if (!generated) { return; }
 
@@ -155,11 +157,14 @@ public class DungeonComponent extends BaseComponent {
 
 	public void removeFoeComponent(Actor a) {
 		if (foeComponents.removeIf(actorComponent -> actorComponent.getActor().equals(a))) {
-			System.out.println("Removed foe!");
+			System.out.println("Removed foe(s)!");
 		}
 	}
 
+	/** @return the player's [ x, y ] position in tiles */
 	public int[] getPlayerPos() { return new int[] { lastPlayerX, lastPlayerY }; }
+
+	/** offsets the player by [ x, y ] pixels */
 	public void offsetPlayerPos(int[] pos) {
 		//System.out.println(lastPlayerX+","+lastPlayerY);
 		this.playerComponent.setLocation(this.playerComponent.getX() + pos[0], this.playerComponent.getY() + pos[1]);
@@ -169,6 +174,7 @@ public class DungeonComponent extends BaseComponent {
 
 	public Dungeon getDungeon() { return dungeon; }
 
+	/** Test code for the dungeon generator */
 	public static void main(String[] args){
 		Dungeon dungeon = new Dungeon(40,20);
 		dungeon.generateDungeon();

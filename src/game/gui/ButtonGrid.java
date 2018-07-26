@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+/** Component responsible for rendering and organizing a grid of buttons */
 public class ButtonGrid extends BaseComponent {
 	private int rows;
 	private int cols;

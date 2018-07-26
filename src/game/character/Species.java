@@ -3,6 +3,7 @@ package game.character;
 import game.character.moves.MoveSet;
 import org.newdawn.slick.SpriteSheet;
 
+/** Stores Species information, including the name, MoveSet, and spritesheet */
 public class Species {
 	private MoveSet learnableMoves;
 	private String name;

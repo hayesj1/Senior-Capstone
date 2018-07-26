@@ -6,8 +6,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.GUIContext;
 
-
-
 /**
  * Extends {@link AbstractComponent} with enable/disable and shown/not-shown functionality.
  * Also provides a routine to display a simple disabled overlay over this component.
@@ -71,6 +69,7 @@ public abstract class BaseComponent extends AbstractComponent implements IBaseCo
 		DrawingUtils.drawDisabledOverlay(container, g, x, y, width, height);
 	}
 
+	/** Draws a rounded rectangle border around the component in its margin */
 	protected void drawBorder(GUIContext container, Graphics g) {
 		if (drawBorder) {
 			Color oldColor = g.getColor();

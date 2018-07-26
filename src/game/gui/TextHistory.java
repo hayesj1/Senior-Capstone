@@ -10,6 +10,7 @@ import org.newdawn.slick.gui.GUIContext;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/** Component responsible for rendering text which fills bottom-up with to fixed height. This component does not use scrolling, rather old text is simply overwritten. */
 public class TextHistory extends BaseComponent {
 
 	private LinkedList<String> history;

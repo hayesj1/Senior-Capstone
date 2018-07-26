@@ -7,6 +7,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.gui.GUIContext;
 
+/** Component responsible for rendering a simple text label */
 public class Label extends BaseComponent {
 	private String str;
 	private Color textColor;
@@ -34,10 +35,12 @@ public class Label extends BaseComponent {
 		this.cutoff = findCutoff();
 	}
 
+	/** coerces the width of this component to the width of its string, with some additional wiggle room. */
 	public void fitWidth(){
 		setWidth(getWidthOfText("_"+str+"_"));
 	}
 
+	/** Finds the last character that can be fully rendered using the current width. */
 	private int findCutoff() {
 		int cutoff;
 		int tw = getTextWidth();

@@ -3,6 +3,7 @@ package game.character;
 import game.battle.Turn;
 import game.character.moves.Move;
 
+/** leaf actor class, for all actors which are capturable. Part of the Actor Hierarchy */
 public class CapturableActor extends BattlableActor implements ICapturable, Cloneable {
 
 	private boolean justCaptured;
@@ -74,7 +75,7 @@ public class CapturableActor extends BattlableActor implements ICapturable, Clon
 	}
 
 	/**
-	 * @return True if this character is capturable, false otherwise
+	 * @return True if this actor is capturable, false otherwise
 	 */
 	@Override
 	public boolean isCapturable() {
@@ -82,20 +83,20 @@ public class CapturableActor extends BattlableActor implements ICapturable, Clon
 	}
 
 	/**
-	 * @return True if this IBattlable was captured in the current battle; false otherwise
+	 * @return True if this <code>ICapturable</code> was captured in the current battle; false otherwise
 	 */
 	@Override
 	public boolean wasJustCaptured() {
 		return this.justCaptured;
 	}
 
-	/** Flags this <code>IBattlable</code> as captured in the current battle */
+	/** Flags this <code>ICapturable</code> as captured in the current battle */
 	@Override
 	public void justCaptured() {
 		this.justCaptured = true;
 	}
 
-	/** Flags this <code>IBattlable</code> as captured in a previous battle */
+	/** Flags this <code>ICapturable</code> as captured in a previous battle */
 	@Override
 	public void clearJustCaptured() {
 		this.justCaptured = false;

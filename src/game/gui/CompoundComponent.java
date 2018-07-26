@@ -9,6 +9,11 @@ import org.newdawn.slick.gui.GUIContext;
 import java.util.Collections;
 import java.util.LinkedList;
 
+/**
+ * Component responsible for rendering a group of components and treating them as a single component.
+ * While similar to {@link Panel}, CompoundCoordinate is designed to facilitate complex componets created from sub-components, rather than simply organization.
+ * However, like Panel, CompoundCoordinate does use a nested coordinate system.
+ */
 public class CompoundComponent extends Panel {
 	protected LinkedList<ComponentCoordinates<IBaseComponent>> components;
 
@@ -40,8 +45,8 @@ public class CompoundComponent extends Panel {
 	 * Adds a new child to this panel.
 	 *
 	 * @param child The component to add
-	 * @param x     the panel-local x-coordinate of the pixel to use as the top left corner of this child
-	 * @param y     the panel-local y-coordinate of the pixel to use as the top left corner of this child
+	 * @param x     the local x-coordinate of the pixel to use as the top left corner of this child
+	 * @param y     the local y-coordinate of the pixel to use as the top left corner of this child
 	 */
 	@Override
 	public void addChild(IBaseComponent child, int x, int y) {

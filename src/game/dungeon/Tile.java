@@ -1,7 +1,7 @@
 package game.dungeon;
 
 /**
- *
+ * Class to manage the state of a given grid space in the dungeon
  * @author Jacob Hayes
  */
 public class Tile {
@@ -28,6 +28,7 @@ public class Tile {
 
 	public boolean isWall() { return state == WALL; }
 	public boolean isPassage() { return state == PASSAGE; }
+	/** @return true if this tile is a wall or is occupied; otherwise false */
 	public boolean isBlocked() { return state == WALL || (( state == ACTOR || state == BOSS ) && occupant != null); }
 
 	/**
@@ -73,6 +74,10 @@ public class Tile {
 	public Object getOccupant() {
 		return occupant;
 	}
+	/**
+	 * if state is ACTOR or BOSS, occupant must be non-null
+	 * @return the old occupant, or null if there wasn't one
+	 */
 	public Object setStateAndOccupant(int state, Object occupant) {
 		this.state = state;
 		Object ret = this.occupant;
@@ -81,6 +86,11 @@ public class Tile {
 		return ret;
 	}
 
+	/**
+	 * Occupant's type must match the type expected by the tile. Otherwise use {@link #setStateAndOccupant(int, Object)}
+	 * @param occupant the new occupant
+	 * @return the old occupant
+	 */
 	public Object setOccupant(Object occupant) {
 		if (occupant.getClass().equals(this.occupant.getClass())) {
 			Object ret = this.occupant;

@@ -9,6 +9,7 @@ import org.newdawn.slick.Animation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/** base actor class, for actors which can participate in battles. Part of the Actor Hierarchy */
 public abstract class BattlableActor extends Actor implements IBattlable {
 	protected int HP;
 	protected int level;

@@ -2,6 +2,7 @@ package game.character;
 
 import game.character.moves.Move;
 
+/** leaf actor class, a special case of PlayableActor for the actor who represents the user. Part of the Actor Hierarchy */
 public class PlayerActor extends PlayableActor {
 	public static final int MAX_PARTY_SIZE = 6;
 
@@ -49,12 +50,12 @@ public class PlayerActor extends PlayableActor {
 	}
 
 	/**
-	 * Adds <code>captured</code> to this <code>IBattlable</code>'s team(if one exists)
-	 * @param captured the newly captured <code>IBattlable</code>
+	 * Adds <code>captured</code> to this <code>PlayerActor</code>'s team
+	 * @param captured the newly captured <code>ICapturable</code>
 	 */
 	public void addToTeam(ICapturable captured) {
 		if (nextFreeSlot >= MAX_PARTY_SIZE) {
-			//TODO: Ask user for swapee
+			//TODO: Ask user for swap slot
 			//SuperDungeoneer.setPendingPartyMember()
 		} else {
 			party[nextFreeSlot++] = captured.convertToPlayable();
@@ -64,7 +65,7 @@ public class PlayerActor extends PlayableActor {
 	}
 
 	/**
-	 * Adds <code>captured</code> to this <code>IBattlable</code>'s team(if one exists)
+	 * Adds <code>captured</code> to this <code>PlayerActor</code>'s team
 	 * @param pendingPartyMember the new party member
 	 */
 	public void addToTeam(PlayableActor pendingPartyMember) {

@@ -9,7 +9,7 @@ import org.newdawn.slick.gui.GUIContext;
 import java.util.LinkedList;
 
 /**
- * A Panel of GUI Elements. Allows drawing GUI Components to coordinates local to a specific segment of the screen
+ * A Panel of GUI Elements. creates a nested coordinate space, e.g. allows drawing GUI Components to coordinates local to a specific segment of the screen
  */
 public class Panel extends BaseComponent {
 	private LinkedList<ComponentCoordinates<IBaseComponent>> children;

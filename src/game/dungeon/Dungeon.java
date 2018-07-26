@@ -39,6 +39,8 @@ public class Dungeon {
 		}
 		initialized = true;
 	}
+
+	/** Generates the dungeon with Math.ceil(Math.pow(width * height, 0.4)) monsters spawned */
 	public void generateDungeon() { this.generateDungeon( (int) Math.ceil(Math.pow(width * height, 0.4f)) ); }
 	public void generateDungeon(int numMonsters) {
 		if (generated) { return; }
@@ -48,6 +50,7 @@ public class Dungeon {
 
 		generated = true;
 	}
+	/** Generates the passages and walls of the dungeon */
 	private void generateLayout() {
 		final LinkedList<int[]> frontiers = new LinkedList<>();
 		final Random random = new Random();
@@ -104,6 +107,8 @@ public class Dungeon {
 			}
 		}
 	}
+
+	/** Spawns the monsters and the boss in the dungeon */
 	private void generateMonsters(int n) {
 		final Random random = new Random();
 		while (n > 0) {
@@ -188,6 +193,7 @@ public class Dungeon {
 		return b.toString();
 	}
 
+	/** @throws IllegalArgumentException if x or y is out of bounds */
 	public Tile getTileAt(int x, int y) {
 		if (x < 0 || x >= this.getWidth() || y < 0 || y>= this.getHeight()) { throw new IllegalArgumentException("x or y is out of bounds!"); }
 		return map[x][y];

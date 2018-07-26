@@ -8,7 +8,7 @@ import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.gui.GUIContext;
-
+/** Component responsible for rendering an actor's stat HUD*/
 public class ActorStatPane extends BaseComponent {
 	private CompoundComponent emptyHUD;
 	private CompoundComponent HUD;
@@ -75,6 +75,9 @@ public class ActorStatPane extends BaseComponent {
 		g.setColor(oldC);
 	}
 
+	/**
+	 * Init the stats section of the GUI
+	 */
 	private void addStats(GUIContext container) {
 		if (!invalid) { return; }
 

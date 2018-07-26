@@ -11,6 +11,7 @@ import org.newdawn.slick.geom.Transform;
 import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.gui.MouseOverArea;
 
+/** Component responsible for rendering buttons with a textual label */
 public class LabeledButton extends MouseOverArea implements IBaseComponent {
 	private Label label;
 	private Shape shape;

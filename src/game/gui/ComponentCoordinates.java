@@ -3,6 +3,7 @@ package game.gui;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.gui.GUIContext;
 
+/** Holds coordinate information for nested coordinate systems, such as those provided by {@link Panel} */
 public class ComponentCoordinates<T extends IBaseComponent> {
 	private T comp;
 	private int x;
@@ -19,6 +20,7 @@ public class ComponentCoordinates<T extends IBaseComponent> {
 
 	}
 
+	/** Sets the location of the component as an offset for some origin */
 	public void offsetLocation(int originX, int originY) {
 		comp.setLocation(x + originX, y + originY);
 	}
@@ -53,6 +55,7 @@ public class ComponentCoordinates<T extends IBaseComponent> {
 		}
 	}
 
+	/** Called to signal the compont's position should be updated */
 	public void invalidate() {
 		this.invalid = true;
 	}

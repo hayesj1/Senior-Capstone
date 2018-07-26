@@ -8,6 +8,7 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.gui.GUIContext;
 
+/** Component responsible for rendering various shapes, with an optional fill */
 public class ShapeComponent extends BaseComponent {
 	private Shape shape;
 	private ShapeFill fill;

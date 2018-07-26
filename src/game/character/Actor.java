@@ -1,5 +1,6 @@
 package game.character;
 
+/** base actor class, for all actors. Part of the Actor Hierarchy */
 public abstract class Actor implements INamed {
 
 	protected Species species;
