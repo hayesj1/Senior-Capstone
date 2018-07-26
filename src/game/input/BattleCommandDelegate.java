@@ -8,6 +8,9 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.command.Command;
 
+/**
+ * Input delegate to handle battle commands
+ */
 public class BattleCommandDelegate implements ICommandDelegate {
 	private Battle battle;
 	private boolean initialized;

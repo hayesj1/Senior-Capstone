@@ -6,6 +6,9 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.gui.GUIContext;
 
+/**
+ * Helper methods for drawing as well as color and component constants
+ */
 public class DrawingUtils {
 	public static final int DEFAULT_MARGIN = SuperDungeoneer.COMPONENT_SPACING;
 
@@ -22,6 +25,13 @@ public class DrawingUtils {
 	public static final Color TIER3_BACKGROUND_COLOR = Color.transparent;
 	public static final Color BASE_COLOR = Color.gray;
 
+	/**
+	 * Draws a red X over the bounding rect of this component
+	 * @param container the GUIContext
+	 * @param g the Graphics object to draw on
+	 *
+	 * @see game.gui.BaseComponent#drawDisabledOverlay(GUIContext, Graphics)
+	 */
 	public static void drawDisabledOverlay(GUIContext container, Graphics g, int x, int y, int width, int height) {
 		Color oldC = g.getColor();
 		float oldLW = g.getLineWidth();

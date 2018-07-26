@@ -3,6 +3,7 @@ package game.exception;
 import game.character.IBattlable;
 import game.character.moves.Move;
 
+/** Thrown when a move is used when it has no uses left */
 public class MoveOutOfUsesException extends Throwable {
 	private Move move;
 	private String thrower;

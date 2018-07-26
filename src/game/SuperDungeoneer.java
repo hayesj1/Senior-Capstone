@@ -27,15 +27,13 @@ public class SuperDungeoneer implements Game {
 	public static final int COMPONENT_SPACING = 3;
 	public static final Color SELECTION_COLOR = Color.orange;
 
+	private String title;
 
 	private int countDown = 1500;
 	private boolean showingSplash = true;
 	private Image splash;
 
-	private String title;
-	private DemoInputHandler handler = null;
-
-	private MouseListener onFlyMouseListner = new MouseListener() {
+	private MouseListener onTheFlyMouseListner = new MouseListener() {
 		private boolean isAcceptingInput = false;
 		@Override
 		public void mousePressed(int button, int x, int y) { }
@@ -91,47 +89,21 @@ public class SuperDungeoneer implements Game {
 		}
 	};
 
-//	private MoveSet testMoveSet;
-//	private Move[] testMoves;
-//	private Species testSpecies;
-//	private Move punch;
-//	private Move kick;
-//	private Move slap;
-//	private Move elbow;
-//	private Move bite;
-//	private Move slam;
-
 	private MoveSet allMoveSet;
 	private MoveSet playerMoveSet;
 	private MoveSet monsterMoveSet;
 	private Move[] allMoves;
 	private Move[] playerMoves;
 	private Move[] monsterMoves;
-	private Move jab;
-	private Move comboPunch;
-	private Move slash;
-	private Move crunch;
-	private Move bladeBeam;
-	private Move rocketPunch;
-	private Move riskyBlow;
-	private Move dragonfist;
-	private Move rage;
-	private Move counter;
-	private Move upperCut;
-	private Move killerStab;
-	private Move fireFist;
 
 	private int spriteSize;
 	private SpriteSheet humanSheet;
 	private SpriteSheet orcSheet;
-
 	private Species playerSpecies;
 	private Species orcSpecies;
 
 	private PlayerActor player;
 	private PlayableActor buddy;
-	private CapturableActor mon2;
-	private CapturableActor mon3;
 	private ArrayList<PlayableActor> actors;
 	private ArrayList<CapturableActor> foes;
 	private ArrayList<Tile> foeTiles;
@@ -146,14 +118,11 @@ public class SuperDungeoneer implements Game {
 	private TextHistory feedbackText;
 	private LabeledButton[] moveButtons;
 	private ButtonGrid moveGrid;
-	private Label moveSelectorLabel;
 	private LabeledButton captureButton;
 	private LabeledButton[] targetSelectorButtons;
 	private ButtonGrid targetSelectionGrid;
-	private Label targetSelectorLabel;
 
 	private Panel helpPanel;
-	private TextHistory helpText;
 	private Panel partyPanel;
 	private ActorStatPane[] partyMemberPanes;
 
@@ -204,17 +173,17 @@ public class SuperDungeoneer implements Game {
 
 		// ##### DEMO CODE ##### //
 		//demoBattle.start(new PlayableActor[] { player, buddy }, foes.toArray(new CapturableActor[0]));
-		//1battleCommandDelegate.init(demoBattle);
+		//battleCommandDelegate.init(demoBattle);
 		movementCommandDelegate.init(dungeon.getDungeon());
 	}
 	private void initInput(GameContainer container) {
 		Input input = container.getInput();
-		input.addMouseListener(onFlyMouseListner);
+		input.addMouseListener(onTheFlyMouseListner);
 
 		battleCommandDelegate = new BattleCommandDelegate();
 		movementCommandDelegate = new MovementCommandDelegate();
 		InputProvider provider = new InputProvider(input);
-		handler = new DemoInputHandler(container);
+		DemoInputHandler handler = new DemoInputHandler(container);
 		handler.addCommandDelegate(battleCommandDelegate);
 		handler.addCommandDelegate(movementCommandDelegate);
 		handler.registerCommands(provider);
@@ -238,19 +207,19 @@ public class SuperDungeoneer implements Game {
 		// ##### PRODUCTION CODE ##### //
 
 		// ##### DEMO CODE ##### //
-		jab = new Move("Jab", "", 2,90, 35);
-		comboPunch = new Move("Combo Punch", "", 2,75, 15);
-		slash = new Move("Slash", "", 3,90, 16);
-		crunch = new Move("Crunch", "", 5,80, 16);
-		bladeBeam = new Move("Blade Beam", "", 7,80, 6);
-		rocketPunch = new Move("Rocket Punch", "", 8,78, 8);
-		riskyBlow = new Move("Risky Blow", "", 16,50, 1);
-		dragonfist = new Move("Dragon Fist", "", 13,70, 3);
-		rage = new Move("Rage", "", 4,87, 25);
-		counter = new Move("Counter", "", 7,100, 10);
-		upperCut = new Move("Upper Cut", "", 8,76, 14);
-		killerStab = new Move("Killer Stab", "", 10,74, 7);
-		fireFist = new Move("Fire Fist", "", 9,75, 8);
+		Move jab = new Move("Jab", "", 2, 90, 35);
+		Move comboPunch = new Move("Combo Punch", "", 2, 75, 15);
+		Move slash = new Move("Slash", "", 3, 90, 16);
+		Move crunch = new Move("Crunch", "", 5, 80, 16);
+		Move bladeBeam = new Move("Blade Beam", "", 7, 80, 6);
+		Move rocketPunch = new Move("Rocket Punch", "", 8, 78, 8);
+		Move riskyBlow = new Move("Risky Blow", "", 16, 50, 1);
+		Move dragonfist = new Move("Dragon Fist", "", 13, 70, 3);
+		Move rage = new Move("Rage", "", 4, 87, 25);
+		Move counter = new Move("Counter", "", 7, 100, 10);
+		Move upperCut = new Move("Upper Cut", "", 8, 76, 14);
+		Move killerStab = new Move("Killer Stab", "", 10, 74, 7);
+		Move fireFist = new Move("Fire Fist", "", 9, 75, 8);
 
 		allMoveSet = new MoveSet();
 		playerMoveSet = new MoveSet();
@@ -305,7 +274,7 @@ public class SuperDungeoneer implements Game {
 		foes = new ArrayList<>();
 		foeTiles = new ArrayList<>();
 
-		demoBattle = new Battle(battleCommandDelegate);
+		demoBattle = new Battle();
 
 		// ##### PRODUCTION CODE ##### //
 		int dcX = DrawingUtils.DEFAULT_MARGIN, dcY = DrawingUtils.DEFAULT_MARGIN;
@@ -314,6 +283,7 @@ public class SuperDungeoneer implements Game {
 		dungeon.generateDungeon(container, spriteSize);
 		dungeon.addPlayer(player);
 	}
+	/** @deprecated No longer used. Kept for reference */
 	private void initMonsters() {
 		// ##### TESTING CODE ##### //
 		//mon2 = new CapturableActor(testSpecies, new Stats(25, 3, 4, 2), testMoves);
@@ -324,8 +294,8 @@ public class SuperDungeoneer implements Game {
 
 		// ##### DEMO CODE ##### //
 		Move[] monsterStartMoves = new Move[] { monsterMoves[0] };
-		mon2 = new CapturableActor(orcSpecies, new Stats(25, 3, 4, 2), monsterStartMoves);
-		mon3 = new CapturableActor(orcSpecies, new Stats(15, 5, 5, 5), monsterStartMoves);
+		CapturableActor mon2 = new CapturableActor(orcSpecies, new Stats(25, 3, 4, 2), monsterStartMoves);
+		CapturableActor mon3 = new CapturableActor(orcSpecies, new Stats(15, 5, 5, 5), monsterStartMoves);
 
 		mon2.setName("Orc 1");
 		mon3.setName("Orc 2");
@@ -380,7 +350,7 @@ public class SuperDungeoneer implements Game {
 		moveGrid = new ButtonGrid(container, 1, 6, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR, moveButtons);
 
 		String label = "Move Selector";
-		moveSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth("__"+label), moveGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
+		Label moveSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth("__" + label), moveGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
 
 		label = "Capture!";
 		captureButton = new LabeledButton(label, container, DrawingUtils.TEXT_COLOR, DrawingUtils.BUTTON_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR, new RoundedRectangle(0, 0, container.getDefaultFont().getWidth("___"+label)+DrawingUtils.DEFAULT_MARGIN, container.getDefaultFont().getLineHeight(), 6));
@@ -398,7 +368,7 @@ public class SuperDungeoneer implements Game {
 		}
 		targetSelectionGrid = new ButtonGrid(container, 1, Battle.MAX_TEAM_SIZE, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR, targetSelectorButtons);
 		label = "Target Selector";
-		targetSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth("__"+label), targetSelectionGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
+		Label targetSelectorLabel = new Label(container, label, 0, 0, container.getDefaultFont().getWidth("__" + label), targetSelectionGrid.getHeight(), DrawingUtils.DEFAULT_MARGIN, false, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER3_BACKGROUND_COLOR);
 
 		feedbackText = new TextHistory(container, 0, 0, battleControlPanel.getWidth(), battleControlPanel.getHeight() - moveGrid.getHeightWithMargin() - 2*container.getDefaultFont().getLineHeight(), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 		//feedbackText.shouldDrawBorder(false);
@@ -411,14 +381,14 @@ public class SuperDungeoneer implements Game {
 
 
 		battleControlPanel.addChild(moveGrid, battleControlPanel.getWidth() - moveGrid.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
-		int mslX = battleControlPanel.getWidth()-moveGrid.getWidthWithMargin()-moveSelectorLabel.getWidthWithMargin();
+		int mslX = battleControlPanel.getWidth()-moveGrid.getWidthWithMargin()- moveSelectorLabel.getWidthWithMargin();
 		battleControlPanel.addChild(moveSelectorLabel, mslX, DrawingUtils.DEFAULT_MARGIN);
 		battleControlPanel.addChild(captureButton, mslX - captureButton.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
 		battleControlPanel.addChild(targetSelectionGrid, DrawingUtils.DEFAULT_MARGIN, DrawingUtils.DEFAULT_MARGIN);
 		battleControlPanel.addChild(targetSelectorLabel, targetSelectionGrid.getWidthWithMargin(), DrawingUtils.DEFAULT_MARGIN);
 		battleControlPanel.addChild(feedbackText, 0, battleControlPanel.getHeight() - feedbackText.getHeight());
 
-		helpText = new TextHistory(container, 0, 0, hpW, hpH - (hpH / 5), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
+		TextHistory helpText = new TextHistory(container, 0, 0, hpW, hpH - ( hpH / 5 ), DrawingUtils.DEFAULT_MARGIN, DrawingUtils.TEXT_COLOR, DrawingUtils.FOREGROUND_COLOR, DrawingUtils.TIER2_BACKGROUND_COLOR);
 		helpText.addLine("Use the mouse to select a target \nafter selecting a move!");
 		helpText.addLine("");
 		helpText.addLine("1-6 -- Select Move (or use the mouse)");
@@ -501,7 +471,7 @@ public class SuperDungeoneer implements Game {
 						}
 					}
 				}
-				updateTargetSelector(container);
+				updateTargetSelector();
 
 				for (BattlableActor a : demoBattle.getFoes()) {
 					if (a instanceof ICapturable) {
@@ -525,16 +495,20 @@ public class SuperDungeoneer implements Game {
 		}
 	}
 
+	/** Enable or disable the target selector depending on gamestate */
+	private void updateTargetSelector() {
+		targetSelectionGrid.setEnabled(needsTarget);
+	}
+
 	/**
 	 * Render the game's screen here.
 	 *
-	 * @param container The container holing this game
+	 * @param container The container for this game
 	 * @param g         The graphics context that can be used to render. However, normal rendering
 	 *                  routines can also be used.
-	 * @throws SlickException Throw to indicate a internal error
 	 */
 	@Override
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		// ##### TESTING CODE ##### //
 		//g.drawString("Welcome to our SuperDungeoneer!",980,20);
 		//g.drawImage(im, 10+input.getxOff(), 120+input.getyOff());
@@ -553,7 +527,6 @@ public class SuperDungeoneer implements Game {
 		}
 
 		drawHUD(container, g);
-		drawBattle(container, g);
 		/*Animation deathAnim = mon2.getDeathAnimation();
 		if (deathAnim != null) {
 			deathAnim.setLooping(false);
@@ -564,29 +537,34 @@ public class SuperDungeoneer implements Game {
 		g.flush();
 	}
 
-	private void drawHUD(GameContainer container, Graphics g) throws SlickException {
+	/**
+	 * Draw the HUD (heads up display)
+	 * @param container The container for this game
+	 * @param g         The graphics context that can be used to render. However, normal rendering
+	 *                  routines can also be used.
+	 */
+	private void drawHUD(GameContainer container, Graphics g) {
 		dungeon.render(container, g);
 		helpPanel.render(container, g);
 		partyPanel.render(container, g);
 		drawBattleHUD(container, g);
 		if (demoBattle.isStarted()) {
-			drawMoves(container, g);
+			drawMoveSelection(container, g);
 		}
 	}
 
-	private void drawBattleHUD(GameContainer container, Graphics g) throws SlickException {
+	/**
+	 * Draw the Battle HUD (heads up display)
+	 * @param container The container for this game
+	 * @param g         The graphics context that can be used to render. However, normal rendering
+	 *                  routines can also be used.
+	 */
+	private void drawBattleHUD(GameContainer container, Graphics g) {
 		Color oldC = g.getColor();
 
 		battleControlPanel.render(container, g);
 		ArrayList<CapturableActor> foes = demoBattle.getFoes();
-		for (int i = 0; i < foes.size(); i++) {
-			if (foes.get(i) != null){
-				if (foes.get(i).isIncapacitated()) {
-					LabeledButton btn = targetSelectorButtons[i];
-					//DrawingUtils.drawDisabledOverlay(container, g, btn.getX(), btn.getY(), btn.getWidth(), btn.getHeight());
-				}
-			}
-		}
+
 		if (!demoBattle.isOver()) {
 			g.setColor(DrawingUtils.FOREGROUND_COLOR);
 			int foeX = COMPONENT_SPACING, foeY = COMPONENT_SPACING;
@@ -625,7 +603,13 @@ public class SuperDungeoneer implements Game {
 		g.setColor(oldC);
 	}
 
-	private void drawMoves(GameContainer container, Graphics g) throws SlickException {
+	/**
+	 * Draw a highlight of the selected move, if one is selected
+	 * @param  container The container for this game
+	 * @param g          The graphics context that can be used to render. However, normal rendering
+	 *                   routines can also be used.
+	 */
+	private void drawMoveSelection(GameContainer container, Graphics g) {
 		if (moveSlot > 0) {
 			int x = moveButtons[moveSlot-1].getX() - 2;
 			int y = moveButtons[moveSlot-1].getY() - 2;
@@ -643,21 +627,11 @@ public class SuperDungeoneer implements Game {
 		}
 	}
 
-	private void drawBattle(GameContainer container, Graphics g) throws SlickException {
-
-	}
-
-	private void drawTargetSelector(GameContainer container, Graphics g) throws SlickException {
-		targetSelectionGrid.setEnabled(needsTarget && moveSlot > 0);
-		//targetSelectionGrid.render(container, g);
-	}
-
-
-	private void updateTargetSelector(GameContainer container) throws SlickException {
-		targetSelectionGrid.setEnabled(needsTarget);
-	}
-
-	public void selectTarget(IBattlable[] targets) {
+	/**
+	 * Allows the user to select a target via the GUI
+	 * @param targets the targets to choose from
+	 */
+	public void enableTargetSelection(IBattlable[] targets) {
 		if (needsTarget || selectedTarget) { return; }
 
 		for (int i = 1; i <= targets.length; i++) {
@@ -690,9 +664,16 @@ public class SuperDungeoneer implements Game {
 	public static SuperDungeoneer getInstance() {
 		return instance;
 	}
-
 	public PlayerActor getPlayer() { return this.player; }
+
+	/** Returns the player's position in tiles as [ x, y ] */
 	public int[] getPlayerPos() { return dungeon.getPlayerPos(); }
+
+	/**
+	 * Offsets the player by (x,y) tiles, or (x*spriteSize, y*spriteSize) pixels
+	 * @param x horizontal tile offset
+	 * @param y vertical tile offset
+	 */
 	public void movePlayer(int x, int y) {
 		dungeon.offsetPlayerPos(new int[] { x*spriteSize, y*spriteSize });
 	}
@@ -701,6 +682,13 @@ public class SuperDungeoneer implements Game {
 		return this.moveButtons;
 	}
 
+	/**
+	 * Returns the active targetSlot, if a selection has been made.
+	 * The target selection state is reset if, and only if, an IllegalStateException is not thrown
+	 * @return 1 for target 1, or 2 for target 2
+	 *
+	 * @throws IllegalStateException if a selection hasn't been made
+	 */
 	public int getSelectedTargetSlot() {
 		if (!this.selectedTarget) {
 			throw new IllegalStateException("Target is invalid or not selected!");
@@ -712,6 +700,7 @@ public class SuperDungeoneer implements Game {
 		return ret;
 	}
 
+	/** Sets the active targetSlot; domain is 1 - 2. This is only necessary if > 1 foes are left. */
 	private void setSelectedTargetSlot(int targetSlot) {
 		this.targetSlot = targetSlot;
 		this.selectedTarget = targetSlot > 0 && targetSlot <= Battle.MAX_TEAM_SIZE;
@@ -719,27 +708,39 @@ public class SuperDungeoneer implements Game {
 		this.targetSelectionGrid.setEnabled(this.needsTarget);
 	}
 
+	/** Sets the active moveSlot; domain is 1 - 6, but is further limited by the active actor's move count */
 	public void setMoveSlot(int moveSlot) {
 		this.moveSlot = moveSlot;
 	}
 
+	/** Adds a line of feedback text to the bottom of the screen */
 	public void addFeedback(String text) {
 		this.feedbackText.addLine(text);
 	}
 
+	/** Adds a new animation to the animation loop */
 	public void addAnim(Animation anim) {
 		if (anims == null) {
-			anims = new ArrayList<Animation>();
+			anims = new ArrayList<>();
 		}
 		anims.add(anim);
 	}
+
+	/** Adds a new Actor to the dungeon. This could be an NPC or a buddy */
 	public void addActor(PlayableActor a) {
 		actors.add(a);
 	}
+
+	/** Adds a new foe to the dungeon */
 	public void addMonster(Tile t, CapturableActor a) {
 		foes.add(a);
 		foeTiles.add(t);
 	}
+
+	/**
+	 * Returns a pseudo-randomly genrated monster
+	 * @return A pseudo-randomly generated CapturableActor instance
+	 */
 	public CapturableActor getRandMonster(Random rand) {
 		Species[] species = new Species[] { orcSpecies };
 		int speciesIdx = rand.nextInt(species.length);
@@ -747,39 +748,21 @@ public class SuperDungeoneer implements Game {
 	}
 
 	public boolean isBattling() { return demoBattle.isStarted() && !demoBattle.isOver(); }
+
+	/**
+	 * Call when the player interacts with another character on screen
+	 */
 	public void interacted() {
 		int x = getPlayerPos()[0], y = getPlayerPos()[1];
 		Dungeon d = dungeon.getDungeon();
 		CapturableActor foe = null;
 		Tile[] tiles = new Tile[] { d.getTileAt(x-1,y), d.getTileAt(x, y-1), d.getTileAt(x+1,y), d.getTileAt(x, y+1) };
-		for (int i = 0; i < tiles.length; i++) {
-			boolean found = foeTiles.contains(tiles[i]);
+		for (Tile tile : tiles) {
+			boolean found = foeTiles.contains(tile);
 			if (found) {
-				foe = (CapturableActor) tiles[i].getOccupant();
+				foe = (CapturableActor) tile.getOccupant();
 			}
 		}
-		/*
-		try {
-			if (d.getTileAt(x + 1, y).getState() == Tile.ACTOR && d.getTileAt(x + 1, y).getOccupant() != player) {
-				foe = (CapturableActor) d.getTileAt(x + 1, y).getOccupant();
-			}
-		} catch (IllegalArgumentException iae) {}
-		try {
-			if (d.getTileAt(x, y - 1).getState() == Tile.ACTOR && d.getTileAt(x, y - 1).getOccupant() != player) {
-				foe = (CapturableActor) d.getTileAt(x, y - 1).getOccupant();
-			}
-		} catch (IllegalArgumentException iae) {}
-		try {
-			if (d.getTileAt(x - 1, y).getState() == Tile.ACTOR && d.getTileAt(x - 1, y).getOccupant() != player) {
-				foe = (CapturableActor) d.getTileAt(x - 1, y).getOccupant();
-			}
-		} catch (IllegalArgumentException iae) {}
-		try {
-			if (d.getTileAt(x, y + 1).getState() == Tile.ACTOR && d.getTileAt(x, y + 1).getOccupant() != player) {
-				foe = (CapturableActor) d.getTileAt(x, y + 1).getOccupant();
-			}
-		} catch (IllegalArgumentException iae) {}
-		*/
 
 		if (foe != null) {
 			try {
@@ -791,6 +774,10 @@ public class SuperDungeoneer implements Game {
 			}
 		}
 	}
+
+	/**
+	 * Call when the player runs away from a battle
+	 */
 	public void runAway() {
 		demoBattle.clearState();
 	}

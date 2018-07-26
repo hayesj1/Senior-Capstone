@@ -7,6 +7,9 @@ import game.dungeon.Tile;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.command.Command;
 
+/**
+ * Input delegate to handle movement and dungeon interaction commands
+ */
 public class MovementCommandDelegate implements ICommandDelegate {
 	private Dungeon map;
 	private boolean initialized;

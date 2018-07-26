@@ -3,6 +3,9 @@ package game.input;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.command.Command;
 
+/**
+ * Handler for input commands
+ */
 public interface ICommandDelegate {
 
 	/**

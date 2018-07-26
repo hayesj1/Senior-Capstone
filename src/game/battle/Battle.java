@@ -2,12 +2,14 @@ package game.battle;
 
 import game.SuperDungeoneer;
 import game.character.*;
-import game.input.BattleCommandDelegate;
 
 import java.util.*;
 import java.util.function.Predicate;
 
+/** Tracks and handles the state of a battle. Instances of this class are reusable. */
 public class Battle {
+	public static final int MAX_TEAM_SIZE = 2;
+	/** Determines the order of execution for moves in a battle. Higher speeds go first, and placement is random for equal speeds */
 	public static class BattleOrder implements Comparator<IBattlable> {
 		private static final BattleOrder instance = new BattleOrder();
 		private BattleOrder() {}
@@ -62,23 +64,19 @@ public class Battle {
 			return instance;
 		}
 	}
-	public static final int MAX_TEAM_SIZE = 2;
 
-	private BattleCommandDelegate commandDelegate;
 	private boolean prepared;
 	private boolean started;
 	private boolean ended;
 	private boolean needsAction = false;
 	private boolean playerWon;
 	private int activeActor = -1;
-	private int playerIdx;
 	private PlayerActor player;
 	private ArrayList<PlayableActor> players;
 	private ArrayList<CapturableActor> foes;
 	private TreeSet<BattlableActor> order;
 
-	public Battle(BattleCommandDelegate del) {
-		this.commandDelegate = del;
+	public Battle() {
 		this.prepared = false;
 		this.started = false;
 		this.ended = false;
@@ -144,7 +142,7 @@ public class Battle {
 		if (activeActor < players.size() && (moveSlot > 0 && moveSlot <= players.get(activeActor).getMoveCount())) {
 			Turn turn = players.get(activeActor).planMove(moveSlot, foeArr);
 			if (turn.getTarget() == null) {
-				SuperDungeoneer.getInstance().selectTarget(foeArr);
+				SuperDungeoneer.getInstance().enableTargetSelection(foeArr);
 				try {
 					int targetSlot = SuperDungeoneer.getInstance().getSelectedTargetSlot();
 					turn.setTarget(foes.get(targetSlot - 1));
@@ -193,6 +191,7 @@ public class Battle {
 		}
 	}
 
+	/** Actually execute each participants move ordered by {@link BattleOrder} */
 	private void executeTurns() {
 		if (!started) { return; }
 		order.descendingSet().forEach(IBattlable::executeTurn);
@@ -217,9 +216,9 @@ public class Battle {
 		}
 	}
 
+	/** Clears the state of this battle, so the instance may be reused */
 	public void clearState() {
 		this.playerWon = false;
-		this.playerIdx = 0;
 
 		this.players.clear();
 		this.foes.clear();
@@ -237,6 +236,8 @@ public class Battle {
 	public boolean isStarted() { return this.started; }
 	public boolean playerVictory() { return this.playerWon; }
 	public boolean needsUserAction() { return this.needsAction; }
+
+	/** @return null if there isn't an active actor; otherwise the active IBattlable instance */
 	public IBattlable getActiveActor() { return this.activeActor >= 0 && this.activeActor < this.players.size() ? this.players.get(this.activeActor) : null; }
 
 	public ArrayList<PlayableActor> getPlayers() { return players; }

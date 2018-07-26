@@ -62,9 +62,9 @@ public abstract class BaseComponent extends AbstractComponent implements IBaseCo
 	}
 
 	/**
-	 * Draws an overlay of red Xs over the bounding rect of this component
-	 * @param container the GUIcontext
-	 * @param g the Graphics oject to draw on
+	 * Draws a red X over the bounding rect of this component
+	 * @param container the GUIContext
+	 * @param g the Graphics object to draw on
 	 * @see #render(GUIContext, Graphics)
 	 */
 	protected void drawDisabledOverlay(GUIContext container, Graphics g) {

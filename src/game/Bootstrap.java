@@ -7,6 +7,9 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Main program entry point
+ */
 public class Bootstrap {
 	public static void main(String[] args) {
 		System.setProperty("net.java.games.input.librarypath", new File("libs/natives").getAbsolutePath());

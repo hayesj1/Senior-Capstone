@@ -7,25 +7,24 @@ import org.newdawn.slick.command.*;
 import java.util.HashSet;
 
 public class DemoInputHandler implements InputProviderListener {
-	public static final BasicCommand attack1 = new BasicCommand("Attack_1");
-	public static final BasicCommand attack2 = new BasicCommand("Attack_2");
-	public static final BasicCommand attack3 = new BasicCommand("Attack_3");
-	public static final BasicCommand attack4 = new BasicCommand("Attack_4");
-	public static final BasicCommand attack5 = new BasicCommand("Attack_5");
-	public static final BasicCommand attack6 = new BasicCommand("Attack_6");
-	public static final BasicCommand attack = new BasicCommand("Attack");
+	static final BasicCommand attack1 = new BasicCommand("Attack_1");
+	static final BasicCommand attack2 = new BasicCommand("Attack_2");
+	static final BasicCommand attack3 = new BasicCommand("Attack_3");
+	static final BasicCommand attack4 = new BasicCommand("Attack_4");
+	static final BasicCommand attack5 = new BasicCommand("Attack_5");
+	static final BasicCommand attack6 = new BasicCommand("Attack_6");
+	static final BasicCommand attack = new BasicCommand("Attack");
 
-	public static final BasicCommand selectTarget = new BasicCommand("Select Target");
-	public static final BasicCommand runAway = new BasicCommand("Escape");
+	static final BasicCommand selectTarget = new BasicCommand("Select Target");
+	static final BasicCommand runAway = new BasicCommand("Escape");
 
-	public static final BasicCommand forward = new BasicCommand("Forward");
-	public static final BasicCommand backward = new BasicCommand("backward");
-	public static final BasicCommand up = new BasicCommand("Up");
-	public static final BasicCommand down = new BasicCommand("Down");
+	static final BasicCommand forward = new BasicCommand("Forward");
+	static final BasicCommand backward = new BasicCommand("backward");
+	static final BasicCommand up = new BasicCommand("Up");
+	static final BasicCommand down = new BasicCommand("Down");
+	static final BasicCommand interact = new BasicCommand("Interact");
 
-	public static final BasicCommand interact = new BasicCommand("Interact");
-
-	public static final BasicCommand quit = new BasicCommand("Quit");
+	static final BasicCommand quit = new BasicCommand("Quit");
 
 	private HashSet<ICommandDelegate> commandDelegates;
 	private GameContainer container;
@@ -38,7 +37,6 @@ public class DemoInputHandler implements InputProviderListener {
 	public void addCommandDelegate(ICommandDelegate del) {
 		this.commandDelegates.add(del);
 	}
-
 	public void removeCommandDelegate(ICommandDelegate del) {
 		this.commandDelegates.remove(del);
 	}
@@ -84,6 +82,9 @@ public class DemoInputHandler implements InputProviderListener {
 		//System.out.println(command.toString()+" pressed!");
 	}
 
+	/**
+	 * Forwards all commands to the delegates for handling, excluding the QUIT command, which is processed directly.
+	 */
 	@Override
 	public void controlReleased(Command command) {
 		//System.out.println(command+" released!");
